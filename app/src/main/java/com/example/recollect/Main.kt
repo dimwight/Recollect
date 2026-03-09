@@ -15,23 +15,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.recollect.ui.theme.RecollectTheme
 import org.javarosa.xform.util.XFormUtils
 import org.javarosa.core.model.FormDef
+import java.io.InputStream
 
 class Main : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val formName = "form6154"
         val identifier = resources.getIdentifier(formName, "raw", packageName)
-       try {
-           resources.openRawResource(identifier)
-       }catch (e: Exception){
-           println("Rec1: = ${e}")
-       }
+        val inputStream: InputStream
+        try {
+           inputStream = resources.openRawResource(identifier)
+           }catch (e: Exception){
+               println("R1: = ${e}")
+           }
         if (false) {
             XFormUtils.getFormFromFormXml("","")
         }
 
 
-        println("Rec1: formName = ${formName}")
+        println("R1: formName = ${formName}")
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
