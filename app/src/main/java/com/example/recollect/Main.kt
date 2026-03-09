@@ -1,6 +1,5 @@
 package com.example.recollect
 
-import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,20 +19,16 @@ import java.io.InputStream
 class Main : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val formName = "form6154"
-        val identifier = resources.getIdentifier(formName, "raw", packageName)
-        val inputStream: InputStream
+        lateinit var formDef: FormDef
         try {
-           inputStream = resources.openRawResource(identifier)
-           }catch (e: Exception){
-               println("R1: = ${e}")
-           }
-        if (false) {
-            XFormUtils.getFormFromFormXml("","")
+            val formId = resources.getIdentifier("form6154", "raw", packageName)
+            val inputStream: InputStream = resources.openRawResource(formId)
+            formDef = XFormUtils.getFormFromInputStream(inputStream)
+        } catch (e: Exception) {
+            println("R1: = ${e}")
         }
+        println("R1: formDef = $formDef")
 
-
-        println("R1: formName = ${formName}")
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
