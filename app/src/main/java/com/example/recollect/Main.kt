@@ -4,8 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +34,8 @@ class Main : ComponentActivity() {
         }
         println("R1: formDef = $formDef")
 
+
+
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -37,8 +44,27 @@ class Main : ComponentActivity() {
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
+                    BackNext()
                 }
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BackNext() {
+    Row (Modifier.height(IntrinsicSize.Min)){
+        Button(
+            onClick = {}) {
+            Text("Back")
+        }
+
+        Button(
+            onClick={},
+   //         modifier = Modifier.fillMaxHeight()
+        ) {
+            Text("Next")
         }
     }
 }
@@ -47,7 +73,7 @@ class Main : ComponentActivity() {
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
-        modifier = modifier
+//        modifier = Modifier
     )
 }
 
