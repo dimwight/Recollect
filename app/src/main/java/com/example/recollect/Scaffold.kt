@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun newTopBar() {
+fun NewTopBar() {
     TopAppBar(
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -32,21 +32,7 @@ fun newTopBar() {
     )
 }
 @Composable
-fun newBottomBar() {
-    BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
-    ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            text = "Bottom app bar",
-        )
-    }
-}
-@Composable
-fun newContent(innerPadding: PaddingValues) {
+fun NewContent(innerPadding: PaddingValues) {
     Column(
         modifier = Modifier.padding(innerPadding),
         verticalArrangement = Arrangement.spacedBy(56.dp),
@@ -77,26 +63,39 @@ fun newContent(innerPadding: PaddingValues) {
 
     }
 }
+@Composable
+fun NewBottomBar() {
+    BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        BackNext()
+    }
+
+
+}
 
 @Preview
 @Composable
 fun ScaffoldSet() {
     Scaffold(
-        topBar = { newTopBar() },
-        bottomBar = { newBottomBar() }
-    ) { innerPadding -> newContent(innerPadding) }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        topBar = { NewTopBar() },
+        bottomBar = { NewBottomBar() }
+    ) { innerPadding -> NewContent(innerPadding) }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

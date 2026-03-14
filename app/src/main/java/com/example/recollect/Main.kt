@@ -3,10 +3,13 @@ package com.example.recollect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +28,7 @@ class Main : ComponentActivity() {
             val inputStream: InputStream = resources.openRawResource(formId)
             formDef = XFormUtils.getFormFromInputStream(inputStream)
         } catch (e: Exception) {
-            println("R1: = ${e}")
+            println("R1: = $e")
         }
         println("R1: formDef = $formDef")
 
@@ -37,21 +40,35 @@ class Main : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun BackNext() {
-    Row (Modifier.height(IntrinsicSize.Min)){
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Button(
-            onClick = {}) {
+            onClick = {println("R1: = back")}) {
             Text("Back")
         }
 
         Button(
-            onClick={},
-   //         modifier = Modifier.fillMaxHeight()
+            onClick={println("R1: = next")},
         ) {
             Text("Next")
         }
     }
+
+
 }
+
+
+
+
+
+
+
+
+
+
 
