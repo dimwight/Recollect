@@ -13,7 +13,7 @@ import java.io.InputStream
 
 class Main : ComponentActivity() {
    private lateinit var controller: FormEntryController
-   private var event: Int=-1
+   var event: Int=-1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

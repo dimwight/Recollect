@@ -16,6 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +37,7 @@ fun NewTopBar() {
         }
     )
 }
+
 @Composable
 fun NewContent(innerPadding: PaddingValues) {
     Column(
@@ -41,8 +46,6 @@ fun NewContent(innerPadding: PaddingValues) {
     ) {
         Text(
             modifier = Modifier.padding(8.dp),
-      //          This is an example of a scaffold. It uses the Scaffold composable's parameters to create a screen with a simple top app bar, bottom app bar, and floating action button.
-
             text = """
                It also contains some basic inner content, such as this text.
                 
@@ -62,9 +65,9 @@ fun NewContent(innerPadding: PaddingValues) {
                      
                 """.trimIndent(),
         )
-
     }
 }
+
 @Composable
 fun NewBottomBar() {
     BottomAppBar(
@@ -72,27 +75,35 @@ fun NewBottomBar() {
         contentColor = MaterialTheme.colorScheme.primary,
     ) {
         Row(
-            modifier = Modifier.Companion.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            var isBackEnabled by remember { mutableStateOf(false) }
             val main = LocalActivity.current as Main
             Button(
-                onClick = { main.onBack() }) {
+                enabled = isBackEnabled,
+                onClick = {
+                    main.onBack()
+                    isBackEnabled=main.event>0
+                },
+
+            ) {
                 Text("Back")
             }
 
             Button(
-                onClick = { main.onNext() },
+                onClick = {
+                    main.onNext()
+                    isBackEnabled=main.event>0
+                },
             ) {
                 Text("Next")
             }
         }
     }
-
-
 }
 
-@Preview()
+@Preview
 @Composable
 fun ScaffoldSet() {
     Scaffold(
