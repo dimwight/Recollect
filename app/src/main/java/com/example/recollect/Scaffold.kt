@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.javarosa.form.api.FormEntryController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,8 +79,11 @@ fun NewBottomBar() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            var isBackEnabled by remember { mutableStateOf(false) }
             val main = LocalActivity.current as Main
+            var isBackEnabled by remember {
+                mutableStateOf(main.event!=
+                        FormEntryController.EVENT_BEGINNING_OF_FORM)
+            }
             Button(
                 enabled = isBackEnabled,
                 onClick = {
