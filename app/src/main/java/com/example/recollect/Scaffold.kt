@@ -19,10 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,8 +74,16 @@ fun NewContent(innerPadding: PaddingValues) {
     }
 }
 
+fun getNumbers(): Flow<Int> = flow {
+    for (i in 1..3) {
+        delay(1000) // Non-blocking delay
+        emit(i) // Emit next value
+    }
+}
+
 @Composable
 fun NewBottomBar() {
+    val scope = rememberCoroutineScope()
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
@@ -99,6 +112,12 @@ fun NewBottomBar() {
                 onClick = {
                     main.onNext()
                     isBackEnabled=main.event>0
+                    scope.launch {
+                        main.getNumbers().collect { value ->
+                            println("R1: value = $value")
+                        }
+                    }
+
                 },
             ) {
                 Text("Next")

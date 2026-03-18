@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.recollect.ui.theme.RecollectTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.javarosa.core.model.FormDef
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryModel
@@ -39,6 +42,13 @@ class Main : ComponentActivity() {
             RecollectTheme {
                 ScaffoldSet()
             }
+        }
+    }
+
+    fun getNumbers(): Flow<Int> = flow {
+        for (i in 1..3) {
+            delay(1000) // Non-blocking delay
+            emit(i) // Emit next value
         }
     }
 
