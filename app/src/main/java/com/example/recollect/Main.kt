@@ -45,8 +45,8 @@ class Main : ComponentActivity() {
         }
     }
 
-    fun getNumbers(): Flow<Int> = flow {
-        for (i in 1..3) {
+    fun getNumbers4(): Flow<Int> = flow {
+        for (i in 4..6) {
             delay(1000) // Non-blocking delay
             emit(i) // Emit next value
         }

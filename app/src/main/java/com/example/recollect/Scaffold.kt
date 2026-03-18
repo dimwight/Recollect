@@ -74,7 +74,7 @@ fun NewContent(innerPadding: PaddingValues) {
     }
 }
 
-fun getNumbers(): Flow<Int> = flow {
+fun getNumbers1(): Flow<Int> = flow {
     for (i in 1..3) {
         delay(1000) // Non-blocking delay
         emit(i) // Emit next value
@@ -102,6 +102,11 @@ fun NewBottomBar() {
                 onClick = {
                     main.onBack()
                     isBackEnabled=main.event>0
+                    scope.launch {
+                        main.getNumbers4().collect { value ->
+                            println("R1: value = $value")
+                        }
+                    }
                 },
 
             ) {
@@ -113,7 +118,12 @@ fun NewBottomBar() {
                     main.onNext()
                     isBackEnabled=main.event>0
                     scope.launch {
-                        main.getNumbers().collect { value ->
+                        main.getNumbers4().collect { value ->
+                            println("R1: value = $value")
+                        }
+                    }
+                    scope.launch {
+                        getNumbers1().collect { value ->
                             println("R1: value = $value")
                         }
                     }
@@ -131,8 +141,22 @@ fun NewBottomBar() {
 fun ScaffoldSet() {
     Scaffold(
         topBar = { NewTopBar() },
-        bottomBar = { NewBottomBar() }
+        bottomBar = {
+            NewBottomBar()
+        }
     ) { innerPadding -> NewContent(innerPadding) }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
