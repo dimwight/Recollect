@@ -74,13 +74,6 @@ fun NewContent(innerPadding: PaddingValues) {
     }
 }
 
-fun getNumbers1(): Flow<Int> = flow {
-    for (i in 1..3) {
-        delay(1000) // Non-blocking delay
-        emit(i) // Emit next value
-    }
-}
-
 @Composable
 fun NewBottomBar() {
     val scope = rememberCoroutineScope()
@@ -94,29 +87,36 @@ fun NewBottomBar() {
         ) {
             val main = LocalActivity.current as Main
             var isBackEnabled by remember {
-                mutableStateOf(main.event!=
-                        FormEntryController.EVENT_BEGINNING_OF_FORM)
+                mutableStateOf(
+                    main.event !=
+                            FormEntryController.EVENT_BEGINNING_OF_FORM
+                )
             }
             Button(
                 enabled = isBackEnabled,
                 onClick = {
                     main.onBack()
-                    isBackEnabled=main.event>0
+                    isBackEnabled = main.event > 0
                     scope.launch {
                         main.getNumbers4().collect { value ->
                             println("R1: value = $value")
+                            scope.launch {
+                                getNumbers1().collect { value ->
+                                    println("R1: value = $value")
+                                }
+                            }
                         }
                     }
                 },
 
-            ) {
+                ) {
                 Text("Back")
             }
 
             Button(
                 onClick = {
                     main.onNext()
-                    isBackEnabled=main.event>0
+                    isBackEnabled = main.event > 0
                     scope.launch {
                         main.getNumbers4().collect { value ->
                             println("R1: value = $value")
