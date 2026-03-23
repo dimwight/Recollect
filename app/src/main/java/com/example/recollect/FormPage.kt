@@ -29,7 +29,7 @@ import org.javarosa.form.api.FormEntryController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewTopBar(label: String="Top app bar") {
+fun TopBar(label: String = "Top app bar") {
     TopAppBar(
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -42,7 +42,7 @@ fun NewTopBar(label: String="Top app bar") {
 }
 
 @Composable
-fun NewContent(innerPadding: PaddingValues) {
+fun Content(innerPadding: PaddingValues) {
     Column(
         modifier = Modifier.padding(innerPadding),
         verticalArrangement = Arrangement.spacedBy(56.dp),
@@ -72,7 +72,7 @@ fun NewContent(innerPadding: PaddingValues) {
 }
 
 @Composable
-fun NewBottomBar() {
+fun BottomBar() {
     val scope = rememberCoroutineScope()
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -100,7 +100,7 @@ fun NewBottomBar() {
                             println("R1: val4 = $val4")
                             scope.launch {
                                 getNumbers1().collect { value ->
-                                    val val14 = value+val4
+                                    val val14 = value + val4
                                     println("R1: val14 = $val14")
                                 }
                             }
@@ -134,34 +134,11 @@ fun NewBottomBar() {
 
 @Preview
 @Composable
-fun ScaffoldSet_() {
+fun FormPage() {
     Scaffold(
-        topBar = { NewTopBar("") },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.primary,
-            ) {
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(56.dp),
-        ) {
-            UserProfileScreen()
-        }
-    }
-}
-@Preview
-@Composable
-fun ScaffoldSet() {
-    Scaffold(
-        topBar = { NewTopBar("Top app bar") },
-        bottomBar = {
-            NewBottomBar()
-        }
-    ) { innerPadding -> NewContent(innerPadding) }
+        topBar = { TopBar("Top app bar") },
+        bottomBar = { BottomBar() }
+    ) { innerPadding -> Content(innerPadding) }
 }
 
 
