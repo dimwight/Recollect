@@ -24,22 +24,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewTopBar() {
+fun NewTopBar(label: String="Top app bar") {
     TopAppBar(
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = {
-            Text("Top app bar")
+            Text(label)
         }
     )
 }
@@ -99,20 +96,20 @@ fun NewBottomBar() {
                     isBackEnabled = main.event > 0
                     scope.launch {
                         main.getNumbers4().collect { value ->
-                            println("R1: value = $value")
+                            val val4 = value
+                            println("R1: val4 = $val4")
                             scope.launch {
                                 getNumbers1().collect { value ->
-                                    println("R1: value = $value")
+                                    val val14 = value+val4
+                                    println("R1: val14 = $val14")
                                 }
                             }
                         }
                     }
-                },
-
-                ) {
+                }
+            ) {
                 Text("Back")
             }
-
             Button(
                 onClick = {
                     main.onNext()
@@ -127,8 +124,7 @@ fun NewBottomBar() {
                             println("R1: value = $value")
                         }
                     }
-
-                },
+                }
             ) {
                 Text("Next")
             }
@@ -138,9 +134,30 @@ fun NewBottomBar() {
 
 @Preview
 @Composable
+fun ScaffoldSet_() {
+    Scaffold(
+        topBar = { NewTopBar("") },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+            ) {
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.padding(innerPadding),
+            verticalArrangement = Arrangement.spacedBy(56.dp),
+        ) {
+            UserProfileScreen()
+        }
+    }
+}
+@Preview
+@Composable
 fun ScaffoldSet() {
     Scaffold(
-        topBar = { NewTopBar() },
+        topBar = { NewTopBar("Top app bar") },
         bottomBar = {
             NewBottomBar()
         }
