@@ -58,7 +58,7 @@ class Main : ComponentActivity() {
 
         setContent {
             RecollectTheme {
-                if (false) UserProfileScaffold()
+                if (true) BitsScaffold()
                 else FormPage()
             }
         }
