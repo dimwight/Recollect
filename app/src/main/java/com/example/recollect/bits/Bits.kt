@@ -83,8 +83,6 @@ fun BitsScaffold() {
 
 @Composable
 fun Pulse() {
-    // Allow the pulse rate to be configured, so it can be sped up if the user is running
-    // out of time
     val pulseRateMs by remember { mutableLongStateOf(3000L) }
     val alpha = remember { Animatable(1f) }
     LaunchedEffect(pulseRateMs) { // Restart the effect when the pulse rate changes

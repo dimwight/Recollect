@@ -132,35 +132,32 @@ fun AnimatedVisibilityCookbook() {
 
 @Preview
 @Composable
-fun AnimatedVisibilityCookbook_ModifierAlpha() {
+fun AnimateAlpha() {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // [START android_compose_animation_cookbook_visibility_alpha]
-        var visible by remember {
-            mutableStateOf(true)
-        }
+        var fullAlpha by remember { mutableStateOf(true) }
         val animatedAlpha by animateFloatAsState(
-            targetValue = if (visible) 1.0f else 0.5f,
-            label = "alpha"
+            targetValue = if (fullAlpha) 1.0f else 0.5f,
+            animationSpec = spring<Float>(
+                dampingRatio = Spring.DampingRatioHighBouncy,
+            )
         )
         Box(
             modifier = Modifier
                 .size(200.dp)
-                .graphicsLayer {
-                    alpha = animatedAlpha
-                }
+                .graphicsLayer { alpha = animatedAlpha }
                 .clip(RoundedCornerShape(8.dp))
                 .background(colorGreen)
                 .align(Alignment.TopCenter)
         ) {
         }
-        // [END android_compose_animation_cookbook_visibility_alpha]
-        Button(modifier = Modifier.align(Alignment.BottomCenter), onClick = {
-            visible = !visible
-        }) {
+        Button(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            onClick = { fullAlpha = !fullAlpha }
+        ) {
             Text("Show/Hide")
         }
     }
