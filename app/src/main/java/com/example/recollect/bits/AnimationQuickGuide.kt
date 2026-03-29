@@ -141,7 +141,7 @@ fun AnimatedVisibilityCookbook_ModifierAlpha() {
             mutableStateOf(true)
         }
         val animatedAlpha by animateFloatAsState(
-            targetValue = if (visible) 1.0f else 0f,
+            targetValue = if (visible) 1.0f else 0.5f,
             label = "alpha"
         )
         Box(

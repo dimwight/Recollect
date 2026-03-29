@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.recollect.bits.AnimatedVisibilityCookbook
+import com.example.recollect.bits.AnimatedVisibilityCookbook_ModifierAlpha
 import com.example.recollect.bits.BitsScaffold
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
@@ -64,7 +65,7 @@ class Main : ComponentActivity() {
 
         setContent {
             RecollectTheme {
-                if (true) AnimatedVisibilityCookbook()
+                if (true) AnimatedVisibilityCookbook_ModifierAlpha()
                 else FormPage()
             }
         }
