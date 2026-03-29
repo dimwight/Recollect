@@ -19,6 +19,7 @@ package com.example.recollect.bits
 
 
 
+import android.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
@@ -63,6 +64,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -167,23 +169,33 @@ fun AnimatedVisibilityCookbook_ModifierAlpha() {
 @Preview
 @Composable
 fun AnimateBackgroundColor() {
-    var animateBackgroundColor by remember {
+    var greenNotBlue by remember {
         mutableStateOf(true)
-    }
-    LaunchedEffect(Unit) {
-        animateBackgroundColor = true
     }
     // [START android_compose_animate_background_color]
     val animatedColor by animateColorAsState(
-        if (animateBackgroundColor) colorGreen else colorBlue,
-        label = "color"
+        targetValue = if (greenNotBlue) colorGreen else colorBlue,
+        finishedListener = {
+            println("R1: it = $it")
+        },
+        animationSpec = spring<Color>(
+            dampingRatio = Spring.DampingRatioHighBouncy,
+        )
     )
     Column(
         modifier = Modifier.drawBehind {
             drawRect(animatedColor)
         }
     ) {
-        // your composable here
+        var textFieldState by remember { mutableStateOf("[A string]") }
+        TextField(
+            value = textFieldState,
+            onValueChange = {
+                textFieldState=it
+                greenNotBlue=!greenNotBlue
+            }
+        )
+        Spacer(Modifier.height(50.dp))
     }
     // [END android_compose_animate_background_color]
 }
@@ -457,7 +469,9 @@ fun AnimateTextColor() {
             },
             // [START_EXCLUDE]
             style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.align(Alignment.Center).padding(16.dp)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(16.dp)
             // [END_EXCLUDE]
         )
         // [END android_compose_animation_cookbook_text_color]
@@ -667,7 +681,7 @@ private fun LoadedScreen() {
         // [START_EXCLUDE]
         Text("Loaded", fontSize = 18.sp)
         Image(
-            painterResource(id = android.R.drawable.gallery_thumb),//dog
+            painterResource(id = R.drawable.gallery_thumb),//dog
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)

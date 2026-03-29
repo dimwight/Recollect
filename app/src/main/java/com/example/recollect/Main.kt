@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.recollect.bits.AnimateBackgroundColor
 import com.example.recollect.bits.AnimatedVisibilityCookbook
 import com.example.recollect.bits.AnimatedVisibilityCookbook_ModifierAlpha
 import com.example.recollect.bits.BitsScaffold
@@ -65,7 +66,7 @@ class Main : ComponentActivity() {
 
         setContent {
             RecollectTheme {
-                if (true) AnimatedVisibilityCookbook_ModifierAlpha()
+                if (true) AnimateBackgroundColor()
                 else FormPage()
             }
         }
