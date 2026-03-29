@@ -1,8 +1,12 @@
 package com.example.recollect
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.recollect.bits.AnimatedVisibilityCookbook
+import com.example.recollect.bits.BitsScaffold
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +35,8 @@ class Main : ComponentActivity() {
     private lateinit var controller: FormEntryController
     var event: Int = -1
 
+    @SuppressLint("DiscouragedApi")
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val formDef by lazy {
@@ -58,7 +64,7 @@ class Main : ComponentActivity() {
 
         setContent {
             RecollectTheme {
-                if (true) BitsScaffold()
+                if (true) AnimatedVisibilityCookbook()
                 else FormPage()
             }
         }
@@ -68,7 +74,7 @@ class Main : ComponentActivity() {
     private fun traceQuestionOrPrompt(trace: String? =null) {
         println("R1: event = $event")
         if (event != FormEntryController.EVENT_QUESTION) return
-        println("R1: prompt = ${trace}")
+        println("R1: prompt = $trace")
     }
 
     fun onNext() {

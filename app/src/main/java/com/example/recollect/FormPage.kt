@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun TopBar(label: String = "Top app bar") {
     TopAppBar(
@@ -133,6 +133,7 @@ fun BottomBar() {
     }
 }
 
+@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun FormPage() {
