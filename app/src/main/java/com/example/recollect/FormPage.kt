@@ -1,22 +1,27 @@
 package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFrom
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
@@ -25,10 +30,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.LastBaseline
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
@@ -48,33 +53,26 @@ fun TopBar(label: String = "Top app bar") {
 }
 
 @Composable
-fun Content(innerPadding: PaddingValues) {
+fun Content(innerPadding: PaddingValues, textFieldState: TextFieldState) {
     Column(
         modifier = Modifier.padding(innerPadding),
-        verticalArrangement = Arrangement.spacedBy(56.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "[label]",
-            style = MaterialTheme.typography.titleMedium,
-/*            modifier = Modifier.a
-                .alignBy(LastBaseline)
-                .paddingFrom(LastBaseline, after = 8.dp)*/ // Space to 1st bubble
+        Spacer(Modifier
+                .fillMaxWidth()
+                .height(58.dp)
         )
-//        Spacer(modifier = Modifier.width(8.dp))
-        var textFieldState by remember { mutableStateOf("[A string]") }
-        TextField(
-            value = textFieldState,
-            onValueChange = {
-                println("R1: onValueChange = $it")
-                textFieldState=it
-            },
-        )
+        val main = LocalActivity.current as Main
+        OutlinedTextField(textFieldState,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            onKeyboardAction = { performDefaultAction ->
+                main.onNext()
+            })
     }
 }
 
 @Composable
 fun BottomBar() {
-    val scope = rememberCoroutineScope()
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
@@ -90,11 +88,13 @@ fun BottomBar() {
                             FormEntryController.EVENT_BEGINNING_OF_FORM
                 )
             }
+            val scope = rememberCoroutineScope()
             Button(
                 enabled = isBackEnabled,
                 onClick = {
                     main.onBack()
                     isBackEnabled = main.event > 0
+                    if (true)return@Button
                     scope.launch {
                         main.getNumbers4().collect { value ->
                             val val4 = value
@@ -115,6 +115,7 @@ fun BottomBar() {
                 onClick = {
                     main.onNext()
                     isBackEnabled = main.event > 0
+                    if (true)return@Button
                     scope.launch {
                         main.getNumbers4().collect { value ->
                             println("R1: value = $value")
@@ -134,13 +135,12 @@ fun BottomBar() {
 }
 
 @ExperimentalMaterial3Api
-@Preview
 @Composable
-fun FormPage() {
+fun FormPage(textFieldState: TextFieldState) {
     Scaffold(
         topBar = { TopBar("Top app bar") },
         bottomBar = { BottomBar() }
-    ) { innerPadding -> Content(innerPadding) }
+    ) { Content(it,textFieldState) }
 }
 
 

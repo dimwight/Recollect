@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.recollect.bits.AnimateAlpha
-import com.example.recollect.bits.AnimateBackgroundColor
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +34,7 @@ class Main : ComponentActivity() {
 
     private lateinit var controller: FormEntryController
     var event: Int = -1
+    val textFieldState= TextFieldState("[A string]").apply { this }
 
     @SuppressLint("DiscouragedApi")
     @OptIn(ExperimentalMaterial3Api::class)
@@ -63,21 +64,22 @@ class Main : ComponentActivity() {
         traceQuestionOrPrompt(promptTrace)
 
         setContent {
-            if (true) AnimateAlpha()
+            if (false) AnimateAlpha()
             else RecollectTheme {
-                FormPage()
+                FormPage(textFieldState)
             }
         }
 
     }
 
-    private fun traceQuestionOrPrompt(trace: String? =null) {
+    private fun traceQuestionOrPrompt(prompt: String? =null) {
         println("R1: event = $event")
-        if (event != FormEntryController.EVENT_QUESTION) return
-        println("R1: prompt = $trace")
+        if (prompt==null) return
+        println("R1: prompt = $prompt")
     }
 
     fun onNext() {
+        println("R1: textFieldState = ${textFieldState.text}")
         event = controller.stepToNextEvent()
         traceQuestionOrPrompt()
     }
