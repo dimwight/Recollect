@@ -1,9 +1,7 @@
 package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,10 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
@@ -32,7 +28,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -53,7 +48,7 @@ fun TopBar(label: String = "Top app bar") {
 }
 
 @Composable
-fun Content(innerPadding: PaddingValues, textFieldState: TextFieldState) {
+fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
     Column(
         modifier = Modifier.padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -63,8 +58,13 @@ fun Content(innerPadding: PaddingValues, textFieldState: TextFieldState) {
                 .height(58.dp)
         )
         val main = LocalActivity.current as Main
-        OutlinedTextField(textFieldState,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        OutlinedTextField(
+            questionDetails.textFieldState,
+            label = {Text(questionDetails.questionText)},
+            labelPosition = TextFieldLabelPosition.Above(),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                showKeyboardOnFocus = true),
             onKeyboardAction = { performDefaultAction ->
                 main.onNext()
             })
@@ -136,11 +136,11 @@ fun BottomBar() {
 
 @ExperimentalMaterial3Api
 @Composable
-fun FormPage(textFieldState: TextFieldState) {
+fun FormPage(questionDetails: QuestionDetails) {
     Scaffold(
         topBar = { TopBar("Top app bar") },
         bottomBar = { BottomBar() }
-    ) { Content(it,textFieldState) }
+    ) { Content(it,questionDetails) }
 }
 
 

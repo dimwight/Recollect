@@ -24,7 +24,14 @@ fun getNumbers1(): Flow<Int> = flow {
     }
 }
 
+data class QuestionDetails(
+    val textFieldState: TextFieldState = TextFieldState("[A string]"),
+    val questionText: String
+)
+
 class Main : ComponentActivity() {
+    lateinit var questionDetails: QuestionDetails
+
     fun getNumbers4(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
@@ -34,7 +41,6 @@ class Main : ComponentActivity() {
 
     private lateinit var controller: FormEntryController
     var event: Int = -1
-    val textFieldState= TextFieldState("[A string]").apply { this }
 
     @SuppressLint("DiscouragedApi")
     @OptIn(ExperimentalMaterial3Api::class)
@@ -58,28 +64,31 @@ class Main : ComponentActivity() {
         while (event != FormEntryController.EVENT_QUESTION)
             event = controller.stepToNextEvent()
 
-        val promptTrace = controller.model.questionPrompt.run {
-            this.questionText
-        }
-        traceQuestionOrPrompt(promptTrace)
+        val questionPrompt = controller.model.questionPrompt
+        val questionText = questionPrompt.questionText
+        questionDetails = QuestionDetails(questionText = questionText)
+        traceQuestionOrPrompt(questionText)
 
         setContent {
             if (false) AnimateAlpha()
-            else RecollectTheme {
-                FormPage(textFieldState)
+            else {
+                RecollectTheme {
+                    FormPage(questionDetails)
+                }
             }
         }
 
     }
 
-    private fun traceQuestionOrPrompt(prompt: String? =null) {
+    private fun traceQuestionOrPrompt(prompt: String? = null) {
         println("R1: event = $event")
-        if (prompt==null) return
+        if (prompt == null) return
         println("R1: prompt = $prompt")
     }
 
     fun onNext() {
-        println("R1: textFieldState = ${textFieldState.text}")
+        println("R1: textFieldState = ${questionDetails.
+            textFieldState.text}")
         event = controller.stepToNextEvent()
         traceQuestionOrPrompt()
     }
