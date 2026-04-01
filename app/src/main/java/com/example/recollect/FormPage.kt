@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -73,6 +74,10 @@ fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
 
 @Composable
 fun BottomBar() {
+    val coroutineScope = rememberCoroutineScope()
+    val bringIntoViewRequester by remember {
+        mutableStateOf(BringIntoViewRequester())
+    }
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
