@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldLabelPosition
@@ -42,13 +43,12 @@ import org.javarosa.form.api.FormEntryController
 
 private const val my = false
 
+private const val textTop = "Top app bar"
+
 @ExperimentalMaterial3Api
 @Composable
-fun TopBar(label: String = "Top app bar") {
-    if (my) Row() {
-        Text(label)
-    }
-    else TopAppBar(
+fun TopBar(label: String = textTop) {
+    TopAppBar(
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary,
@@ -61,15 +61,7 @@ fun TopBar(label: String = "Top app bar") {
 
 @Composable
 fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
-    if (my) Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(Modifier
-            .fillMaxWidth()
-            .height(18.dp))
-        TextField(value = "Testing...", onValueChange = {})
-    }
-    else Column(
+    Column(
         modifier = Modifier.padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,8 +85,7 @@ fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
 
 @Composable
 fun BottomBar() {
-    if (my) BottomRow()
-    else BottomAppBar(
+    BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
     ) {
@@ -163,16 +154,23 @@ private fun BottomRow() {
 @ExperimentalMaterial3Api
 @Composable
 fun FormPage(questionDetails: QuestionDetails) {
-    Scaffold(
-        modifier = Modifier
-//        .fillMaxSize()
-        /*    .fitInside(
-                RectRulers.innermostOf(
-                    WindowInsetsRulers.NavigationBars.current,
-                    WindowInsetsRulers.Ime.current
-                )
-            )*/,
-        topBar = { TopBar("Top app bar") },
+    if (my) Surface(){
+        Row() {
+            Text(textTop)
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier
+                .fillMaxWidth()
+                .height(18.dp))
+            TextField(value = "Testing...", onValueChange = {})
+        }
+        BottomRow()
+    }
+    else Scaffold(
+        modifier = Modifier,
+        topBar = { TopBar(textTop) },
         bottomBar = { BottomBar() }
     ) { Content(it, questionDetails) }
 }
