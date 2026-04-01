@@ -70,7 +70,7 @@ class Main : ComponentActivity() {
         traceQuestionOrPrompt(questionText)
 
         setContent {
-            if (false) AnimateAlpha()
+            if (false) FitInsideWithImeDemo()
             else {
                 RecollectTheme {
                     FormPage(questionDetails)
