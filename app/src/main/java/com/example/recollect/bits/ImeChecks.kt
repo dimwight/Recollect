@@ -49,26 +49,30 @@ fun ImeCheck(insideNotPadding: Boolean) {
 
         val caption = if (insideNotPadding) "Inside" else "Padding"
         if (false) {
-            // Trigger and good check
+            // Trigger and good behavior
             TextField(caption, {}, alignAtBottom)
         } else {
             // Trigger
             TextField("Click here!", {})
-            // Bad checks?
-            if (false) Text(caption, alignAtBottom)
-            else if (false)
-                Button(onClick = {}, alignAtBottom) {
-                Text(caption)
-            }
-            else
-                Box(alignAtBottom
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(Color(0xFF53D9A1))
+            // Bad behaviors
+            val option = 2
+            when (option) {
+                0 -> Box(alignAtBottom
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(Color(0xFF53D9A1))
                 )
+                1 -> Text(caption, alignAtBottom)
+                2 -> Button(onClick = {}, alignAtBottom) {
+                    Text(caption)
+                }
+            }
+
         }
+
     }
 }
+
 
 
 
