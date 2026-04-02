@@ -2,14 +2,11 @@ package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fitInside
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,15 +30,34 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.RectRulers
-import androidx.compose.ui.layout.WindowInsetsRulers
-import androidx.compose.ui.layout.innermostOf
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
-private const val my = false
+
+@ExperimentalMaterial3Api
+@Composable
+fun FormPage(questionDetails: QuestionDetails) {
+    val my = false
+    if (my) Surface(){
+        TopBar()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier
+                .fillMaxWidth()
+                .height(18.dp))
+            TextField(value = "Testing...", onValueChange = {})
+        }
+        BottomBar()
+    }
+    else Scaffold(
+        modifier = Modifier,
+        topBar = { TopBar(textTop) },
+        bottomBar = { BottomBar() }
+    ) { Content(it, questionDetails) }
+}
 
 private const val textTop = "Top app bar"
 
@@ -86,15 +102,14 @@ fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
 @Composable
 fun BottomBar() {
     BottomAppBar(
+//        modifier = Modifier.imePadding(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
-    ) {
-        BottomRow()
-    }
+        content = { BackNextRow() })
 }
 
 @Composable
-private fun BottomRow() {
+fun BackNextRow() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -151,51 +166,17 @@ private fun BottomRow() {
     }
 }
 
-@ExperimentalMaterial3Api
-@Composable
-fun FormPage(questionDetails: QuestionDetails) {
-    if (my) Surface(){
-        Row() {
-            Text(textTop)
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(Modifier
-                .fillMaxWidth()
-                .height(18.dp))
-            TextField(value = "Testing...", onValueChange = {})
-        }
-        BottomRow()
-    }
-    else Scaffold(
-        modifier = Modifier,
-        topBar = { TopBar(textTop) },
-        bottomBar = { BottomBar() }
-    ) { Content(it, questionDetails) }
-}
 
-@Composable
-fun FitInsideWithImeDemo(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .fitInside(
-                RectRulers.innermostOf(
-                    WindowInsetsRulers.NavigationBars.current,
-                    WindowInsetsRulers.Ime.current
-                )
-            )
-    ) {
-        TextField(
-            value = "Demo IME Insets",
-            onValueChange = {},
-            modifier = modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth()
-        )
-    }
-}
+
+
+
+
+
+
+
+
+
+
 
 
 
