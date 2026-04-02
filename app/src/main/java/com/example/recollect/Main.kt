@@ -1,12 +1,12 @@
 package com.example.recollect
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.recollect.bits.AnimateAlpha
+import com.example.recollect.bits.ImeCheck
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +20,6 @@ import java.io.InputStream
 fun getNumbers1(): Flow<Int> = flow {
     for (i in 1..3) {
         delay(1000)
-        emit(i)
     }
 }
 
@@ -42,7 +41,6 @@ class Main : ComponentActivity() {
     private lateinit var controller: FormEntryController
     var event: Int = -1
 
-    @SuppressLint("DiscouragedApi")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,12 +67,12 @@ class Main : ComponentActivity() {
         questionDetails = QuestionDetails(questionText = questionText)
         traceQuestionOrPrompt(questionText)
 
+        enableEdgeToEdge()
+
         setContent {
-            if (false) FitInsideWithImeDemo()
-            else {
-                RecollectTheme {
-                    FormPage(questionDetails)
-                }
+            RecollectTheme {
+                if (false) FormPage(questionDetails)
+                else ImeCheck(insideNotPadding = false)
             }
         }
 
