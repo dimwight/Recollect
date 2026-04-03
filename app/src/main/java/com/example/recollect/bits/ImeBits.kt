@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Ime() {
-    var height by remember { mutableIntStateOf(330) }
+    var height by remember { mutableIntStateOf(250) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,6 +60,9 @@ fun Ime() {
 //                   .imePadding()
                     .fillMaxWidth()
             )
+            TextField("Edit me?", {
+                height-=10
+            })
         }
     }
 }
