@@ -19,6 +19,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,19 +40,24 @@ fun Ime() {
             .imePadding()
     ) {
         val imeVisible = WindowInsets.isImeVisible
-        Column(
+        var includeText by remember { mutableStateOf(true) }
+         Column(
             modifier = Modifier
                 .fillMaxSize()
 //                .imePadding()
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            Text(
+             Button(onClick = { includeText = !includeText }) { Text("Toggle") }
+             Text(
                 height.dp.toString()+" "+imeVisible.toString()
             )
             TextField("Edit me!", {
                 height-=10
             })
+             if (includeText) {
+                 Text("Text")
+             }
             Box(
                 Modifier
                     .height(height.dp)
