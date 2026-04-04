@@ -1,6 +1,8 @@
 package com.example.recollect.bits
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,11 +27,61 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.RectRulers
 import androidx.compose.ui.layout.WindowInsetsRulers
 import androidx.compose.ui.layout.innermostOf
 import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun Show() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+//            .imePadding()
+    ) {
+        var show by remember { mutableStateOf(false) }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Button(onClick = { show = !show }) { Text(show.toString()) }
+            TextField(
+                "Edit me!", {}, Modifier
+                .onFocusChanged { if (it.isFocused) show = true },
+                interactionSource = remember { MutableInteractionSource() }
+                    .also { interactionSource ->
+                        LaunchedEffect(interactionSource) {
+                            interactionSource.interactions.collect {
+                                if (it is PressInteraction.Release) {
+                                    show=true
+                                }
+                            }
+                        }
+                    }
+
+            )
+            Box(
+                Modifier
+                    .height(if (show) 250.dp else 0.dp)
+                    .background(colorGreen)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+            Box(
+                Modifier
+                    .height(550.dp)
+                    .background(colorBlue)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -40,24 +93,19 @@ fun Ime() {
             .imePadding()
     ) {
         val imeVisible = WindowInsets.isImeVisible
-        var includeText by remember { mutableStateOf(true) }
-         Column(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
 //                .imePadding()
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.Bottom
         ) {
-             Button(onClick = { includeText = !includeText }) { Text("Toggle") }
-             Text(
-                height.dp.toString()+" "+imeVisible.toString()
+            Text(
+                height.dp.toString() + " " + imeVisible.toString()
             )
             TextField("Edit me!", {
-                height-=10
+                height -= 10
             })
-             if (includeText) {
-                 Text("Text")
-             }
             Box(
                 Modifier
                     .height(height.dp)
@@ -67,11 +115,12 @@ fun Ime() {
                     .fillMaxWidth()
             )
             TextField("Edit me?", {
-                height-=10
+                height -= 10
             })
         }
     }
 }
+
 
 @Composable
 fun ImeCheck(insideNotPadding: Boolean) {
