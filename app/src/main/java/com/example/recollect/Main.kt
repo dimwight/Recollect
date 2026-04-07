@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.recollect.bits.Ime
+import com.example.recollect.bits.Pad
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -72,7 +73,7 @@ class Main : ComponentActivity() {
         setContent {
             RecollectTheme {
                 if (false) FormPage(questionDetails)
-                else Ime()
+                else Pad()
             }
         }
 

@@ -88,6 +88,58 @@ fun Show() {
     }
 }
 
+@Composable
+fun Pad() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            TextField("Edit me!", {})
+            Box(
+                Modifier
+                    .height(550.dp)
+                    .background(colorBlue)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+            Box(
+                Modifier
+                    .height(imeHeight().dp)
+                    .background(colorGreen)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun imeHeight(): Int {
+    val view = LocalView.current
+    val observer = view.viewTreeObserver
+    val height = remember { mutableIntStateOf(0) }
+    DisposableEffect(observer) {
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            val screenHeight = view.rootView.height
+            val rect = Rect()
+            view.getWindowVisibleDisplayFrame(rect)
+            height.value = screenHeight - rect.bottom
+        }
+        observer.addOnGlobalLayoutListener(listener)
+
+        onDispose {
+            observer.removeOnGlobalLayoutListener(listener)
+        }
+    }
+
+    return height.value
+}
 
 enum class KeyboardState {
     Opened, Closed
@@ -121,6 +173,7 @@ fun keyboardAsState(): MutableState<KeyboardState> {
 
     return keyboardState
 }
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Modifier.my(): Modifier {
