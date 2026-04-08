@@ -57,7 +57,7 @@ class Main : ComponentActivity() {
                 println("R1: = $e")
             }
         }
-        println("R1: formDef = $formDef")
+        if (false) println("R1: formDef = $formDef")
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
         while (event != FormEntryController.EVENT_QUESTION)
@@ -66,7 +66,7 @@ class Main : ComponentActivity() {
         val questionPrompt = controller.model.questionPrompt
         val questionText = questionPrompt.questionText
         questionDetails = QuestionDetails(questionText = questionText)
-        traceQuestionOrPrompt(questionText)
+        if (false) traceQuestionOrPrompt(questionText)
 
         enableEdgeToEdge()
 

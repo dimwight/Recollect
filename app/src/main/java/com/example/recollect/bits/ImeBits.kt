@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fitInside
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -40,78 +38,35 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 
 
-@Composable
-fun Show() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-//            .imePadding()
-    ) {
-        var show by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            Button(onClick = { show = !show }) { Text(show.toString()) }
-            TextField(
-                "Edit me!", {}, Modifier
-                    .onFocusChanged { if (it.isFocused) show = true },
-                interactionSource = remember { MutableInteractionSource() }
-                    .also { interactionSource ->
-                        LaunchedEffect(interactionSource) {
-                            interactionSource.interactions.collect {
-                                if (it is PressInteraction.Release) {
-                                    show = true
-                                }
-                            }
-                        }
-                    }
-
-            )
-            Box(
-                Modifier
-                    .height(if (show) 250.dp else 0.dp)
-                    .background(colorGreen)
-                    .navigationBarsPadding()
-                    .fillMaxWidth()
-            )
-            Box(
-                Modifier
-                    .height(550.dp)
-                    .background(colorBlue)
-                    .navigationBarsPadding()
-                    .fillMaxWidth()
-            )
-        }
-    }
-}
+private const val atTop = false
 
 @Composable
 fun Pad() {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .my()
     ) {
+        if (atTop) EditMe()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            TextField("Edit me!", {})
+            if (!atTop) EditMe()
             Box(
                 Modifier
-                    .height(550.dp)
+                    .height(250.dp)
                     .background(colorBlue)
                     .navigationBarsPadding()
                     .fillMaxWidth()
             )
             Box(
                 Modifier
-                    .height(imeHeight().dp)
-                    .background(colorGreen)
+//                    .height(imeHeight().dp)
+                    .imeDp(getImeHeight())
+                    .background(Color.Red)
                     .navigationBarsPadding()
                     .fillMaxWidth()
             )
@@ -120,16 +75,42 @@ fun Pad() {
 }
 
 @Composable
-fun imeHeight(): Int {
+fun Modifier.imeDp(imeHeight: Int): Modifier {
+    val fraction =if (atTop) .4 else .31
+    var heightOut = (imeHeight * fraction).toInt()
+    return this then Modifier.height(heightOut.dp)
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun Modifier.my(): Modifier {
+    println("R1: imeHeight = ${getImeHeight()}")
+    return this //then Modifier.imePadding()
+}
+
+@Composable
+private fun EditMe() {
+    TextField("Edit me!", {})
+}
+
+@Composable
+fun getImeHeight(): Int {
     val view = LocalView.current
     val observer = view.viewTreeObserver
-    val height = remember { mutableIntStateOf(0) }
+    val height = remember { mutableIntStateOf(1) }
     DisposableEffect(observer) {
         val listener = ViewTreeObserver.OnGlobalLayoutListener {
             val screenHeight = view.rootView.height
             val rect = Rect()
             view.getWindowVisibleDisplayFrame(rect)
-            height.value = screenHeight - rect.bottom
+            val diff = screenHeight - rect.bottom
+            val ratio = screenHeight.toFloat() / rect.bottom
+            println("R1: screen = $screenHeight")
+            println("R1: rect = ${rect.bottom}")
+            println("R1: diff = $diff")
+//            println("R1: rect = ${rect.height()}")
+            println("R1: ratio = ${(ratio * 100).toInt()}")
+            height.intValue = if (ratio < 1.5) 0 else diff
         }
         observer.addOnGlobalLayoutListener(listener)
 
@@ -138,7 +119,7 @@ fun imeHeight(): Int {
         }
     }
 
-    return height.value
+    return height.intValue
 }
 
 enum class KeyboardState {
@@ -172,15 +153,6 @@ fun keyboardAsState(): MutableState<KeyboardState> {
     }
 
     return keyboardState
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun Modifier.my(): Modifier {
-    val visible = WindowInsets.isImeVisible
-    val isKeyboardOpen by keyboardAsState() // Keyboard.Opened or Keyboard.Closed
-    println("R1: isKeyboardOpen = $isKeyboardOpen")
-    return this then Modifier.imePadding()
 }
 
 @Composable
@@ -275,6 +247,53 @@ fun ImeCheck(insideNotPadding: Boolean) {
     }
 }
 
+@Composable
+fun Show() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+//            .imePadding()
+    ) {
+        var show by remember { mutableStateOf(false) }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Button(onClick = { show = !show }) { Text(show.toString()) }
+            TextField(
+                "Edit me!", {}, Modifier
+                    .onFocusChanged { if (it.isFocused) show = true },
+                interactionSource = remember { MutableInteractionSource() }
+                    .also { interactionSource ->
+                        LaunchedEffect(interactionSource) {
+                            interactionSource.interactions.collect {
+                                if (it is PressInteraction.Release) {
+                                    show = true
+                                }
+                            }
+                        }
+                    }
+
+            )
+            Box(
+                Modifier
+                    .height(if (show) 250.dp else 0.dp)
+                    .background(colorGreen)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+            Box(
+                Modifier
+                    .height(550.dp)
+                    .background(colorBlue)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
 
 
 
