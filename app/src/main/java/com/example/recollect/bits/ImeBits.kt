@@ -35,61 +35,70 @@ import androidx.compose.ui.layout.RectRulers
 import androidx.compose.ui.layout.WindowInsetsRulers
 import androidx.compose.ui.layout.innermostOf
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
 private const val atTop = false
 
+@Preview
 @Composable
 fun Pad() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .my()
+            .imePadding()
     ) {
-        if (atTop) EditMe()
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
-            verticalArrangement = Arrangement.Bottom
+                .imePadding()
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (!atTop) EditMe()
             Box(
                 Modifier
-                    .height(250.dp)
-                    .background(colorBlue)
-                    .navigationBarsPadding()
+                    .height(50.dp)
+                    .imePadding()
+                    .background(Color.Cyan)
+                    .fillMaxWidth()
+            )
+            EditMe()
+            Box(
+                Modifier
+                    .height(50.dp)
+                    .background(Color.Cyan)
+                    .imePadding()
                     .fillMaxWidth()
             )
             Box(
-                Modifier
-                    .height(getImeHeight().dp)
-                    .background(Color.Red)
-                    .navigationBarsPadding()
-                    .fillMaxWidth()
-            )
+                modifier = Modifier
+                    .imePadding()
+                    .fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .imePadding()
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Box(
+                        Modifier
+                            .height(300.dp)
+                            .imePadding()
+                            .background(Color.Blue)
+                            .fillMaxWidth()
+                    )
+/*                   Box(
+                        Modifier
+                            .height(getImeHeight().dp)
+                            .background(Color.Red)
+                            .fillMaxWidth()
+                    )*/
+                }
+            }
         }
     }
-}
-
-@Composable
-fun Modifier.imeDp(imeHeight: Int): Modifier {
-    val fraction =if (atTop) .4 else .31
-    var heightOut = (imeHeight * fraction).toInt()
-    return this then Modifier.height(heightOut.dp)
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun Modifier.my(): Modifier {
-    println("R1: imeHeight = ${getImeHeight()}")
-    return this //then Modifier.imePadding()
-}
-
-@Composable
-private fun EditMe() {
-    TextField("Edit me!", {})
 }
 
 @Composable
@@ -111,7 +120,7 @@ fun getImeHeight(): Int {
             println("R1: ratio = ${(ratio * 100).toInt()}")
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction =if (atTop) .4 else .31
+                val fraction =if (true||atTop) .34 else .31
                 (diff * fraction).toInt()
             }
         }
@@ -123,6 +132,45 @@ fun getImeHeight(): Int {
     }
 
     return height.intValue
+}
+
+@Composable
+fun Pad_() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        if (true||
+            atTop) EditMe()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            if (true||
+                !atTop) EditMe()
+            Box(
+                Modifier
+                    .height(250.dp)
+                    .background(colorBlue)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+            Box(
+                Modifier
+                    .height(getImeHeight().dp)
+                    .background(Color.Red)
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun EditMe() {
+    TextField("Edit me!", {})
 }
 
 enum class KeyboardState {
@@ -164,7 +212,6 @@ fun Ime() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .my()
     ) {
         Column(
             modifier = Modifier
