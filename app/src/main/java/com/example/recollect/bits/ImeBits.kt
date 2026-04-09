@@ -64,8 +64,7 @@ fun Pad() {
             )
             Box(
                 Modifier
-//                    .height(imeHeight().dp)
-                    .imeDp(getImeHeight())
+                    .height(getImeHeight().dp)
                     .background(Color.Red)
                     .navigationBarsPadding()
                     .fillMaxWidth()
@@ -110,7 +109,11 @@ fun getImeHeight(): Int {
             println("R1: diff = $diff")
 //            println("R1: rect = ${rect.height()}")
             println("R1: ratio = ${(ratio * 100).toInt()}")
-            height.intValue = if (ratio < 1.5) 0 else diff
+            height.intValue = if (ratio < 1.5) 0
+            else {
+                val fraction =if (atTop) .4 else .31
+                (diff * fraction).toInt()
+            }
         }
         observer.addOnGlobalLayoutListener(listener)
 
