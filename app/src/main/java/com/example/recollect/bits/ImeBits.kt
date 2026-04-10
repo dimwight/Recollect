@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fitInside
@@ -34,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.RectRulers
 import androidx.compose.ui.layout.WindowInsetsRulers
 import androidx.compose.ui.layout.innermostOf
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -89,12 +89,12 @@ fun Pad() {
                             .background(Color.Blue)
                             .fillMaxWidth()
                     )
-/*                   Box(
+                   Box(
                         Modifier
                             .height(getImeHeight().dp)
                             .background(Color.Red)
                             .fillMaxWidth()
-                    )*/
+                    )
                 }
             }
         }
@@ -106,21 +106,23 @@ fun getImeHeight(): Int {
     val view = LocalView.current
     val observer = view.viewTreeObserver
     val height = remember { mutableIntStateOf(1) }
+    val pxToDp = with(LocalDensity.current) { 1.0 / (1.dp.toPx()) }
+    val remember = remember { pxToDp }
     DisposableEffect(observer) {
         val listener = ViewTreeObserver.OnGlobalLayoutListener {
             val screenHeight = view.rootView.height
             val rect = Rect()
             view.getWindowVisibleDisplayFrame(rect)
-            val diff = screenHeight - rect.bottom
-            val ratio = screenHeight.toFloat() / rect.bottom
+            println("R1: rect = $rect")
+            val rectY = if (false) rect.height() else rect.bottom
+            val diff = screenHeight - rectY
+            val ratio = screenHeight.toFloat() / rectY
             println("R1: screen = $screenHeight")
-            println("R1: rect = ${rect.bottom}")
             println("R1: diff = $diff")
-//            println("R1: rect = ${rect.height()}")
             println("R1: ratio = ${(ratio * 100).toInt()}")
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction =if (true||atTop) .34 else .31
+                val fraction =if (true||atTop) .34 else remember
                 (diff * fraction).toInt()
             }
         }
@@ -130,6 +132,7 @@ fun getImeHeight(): Int {
             observer.removeOnGlobalLayoutListener(listener)
         }
     }
+
 
     return height.intValue
 }
