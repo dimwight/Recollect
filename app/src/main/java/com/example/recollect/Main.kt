@@ -3,12 +3,8 @@ package com.example.recollect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.recollect.bits.Ime
-import com.example.recollect.bits.Pad
-import com.example.recollect.bits.Pad_
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -71,13 +67,18 @@ class Main : ComponentActivity() {
 
 //        enableEdgeToEdge()
 
+        setContent()
+
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    private fun setContent() {
         setContent {
             RecollectTheme {
                 if (false) FormPage(questionDetails)
                 else Pad()
             }
         }
-
     }
 
     private fun traceQuestionOrPrompt(prompt: String? = null) {
