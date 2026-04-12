@@ -106,7 +106,7 @@ fun getImeHeight(): Int {
             println("R1: ratio = ${(ratio * 100).toInt()}")
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction =if (true) .34 else remember
+                val fraction =if (true) .33 else remember
                 (diff * fraction).toInt()
             }
         }

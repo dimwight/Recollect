@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recollect.bits.getImeHeight
 import kotlinx.coroutines.launch
@@ -46,7 +45,6 @@ import org.javarosa.form.api.FormEntryController
 
 
 @ExperimentalMaterial3Api
-@Preview
 @Composable
 fun Pad() {
     Box(
@@ -65,14 +63,24 @@ fun Pad() {
                 Modifier
                     .height(50.dp)
                     .imePadding()
-                    .background(Color.Cyan)
+//                    .background(Color.Cyan)
                     .fillMaxWidth()
             )
-            TextField("Edit me!", {})
+            val main = LocalActivity.current as Main
+            val questionDetails = main.questionDetails
+            OutlinedTextField(
+                questionDetails.textFieldState,
+                label = { Text(questionDetails.questionText) },
+                labelPosition = TextFieldLabelPosition.Above(),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    showKeyboardOnFocus = true
+                ),
+                onKeyboardAction = { main.onNext() })
             Box(
                 Modifier
                     .height(50.dp)
-                    .background(Color.Cyan)
+//                    .background(Color.Cyan)
                     .imePadding()
                     .fillMaxWidth()
             )
@@ -87,17 +95,11 @@ fun Pad() {
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    Box(
-                        Modifier
-                            .height(300.dp)
-                            .imePadding()
-                            .background(Color.Blue)
-                            .fillMaxWidth()
-                    )
+                    BackNextRow()
                     Box(
                         Modifier
                             .height(getImeHeight().dp)
-                            .background(Color.Red)
+//                            .background(Color.Red)
                             .fillMaxWidth()
                     )
                 }
