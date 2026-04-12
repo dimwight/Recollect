@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.javarosa.core.model.FormDef
+import org.javarosa.core.model.QuestionDef
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
@@ -21,13 +22,13 @@ fun getNumbers1(): Flow<Int> = flow {
     }
 }
 
-data class QuestionDetails(
+data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionText: String
+    val questionDef: QuestionDef?
 )
 
 class Main : ComponentActivity() {
-    lateinit var questionDetails: QuestionDetails
+    lateinit var questionSpec: QuestionSpec
 
     fun getNumbers4(): Flow<Int> = flow {
         for (i in 4..6) {
@@ -62,10 +63,9 @@ class Main : ComponentActivity() {
 
         val questionPrompt = controller.model.questionPrompt
         val questionText = questionPrompt.questionText
-        questionDetails = QuestionDetails(questionText = questionText)
-        if (false) traceQuestionOrPrompt(questionText)
-
-//        enableEdgeToEdge()
+        val questionDef = questionPrompt.question
+        questionSpec = QuestionSpec(questionDef = questionDef)
+        if (true) traceQuestionOrPrompt(questionText)
 
         setContent()
 
@@ -75,8 +75,7 @@ class Main : ComponentActivity() {
     private fun setContent() {
         setContent {
             RecollectTheme {
-                if (false) FormPage(questionDetails)
-                else Pad()
+                FormPage()
             }
         }
     }
@@ -88,7 +87,7 @@ class Main : ComponentActivity() {
     }
 
     fun onNext() {
-        println("R1: textFieldState = ${questionDetails.
+        println("R1: textFieldState = ${questionSpec.
             textFieldState.text}")
         event = controller.stepToNextEvent()
         traceQuestionOrPrompt()

@@ -3,7 +3,6 @@
 package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.recollect.bits.getImeHeight
@@ -46,7 +44,7 @@ import org.javarosa.form.api.FormEntryController
 
 @ExperimentalMaterial3Api
 @Composable
-fun Pad() {
+fun FormPage() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,16 +65,16 @@ fun Pad() {
                     .fillMaxWidth()
             )
             val main = LocalActivity.current as Main
-            val questionDetails = main.questionDetails
+            val questionSpec = main.questionSpec
             OutlinedTextField(
-                questionDetails.textFieldState,
-                label = { Text(questionDetails.questionText) },
+                questionSpec.textFieldState,
                 labelPosition = TextFieldLabelPosition.Above(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
                     showKeyboardOnFocus = true
                 ),
-                onKeyboardAction = { main.onNext() })
+                onKeyboardAction = { main.onNext() },
+                label = { Text(questionSpec.questionDef?.labelInnerText?:"") })
             Box(
                 Modifier
                     .height(50.dp)
@@ -108,7 +106,7 @@ fun Pad() {
     }
 }
 @Composable
-fun FormPage(questionDetails: QuestionDetails) {
+fun FormPage_(questionSpec: QuestionSpec) {
     val my = false
     if (my) Surface(){
         TopBar()
@@ -126,7 +124,7 @@ fun FormPage(questionDetails: QuestionDetails) {
         modifier = Modifier,
         topBar = { TopBar(textTop) },
         bottomBar = { BottomBar() }
-    ) { Content(it, questionDetails) }
+    ) { Content(it, questionSpec) }
 }
 
 private const val textTop = "Top app bar"
@@ -146,7 +144,7 @@ fun TopBar(label: String = textTop) {
 }
 
 @Composable
-fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
+fun Content(innerPadding: PaddingValues, questionSpec: QuestionSpec) {
     Column(
         modifier = Modifier.padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -155,9 +153,10 @@ fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
             .fillMaxWidth()
             .height(58.dp))
         val main = LocalActivity.current as Main
+/*
         OutlinedTextField(
-            questionDetails.textFieldState,
-            label = { Text(questionDetails.questionText) },
+            questionSpec.textFieldState,
+            label = { Text(questionSpec.questionDef) },
             labelPosition = TextFieldLabelPosition.Above(),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
@@ -166,6 +165,7 @@ fun Content(innerPadding: PaddingValues, questionDetails: QuestionDetails) {
             onKeyboardAction = { performDefaultAction ->
                 main.onNext()
             })
+*/
     }
 }
 
