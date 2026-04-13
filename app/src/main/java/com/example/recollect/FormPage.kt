@@ -3,29 +3,23 @@
 package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldLabelPosition
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,7 +39,6 @@ import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
 
-@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun FormPage() {
@@ -115,80 +109,13 @@ private fun scaleStyle(src: TextStyle): TextStyle =
     src.copy(fontSize = src.fontSize.times(1.5f))
 
 @Composable
-fun FormPage_(questionSpec: QuestionSpec) {
-    val my = false
-    if (my) Surface() {
-        TopBar()
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(
-                Modifier
-                    .fillMaxWidth()
-                    .height(18.dp)
-            )
-            TextField(value = "Testing...", onValueChange = {})
-        }
-        BottomBar()
-    }
-    else Scaffold(
-        modifier = Modifier,
-        topBar = { TopBar(textTop) },
-        bottomBar = { BottomBar() }) { Content(it, questionSpec) }
-}
-
-private const val textTop = "Top app bar"
-
-@ExperimentalMaterial3Api
-@Composable
-fun TopBar(label: String = textTop) {
-    TopAppBar(
-        colors = topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ), title = {
-            Text(label)
-        })
-}
-
-@Composable
-fun Content(innerPadding: PaddingValues, questionSpec: QuestionSpec) {
-    Column(
-        modifier = Modifier.padding(innerPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(
-            Modifier
-                .fillMaxWidth()
-                .height(58.dp)
-        )
-        val main = LocalActivity.current as Main/*
-                OutlinedTextField(
-                    questionSpec.textFieldState,
-                    label = { Text(questionSpec.questionDef) },
-                    labelPosition = TextFieldLabelPosition.Above(),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next,
-                        showKeyboardOnFocus = true
-                    ),
-                    onKeyboardAction = { performDefaultAction ->
-                        main.onNext()
-                    })
-        */
-    }
-}
-
-@Composable
-fun BottomBar() {
-    BottomAppBar(
-//        modifier = Modifier.imePadding(),
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
-        content = { BackNextRow() })
-}
-
-@Composable
 fun BackNextRow() {
+    val buttonColors = ButtonColors(
+        Color.White,
+        Color.Blue,
+        Color.White,
+        Color.LightGray
+    )
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -199,11 +126,15 @@ fun BackNextRow() {
             )
         }
         val scope = rememberCoroutineScope()
-        Button(
+        OutlinedButton(
+            colors = buttonColors,
+            border = BorderStroke(1.dp,
+                if (isBackEnabled) Color.Blue else Color.LightGray),
+//            modifier = Modifier.hoverable(),
             enabled = isBackEnabled, onClick = {
                 main.onBack()
                 isBackEnabled = main.event > 0
-                if (true) return@Button
+                if (true) return@OutlinedButton
                 scope.launch {
                     main.getNumbers4().collect { value ->
                         val val4 = value
@@ -217,14 +148,16 @@ fun BackNextRow() {
                     }
                 }
             }) {
-            Text("Back",
+            Text("<  Back",
                 style = scaleStyle(typography.bodySmall))
         }
-        Button(
+        OutlinedButton(
+            colors = buttonColors,
+            border = BorderStroke(1.dp, Color.Blue),
             onClick = {
                 main.onNext()
                 isBackEnabled = main.event > 0
-                if (true) return@Button
+                if (true) return@OutlinedButton
                 scope.launch {
                     main.getNumbers4().collect { value ->
                         println("R1: value = $value")
@@ -236,7 +169,7 @@ fun BackNextRow() {
                     }
                 }
             }) {
-            Text("Next",
+            Text("Next  >",
                 style = scaleStyle(typography.bodySmall))
         }
     }
