@@ -97,13 +97,15 @@ fun getImeHeight(): Int {
             val screenHeight = view.rootView.height
             val rect = Rect()
             view.getWindowVisibleDisplayFrame(rect)
-            println("R1: rect = $rect")
             val rectY = if (false) rect.height() else rect.bottom
             val diff = screenHeight - rectY
             val ratio = screenHeight.toFloat() / rectY
-            println("R1: screen = $screenHeight")
-            println("R1: diff = $diff")
-            println("R1: ratio = ${(ratio * 100).toInt()}")
+            if (false) {
+                println("R1: rect = $rect")
+                println("R1: screen = $screenHeight")
+                println("R1: diff = $diff")
+                println("R1: ratio = ${(ratio * 100).toInt()}")
+            }
             height.intValue = if (ratio < 1.5) 0
             else {
                 val fraction =if (true) .33 else remember

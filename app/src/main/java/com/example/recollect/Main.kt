@@ -22,10 +22,23 @@ fun getNumbers1(): Flow<Int> = flow {
     }
 }
 
+fun QuestionDef.toString(): String {
+    return "labelInnerText = ${labelInnerText}" +
+            "helpText = ${helpText}"
+}
+
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionDef: QuestionDef?
-)
+    val questionDef: QuestionDef
+){
+    override fun toString(): String {
+        return questionDef.run {
+            "label: ${labelInnerText} hint: ${helpText}"
+        }
+    }
+}
+
+
 
 class Main : ComponentActivity() {
     lateinit var questionSpec: QuestionSpec
@@ -39,6 +52,12 @@ class Main : ComponentActivity() {
 
     private lateinit var controller: FormEntryController
     var event: Int = -1
+
+    private fun traceEventOrQuestion(spec: QuestionSpec? = null) {
+        println("R1: event = $event")
+        if (spec == null) return
+        println("R1: spec = ${spec.toString()}")
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,14 +80,30 @@ class Main : ComponentActivity() {
         while (event != FormEntryController.EVENT_QUESTION)
             event = controller.stepToNextEvent()
 
-        val questionPrompt = controller.model.questionPrompt
-        val questionText = questionPrompt.questionText
-        val questionDef = questionPrompt.question
-        questionSpec = QuestionSpec(questionDef = questionDef)
-        if (true) traceQuestionOrPrompt(questionText)
+        onNext()
+        onNext()
 
         setContent()
 
+    }
+
+    private fun update() {
+        val questionPrompt = controller.model.questionPrompt
+        val questionDef = questionPrompt.question
+        questionSpec = QuestionSpec(questionDef = questionDef)
+        traceEventOrQuestion(questionSpec)
+    }
+
+    fun onNext() {
+        event = controller.stepToNextEvent()
+        if (event == FormEntryController.EVENT_QUESTION){
+            update()
+        }
+        traceEventOrQuestion()
+    }
+
+    fun onBack() {
+        event = controller.stepToPreviousEvent()
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -80,23 +115,6 @@ class Main : ComponentActivity() {
         }
     }
 
-    private fun traceQuestionOrPrompt(prompt: String? = null) {
-        println("R1: event = $event")
-        if (prompt == null) return
-        println("R1: prompt = $prompt")
-    }
-
-    fun onNext() {
-        println("R1: textFieldState = ${questionSpec.
-            textFieldState.text}")
-        event = controller.stepToNextEvent()
-        traceQuestionOrPrompt()
-    }
-
-    fun onBack() {
-        event = controller.stepToPreviousEvent()
-        traceQuestionOrPrompt()
-    }
 }
 
 
