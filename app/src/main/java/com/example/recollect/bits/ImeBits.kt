@@ -108,7 +108,7 @@ fun getImeHeight(): Int {
             }
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction =if (true) .33 else remember
+                val fraction =if (true) .34 else remember
                 (diff * fraction).toInt()
             }
         }

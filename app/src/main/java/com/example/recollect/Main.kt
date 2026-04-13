@@ -80,9 +80,7 @@ class Main : ComponentActivity() {
         while (event != FormEntryController.EVENT_QUESTION)
             event = controller.stepToNextEvent()
 
-        onNext()
-        onNext()
-
+        update()
         setContent()
 
     }
