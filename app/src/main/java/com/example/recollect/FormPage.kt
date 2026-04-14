@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +30,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -59,9 +63,15 @@ fun FormPage() {
             )
             val main = LocalActivity.current as Main
             val questionSpec = main.questionSpec
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 questionSpec.textFieldState,
-                Modifier.fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                colors= TextFieldDefaults.colors().copy(
+                    focusedIndicatorColor = Color.Blue
+                ),
                 labelPosition = TextFieldLabelPosition.Above(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next, showKeyboardOnFocus = true
@@ -81,6 +91,7 @@ fun FormPage() {
                         )
                     }
                 })
+            focusRequester.requestFocus()
             Box(
                 Modifier
                     .height(50.dp)
@@ -150,7 +161,7 @@ fun BackNextRow() {
                 }
             }) {
             Text("<  Back",
-                style = scaleStyle(typography.bodySmall, 1.5))
+                style = scaleStyle(typography.bodySmall, 1.2))
         }
         OutlinedButton(
             colors = buttonColors,
@@ -171,7 +182,7 @@ fun BackNextRow() {
                 }
             }) {
             Text("Next  >",
-                style = scaleStyle(typography.bodySmall, 1.5))
+                style = scaleStyle(typography.bodySmall, 1.2))
         }
     }
 }
