@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +29,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +41,7 @@ import com.example.recollect.bits.getImeHeight
 import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
+val myBlue = Color(62, 159, 208)
 
 @Preview
 @Composable
@@ -59,27 +63,35 @@ fun FormPage() {
             )
             val main = LocalActivity.current as Main
             val questionSpec = main.questionSpec
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 questionSpec.textFieldState,
-                Modifier.fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                colors= TextFieldDefaults.colors().copy(
+                    focusedIndicatorColor = myBlue
+                ),
                 labelPosition = TextFieldLabelPosition.Above(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next, showKeyboardOnFocus = true
                 ),
+                textStyle = scaleStyle(typography.bodySmall, 1.5),
                 onKeyboardAction = { main.onNext() },
                 label = {
                     Column() {
                         Text(
                             questionSpec.questionDef.labelInnerText,
-                            style = scaleStyle(typography.bodyMedium),
+                            style = scaleStyle(typography.bodyMedium, 1.5),
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             questionSpec.questionDef.helpText,
-                            style = scaleStyle(typography.bodySmall)
+                            style = scaleStyle(typography.bodySmall, 1.5)
                         )
                     }
                 })
+            focusRequester.requestFocus()
             Box(
                 Modifier
                     .height(50.dp)
@@ -105,14 +117,14 @@ fun FormPage() {
 }
 
 @Composable
-private fun scaleStyle(src: TextStyle): TextStyle =
-    src.copy(fontSize = src.fontSize.times(1.5f))
+private fun scaleStyle(src: TextStyle, by: Double): TextStyle =
+    src.copy(fontSize = src.fontSize.times(by))
 
 @Composable
 fun BackNextRow() {
     val buttonColors = ButtonColors(
         Color.White,
-        Color.Blue,
+        myBlue,
         Color.White,
         Color.LightGray
     )
@@ -128,8 +140,7 @@ fun BackNextRow() {
         val scope = rememberCoroutineScope()
         OutlinedButton(
             colors = buttonColors,
-            border = BorderStroke(1.dp,
-                if (isBackEnabled) Color.Blue else Color.LightGray),
+            border = BorderStroke(1.dp,Color.LightGray),
 //            modifier = Modifier.hoverable(),
             enabled = isBackEnabled, onClick = {
                 main.onBack()
@@ -149,11 +160,11 @@ fun BackNextRow() {
                 }
             }) {
             Text("<  Back",
-                style = scaleStyle(typography.bodySmall))
+                style = scaleStyle(typography.bodySmall, 1.2))
         }
         OutlinedButton(
             colors = buttonColors,
-            border = BorderStroke(1.dp, Color.Blue),
+            border = BorderStroke(1.dp, Color.LightGray),
             onClick = {
                 main.onNext()
                 isBackEnabled = main.event > 0
@@ -170,7 +181,7 @@ fun BackNextRow() {
                 }
             }) {
             Text("Next  >",
-                style = scaleStyle(typography.bodySmall))
+                style = scaleStyle(typography.bodySmall, 1.2))
         }
     }
 }
