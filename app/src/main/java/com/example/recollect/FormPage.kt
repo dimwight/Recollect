@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
@@ -42,6 +41,7 @@ import com.example.recollect.bits.getImeHeight
 import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
+val myBlue = Color(62, 159, 208)
 
 @Preview
 @Composable
@@ -70,7 +70,7 @@ fun FormPage() {
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 colors= TextFieldDefaults.colors().copy(
-                    focusedIndicatorColor = Color.Blue
+                    focusedIndicatorColor = myBlue
                 ),
                 labelPosition = TextFieldLabelPosition.Above(),
                 keyboardOptions = KeyboardOptions(
@@ -124,7 +124,7 @@ private fun scaleStyle(src: TextStyle, by: Double): TextStyle =
 fun BackNextRow() {
     val buttonColors = ButtonColors(
         Color.White,
-        Color.Blue,
+        myBlue,
         Color.White,
         Color.LightGray
     )
@@ -141,7 +141,7 @@ fun BackNextRow() {
         OutlinedButton(
             colors = buttonColors,
             border = BorderStroke(1.dp,
-                if (isBackEnabled) Color.Blue else Color.LightGray),
+                if (isBackEnabled) myBlue else Color.LightGray),
 //            modifier = Modifier.hoverable(),
             enabled = isBackEnabled, onClick = {
                 main.onBack()
@@ -165,7 +165,7 @@ fun BackNextRow() {
         }
         OutlinedButton(
             colors = buttonColors,
-            border = BorderStroke(1.dp, Color.Blue),
+            border = BorderStroke(1.dp, myBlue),
             onClick = {
                 main.onNext()
                 isBackEnabled = main.event > 0
