@@ -66,18 +66,18 @@ fun FormPage() {
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next, showKeyboardOnFocus = true
                 ),
-                textStyle = scaleStyle(typography.bodySmall),
+                textStyle = scaleStyle(typography.bodySmall, 1.5),
                 onKeyboardAction = { main.onNext() },
                 label = {
                     Column() {
                         Text(
                             questionSpec.questionDef.labelInnerText,
-                            style = scaleStyle(typography.bodyMedium),
+                            style = scaleStyle(typography.bodyMedium, 1.5),
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             questionSpec.questionDef.helpText,
-                            style = scaleStyle(typography.bodySmall)
+                            style = scaleStyle(typography.bodySmall, 1.5)
                         )
                     }
                 })
@@ -106,8 +106,8 @@ fun FormPage() {
 }
 
 @Composable
-private fun scaleStyle(src: TextStyle): TextStyle =
-    src.copy(fontSize = src.fontSize.times(1.5f))
+private fun scaleStyle(src: TextStyle, by: Double): TextStyle =
+    src.copy(fontSize = src.fontSize.times(by))
 
 @Composable
 fun BackNextRow() {
@@ -150,7 +150,7 @@ fun BackNextRow() {
                 }
             }) {
             Text("<  Back",
-                style = scaleStyle(typography.bodySmall))
+                style = scaleStyle(typography.bodySmall, 1.5))
         }
         OutlinedButton(
             colors = buttonColors,
@@ -171,7 +171,7 @@ fun BackNextRow() {
                 }
             }) {
             Text("Next  >",
-                style = scaleStyle(typography.bodySmall))
+                style = scaleStyle(typography.bodySmall, 1.5))
         }
     }
 }
