@@ -99,7 +99,8 @@ private fun InsertTextField(focusRequester: FocusRequester) {
             .fillMaxWidth()
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.colors().copy(
-            focusedIndicatorColor = myBlue
+            focusedIndicatorColor =
+                if (main.inError)Color.Red else myBlue
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(

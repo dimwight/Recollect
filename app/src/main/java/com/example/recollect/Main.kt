@@ -41,6 +41,7 @@ data class QuestionSpec(
 
 
 class Main : ComponentActivity() {
+    var inError: Boolean=false
     lateinit var questionSpec: QuestionSpec
 
     fun getNumbers4(): Flow<Int> = flow {
@@ -93,10 +94,13 @@ class Main : ComponentActivity() {
     }
 
     fun onNext() {
+        inError=false
         val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
-        if (true || result != RESULT_OK) {
-            throw RuntimeException("Bad result not RESULT_OK")
+        inError= (true || result != RESULT_OK)
+        if (inError) {
+            setMyContent()
+            return
         }
 
         event = controller.stepToNextEvent()
