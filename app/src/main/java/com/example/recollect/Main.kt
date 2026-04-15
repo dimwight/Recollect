@@ -81,7 +81,7 @@ class Main : ComponentActivity() {
             event = controller.stepToNextEvent()
 
         update()
-        setContent()
+        setMyContent()
 
     }
 
@@ -105,7 +105,7 @@ class Main : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun setContent() {
+    private fun setMyContent() {
         setContent {
             RecollectTheme {
                 FormPage()
