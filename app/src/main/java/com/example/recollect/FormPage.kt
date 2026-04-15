@@ -62,37 +62,7 @@ fun FormPage() {
                     .height(50.dp)
                     .fillMaxWidth()
             )
-            val main = LocalActivity.current as Main
-            val questionSpec = main.questionSpec
-            val focusRequester = remember { FocusRequester() }
-            TextField(
-                questionSpec.textFieldState,
-                Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                colors= TextFieldDefaults.colors().copy(
-                    focusedIndicatorColor = myBlue
-                ),
-                labelPosition = TextFieldLabelPosition.Above(),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next, showKeyboardOnFocus = true
-                ),
-                textStyle = scaleStyle(typography.bodySmall, 1.5),
-                onKeyboardAction = { main.onNext() },
-                label = {
-                    Column() {
-                        Text(
-                            questionSpec.questionDef.labelInnerText,
-                            style = scaleStyle(typography.bodyMedium, 1.5),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            questionSpec.questionDef.helpText,
-                            style = scaleStyle(typography.bodySmall, 1.5)
-                        )
-                    }
-                })
-            focusRequester.requestFocus()
+            InsertTextField()
             Box(
                 Modifier
                     .height(50.dp)
@@ -118,11 +88,46 @@ fun FormPage() {
 }
 
 @Composable
+private fun InsertTextField() {
+    val main = LocalActivity.current as Main
+    val questionSpec = main.questionSpec
+    val focusRequester = remember { FocusRequester() }
+    TextField(
+        questionSpec.textFieldState,
+        Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
+        colors = TextFieldDefaults.colors().copy(
+            focusedIndicatorColor = myBlue
+        ),
+        labelPosition = TextFieldLabelPosition.Above(),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Next, showKeyboardOnFocus = true
+        ),
+        textStyle = scaleStyle(typography.bodySmall, 1.5),
+        onKeyboardAction = { main.onNext() },
+        label = {
+            Column() {
+                Text(
+                    questionSpec.questionDef.labelInnerText,
+                    style = scaleStyle(typography.bodyMedium, 1.5),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    questionSpec.questionDef.helpText,
+                    style = scaleStyle(typography.bodySmall, 1.5)
+                )
+            }
+        })
+    focusRequester.requestFocus()
+}
+
+@Composable
 private fun scaleStyle(src: TextStyle, by: Double): TextStyle =
     src.copy(fontSize = src.fontSize.times(by))
 
 @Composable
-fun BackNextRow() {
+private fun BackNextRow() {
     val buttonColors = ButtonColors(
         Color.White,
         myBlue,
@@ -167,7 +172,12 @@ fun BackNextRow() {
             colors = buttonColors,
             border = BorderStroke(1.dp, Color.LightGray),
             onClick = {
-                main.onNext()
+                try {
+                    main.onNext()
+                } catch (e: Exception) {
+                    TODO("Not yet implemented")
+                } finally {
+                }
                 isBackEnabled = main.event > 0
                 if (true) return@OutlinedButton
                 scope.launch {
