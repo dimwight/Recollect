@@ -62,7 +62,9 @@ fun FormPage() {
                     .height(50.dp)
                     .fillMaxWidth()
             )
-            InsertTextField()
+            val focusRequester = remember { FocusRequester() }
+            InsertTextField(focusRequester)
+            focusRequester.requestFocus()
             Box(
                 Modifier
                     .height(50.dp)
@@ -88,10 +90,9 @@ fun FormPage() {
 }
 
 @Composable
-private fun InsertTextField() {
+private fun InsertTextField(focusRequester: FocusRequester) {
     val main = LocalActivity.current as Main
     val questionSpec = main.questionSpec
-    val focusRequester = remember { FocusRequester() }
     TextField(
         questionSpec.textFieldState,
         Modifier
@@ -119,7 +120,6 @@ private fun InsertTextField() {
                 )
             }
         })
-    focusRequester.requestFocus()
 }
 
 @Composable
@@ -128,12 +128,6 @@ private fun scaleStyle(src: TextStyle, by: Double): TextStyle =
 
 @Composable
 private fun BackNextRow() {
-    val buttonColors = ButtonColors(
-        Color.White,
-        myBlue,
-        Color.White,
-        Color.LightGray
-    )
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -144,11 +138,19 @@ private fun BackNextRow() {
             )
         }
         val scope = rememberCoroutineScope()
+        val buttonColors = ButtonColors(
+            Color.White,
+            myBlue,
+            Color.White,
+            Color.LightGray
+        )
+        val borderStroke = BorderStroke(1.dp, Color.LightGray)
+        val textStyle = scaleStyle(typography.bodySmall, 1.2)
         OutlinedButton(
             colors = buttonColors,
-            border = BorderStroke(1.dp,Color.LightGray),
-//            modifier = Modifier.hoverable(),
-            enabled = isBackEnabled, onClick = {
+            border = borderStroke,
+            enabled = isBackEnabled,
+            onClick = {
                 main.onBack()
                 isBackEnabled = main.event > 0
                 if (true) return@OutlinedButton
@@ -166,11 +168,12 @@ private fun BackNextRow() {
                 }
             }) {
             Text("<  Back",
-                style = scaleStyle(typography.bodySmall, 1.2))
+                style = textStyle
+            )
         }
         OutlinedButton(
             colors = buttonColors,
-            border = BorderStroke(1.dp, Color.LightGray),
+            border = borderStroke,
             onClick = {
                 try {
                     main.onNext()
@@ -192,7 +195,8 @@ private fun BackNextRow() {
                 }
             }) {
             Text("Next  >",
-                style = scaleStyle(typography.bodySmall, 1.2))
+                style = textStyle
+            )
         }
     }
 }
