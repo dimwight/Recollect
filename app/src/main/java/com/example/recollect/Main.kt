@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.QuestionDef
+import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
@@ -30,14 +31,13 @@ fun QuestionDef.toString(): String {
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val questionDef: QuestionDef
-){
+) {
     override fun toString(): String {
         return questionDef.run {
             "label: ${labelInnerText} hint: ${helpText}"
         }
     }
 }
-
 
 
 class Main : ComponentActivity() {
@@ -93,8 +93,14 @@ class Main : ComponentActivity() {
     }
 
     fun onNext() {
+        val answer = StringData(questionSpec.textFieldState.text as String)
+        val result = controller.answerQuestion(answer, true)
+        if (true || result != RESULT_OK) {
+            throw RuntimeException("Bad result not RESULT_OK")
+        }
+
         event = controller.stepToNextEvent()
-        if (event == FormEntryController.EVENT_QUESTION){
+        if (event == FormEntryController.EVENT_QUESTION) {
             update()
         }
         traceEventOrQuestion()
