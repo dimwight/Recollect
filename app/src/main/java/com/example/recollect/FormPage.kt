@@ -4,6 +4,7 @@ package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,7 @@ val myBlue = Color(62, 159, 208)
 @Composable
 fun FormPage() {
     Box(
-        modifier = Modifier
+        modifier = Modifier.background(Color.White)
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
