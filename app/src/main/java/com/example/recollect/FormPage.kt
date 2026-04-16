@@ -63,7 +63,13 @@ fun FormPage() {
                     .fillMaxWidth()
             )
             val focusRequester = remember { FocusRequester() }
-            InsertTextField(focusRequester)
+            val main = LocalActivity.current as Main
+            var mainError by remember {
+                mutableStateOf(
+                    main.inError
+                )
+            }
+            InsertTextField(focusRequester,mainError)
             focusRequester.requestFocus()
             Box(
                 Modifier
@@ -90,7 +96,7 @@ fun FormPage() {
 }
 
 @Composable
-private fun InsertTextField(focusRequester: FocusRequester) {
+private fun InsertTextField(focusRequester: FocusRequester, mainError: Boolean) {
     val main = LocalActivity.current as Main
     val questionSpec = main.questionSpec
     TextField(
@@ -100,7 +106,7 @@ private fun InsertTextField(focusRequester: FocusRequester) {
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.colors().copy(
             focusedIndicatorColor =
-                if (main.inError)Color.Red else myBlue
+                if (mainError)Color.Red else myBlue
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
