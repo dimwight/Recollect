@@ -64,14 +64,7 @@ fun FormPage() {
                     .fillMaxWidth()
             )
             val focusRequester = remember { FocusRequester() }
-            val main = LocalActivity.current as Main
-            var mainError by remember { mutableStateOf(main.inError) }
-            LaunchedEffect("") {
-                main.getError().collect { it: Boolean ->
-                    mainError=it
-                }
-            }
-            InsertTextField(focusRequester,mainError)
+            InsertTextField(focusRequester)
             focusRequester.requestFocus()
             Box(
                 Modifier
@@ -98,9 +91,11 @@ fun FormPage() {
 }
 
 @Composable
-private fun InsertTextField(focusRequester: FocusRequester, mainError: Boolean) {
+private fun InsertTextField(focusRequester: FocusRequester) {
     val main = LocalActivity.current as Main
     val questionSpec = main.questionSpec
+    var mainError by remember { mutableStateOf(main.inError) }
+    LaunchedEffect("") { main.getError().collect { mainError = it } }
     TextField(
         questionSpec.textFieldState,
         Modifier
