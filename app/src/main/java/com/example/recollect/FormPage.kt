@@ -23,6 +23,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,10 +65,11 @@ fun FormPage() {
             )
             val focusRequester = remember { FocusRequester() }
             val main = LocalActivity.current as Main
-            var mainError by remember {
-                mutableStateOf(
-                    main.inError
-                )
+            var mainError by remember { mutableStateOf(main.inError) }
+            LaunchedEffect("") {
+                main.getError().collect { it: Boolean ->
+                    mainError=it
+                }
             }
             InsertTextField(focusRequester,mainError)
             focusRequester.requestFocus()

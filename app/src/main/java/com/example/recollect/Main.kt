@@ -44,6 +44,13 @@ class Main : ComponentActivity() {
     var inError: Boolean=false
     lateinit var questionSpec: QuestionSpec
 
+    fun getError(): Flow<Boolean> = flow {
+        while (true) {
+            delay(100)
+            emit(inError)
+        }
+    }
+
     fun getNumbers4(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
@@ -94,14 +101,11 @@ class Main : ComponentActivity() {
     }
 
     fun onNext() {
-        inError=false
+//        inError=false
         val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
-        inError= (true || result != RESULT_OK)
-        if (inError) {
-            setMyContent()
-            return
-        }
+        inError= if (false) result != RESULT_OK else !inError
+        if (true)return
 
         event = controller.stepToNextEvent()
         if (event == FormEntryController.EVENT_QUESTION) {
