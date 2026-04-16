@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.QuestionDef
+import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
@@ -30,7 +31,7 @@ fun QuestionDef.toString(): String {
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val questionDef: QuestionDef
-){
+) {
     override fun toString(): String {
         return questionDef.run {
             "label: ${labelInnerText} hint: ${helpText}"
@@ -39,9 +40,16 @@ data class QuestionSpec(
 }
 
 
-
 class Main : ComponentActivity() {
+    var inError: Boolean=false
     lateinit var questionSpec: QuestionSpec
+
+    fun getError(): Flow<Boolean> = flow {
+        while (true) {
+            delay(100)
+            emit(inError)
+        }
+    }
 
     fun getNumbers4(): Flow<Int> = flow {
         for (i in 4..6) {
@@ -81,7 +89,7 @@ class Main : ComponentActivity() {
             event = controller.stepToNextEvent()
 
         update()
-        setContent()
+        setMyContent()
 
     }
 
@@ -93,8 +101,14 @@ class Main : ComponentActivity() {
     }
 
     fun onNext() {
+//        inError=false
+        val answer = StringData(questionSpec.textFieldState.text as String)
+        val result = controller.answerQuestion(answer, true)
+        inError= if (false) result != RESULT_OK else !inError
+        if (true)return
+
         event = controller.stepToNextEvent()
-        if (event == FormEntryController.EVENT_QUESTION){
+        if (event == FormEntryController.EVENT_QUESTION) {
             update()
         }
         traceEventOrQuestion()
@@ -105,7 +119,7 @@ class Main : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun setContent() {
+    private fun setMyContent() {
         setContent {
             RecollectTheme {
                 FormPage()
