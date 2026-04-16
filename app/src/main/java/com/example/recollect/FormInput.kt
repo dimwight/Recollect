@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -16,17 +18,19 @@ import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
 import java.io.InputStream
+import kotlin.time.TimeSource.Monotonic
 
-fun getNumbers1(): Flow<Int> = flow {
+var time_: Monotonic.ValueTimeMark? = null
+
+fun getNumbers1_(): Flow<Int> = flow {
     for (i in 1..3) {
         delay(1000)
     }
 }
 
-fun QuestionDef.toString(): String {
-    return "labelInnerText = ${labelInnerText}" +
-            "helpText = ${helpText}"
-}
+@Composable
+fun scaleStyle(src: TextStyle, by: Double): TextStyle =
+    src.copy(fontSize = src.fontSize.times(by))
 
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
@@ -39,34 +43,23 @@ data class QuestionSpec(
     }
 }
 
-
-class Main : ComponentActivity() {
-    var inError: Boolean=false
-    lateinit var questionSpec: QuestionSpec
-
-    fun getError(): Flow<Boolean> = flow {
-        while (true) {
-            delay(100)
-            emit(inError)
-        }
-    }
-
-    fun getNumbers4(): Flow<Int> = flow {
+class FormInput : ComponentActivity() {
+    fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
             emit(i)
         }
     }
-
     private lateinit var controller: FormEntryController
     var event: Int = -1
-
+    private var emitBad: Boolean=false
+    private lateinit var checkResult: (Int) -> Unit
+    lateinit var questionSpec: QuestionSpec
     private fun traceEventOrQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
         if (spec == null) return
         println("R1: spec = ${spec.toString()}")
     }
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,23 +82,30 @@ class Main : ComponentActivity() {
             event = controller.stepToNextEvent()
 
         update()
-        setMyContent()
-
+        setInputContent()
     }
-
+    private fun setInputContent() {
+        setContent {
+            RecollectTheme {
+                ImePage()
+            }
+        }
+    }
+    fun setResultCheck(check: (Int) -> Unit) {
+        checkResult = check
+    }
     private fun update() {
         val questionPrompt = controller.model.questionPrompt
         val questionDef = questionPrompt.question
         questionSpec = QuestionSpec(questionDef = questionDef)
         traceEventOrQuestion(questionSpec)
     }
-
     fun onNext() {
-//        inError=false
         val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
-        inError= if (false) result != RESULT_OK else !inError
-        if (true)return
+        emitBad=!emitBad
+        checkResult(result-(if (emitBad)1 else 0))
+        if (true) return
 
         event = controller.stepToNextEvent()
         if (event == FormEntryController.EVENT_QUESTION) {
@@ -113,21 +113,16 @@ class Main : ComponentActivity() {
         }
         traceEventOrQuestion()
     }
-
     fun onBack() {
         event = controller.stepToPreviousEvent()
     }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    private fun setMyContent() {
-        setContent {
-            RecollectTheme {
-                FormPage()
-            }
-        }
-    }
-
 }
+
+
+
+
+
+
 
 
 
