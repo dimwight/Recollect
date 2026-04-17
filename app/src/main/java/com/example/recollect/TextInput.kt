@@ -24,10 +24,10 @@ import org.javarosa.form.api.FormEntryController
 
 @Composable
 fun FocusedTextField(focusRequester: FocusRequester) {
-    val formControl = LocalActivity.current as FormControl
-    val questionSpec = formControl.questionSpec
+    val form = LocalActivity.current as FormControl
+    val questionSpec = form.questionSpec
     var indicateBad by remember { mutableStateOf(false) }
-    formControl.setResultCheck { result: Int ->
+    form.setResultCheck { result: Int ->
         indicateBad = result != FormEntryController.ANSWER_OK
     }
     TextField(
@@ -44,7 +44,7 @@ fun FocusedTextField(focusRequester: FocusRequester) {
             imeAction = ImeAction.Companion.Default, showKeyboardOnFocus = true
         ),
         textStyle = scaleStyle(MaterialTheme.typography.bodySmall, 1.5),
-        onKeyboardAction = { formControl.onNext() },
+        onKeyboardAction = { form.onNext() },
         label = {
             Column() {
                 Text(

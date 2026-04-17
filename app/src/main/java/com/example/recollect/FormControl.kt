@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flow
 import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.QuestionDef
 import org.javarosa.core.model.data.StringData
+import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
@@ -34,7 +35,9 @@ fun scaleStyle(src: TextStyle, by: Double): TextStyle =
 
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionDef: QuestionDef
+    val formDef: FormDef,
+    val questionDef: QuestionDef,
+    val captions: Array<FormEntryCaption>
 ) {
     override fun toString(): String {
         return questionDef.run {
@@ -95,13 +98,12 @@ class FormControl : ComponentActivity() {
         checkResult = check
     }
     private fun update() {
-        val questionPrompt = controller.model.questionPrompt
-        val questionDef = questionPrompt.question
-        questionSpec = QuestionSpec(questionDef = questionDef)
-        val labels = ArrayList<String>()
-        controller.model.captionHierarchy.mapTo(labels) {
-            it.formElement.labelInnerText
-        }
+        val model = controller.model
+        questionSpec = QuestionSpec(
+            formDef = model.form,
+            questionDef = model.questionPrompt.question,
+            captions = model.captionHierarchy
+        )
         traceEventOrQuestion(questionSpec)
     }
     fun onNext() {

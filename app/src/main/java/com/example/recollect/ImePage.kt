@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,10 +37,37 @@ import kotlinx.coroutines.launch
 import org.javarosa.form.api.FormEntryController
 
 val myBlue = Color(62, 159, 208)
+
+@Composable
+private fun HeaderRows() {
+    Column(
+        Modifier.background(Color.LightGray).fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top,
+        /*
+           modifier = Modifier.fillMaxSize(),
+           */
+    ) {
+        val spec = (LocalActivity.current as FormControl).questionSpec
+        Row() {
+            Text(spec.formDef.title)
+        }
+        FlowRow() {
+            val labels = spec.captions.mapTo(ArrayList<String>()) {
+                it.formElement.labelInnerText
+            }
+            for ((at: Int, next) in labels.withIndex()) {
+                if (at < labels.size - 1) Text("$next >")
+            }
+        }
+    }
+}
+
 @Composable
 fun ImePage() {
     Box(
-        modifier = Modifier.background(Color.White)
+        modifier = Modifier
+            .background(Color.White)
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
@@ -48,7 +76,7 @@ fun ImePage() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IndexRows()
+            HeaderRows()
             val focusRequester = remember { FocusRequester() }
             FocusedTextField(focusRequester)
             focusRequester.requestFocus()
@@ -74,15 +102,6 @@ fun ImePage() {
             }
         }
     }
-}
-
-@Composable
-private fun IndexRows() {
-    Box(
-        Modifier
-            .height(50.dp)
-            .fillMaxWidth()
-    )
 }
 
 @Composable
@@ -163,7 +182,8 @@ fun BackNextRow() {
                     }
                 }
             }) {
-            Text("<  Back",
+            Text(
+                "<  Back",
                 style = textStyle
             )
         }
@@ -185,7 +205,8 @@ fun BackNextRow() {
                     }
                 }
             }) {
-            Text("Next  >",
+            Text(
+                "Next  >",
                 style = textStyle
             )
         }
