@@ -43,7 +43,7 @@ data class QuestionSpec(
     }
 }
 
-class FormInput : ComponentActivity() {
+class FormControl : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
@@ -98,6 +98,10 @@ class FormInput : ComponentActivity() {
         val questionPrompt = controller.model.questionPrompt
         val questionDef = questionPrompt.question
         questionSpec = QuestionSpec(questionDef = questionDef)
+        val labels = ArrayList<String>()
+        controller.model.captionHierarchy.mapTo(labels) {
+            it.formElement.labelInnerText
+        }
         traceEventOrQuestion(questionSpec)
     }
     fun onNext() {
@@ -105,7 +109,7 @@ class FormInput : ComponentActivity() {
         val result = controller.answerQuestion(answer, true)
         emitBad=!emitBad
         checkResult(result-(if (emitBad)1 else 0))
-        if (true) return
+        if (false) return
 
         event = controller.stepToNextEvent()
         if (event == FormEntryController.EVENT_QUESTION) {

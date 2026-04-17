@@ -70,25 +70,20 @@
             <instance>
                 <data
                     id="all-question-types"
-                    version="2024091201">
+                    version="B2">
                     <text_question_types>
-                        <string />
-                        <string_number />
-                        <url>http://getodk.org/</url>
-                        <ex_string />
-                        <string_masked />
-                        <printer>&lt;p&gt;123456789&lt;/p&gt;&lt;qrcode&gt;some
-                            text&lt;/qrcode&gt;
-                        </printer>
+                        <superstring />
+                        <text_question_types>
+                            <string />
+                            <string_number />
+                            <string_masked />
+                        </text_question_types>
                     </text_question_types>
                     <numerical_question_types>
                         <integer />
                         <integer_thousands_sep />
-                        <ex_integer />
                         <counter />
                         <decimal />
-                        <ex_decimal />
-                        <bearing />
                     </numerical_question_types>
                     <range_question_types>
                         <range_integer />
@@ -102,22 +97,10 @@
                         <image />
                         <image_no_choose />
                         <selfie_image />
-                        <ex_image />
-                        <image_custom_app />
                         <draw_image />
                         <annotate_image />
                         <signature />
                     </image_question_types>
-                    <media_question_types>
-                        <barcode />
-                        <barcode_hidden_answer />
-                        <audio />
-                        <ex_audio />
-                        <video />
-                        <ex_video />
-                        <file />
-                        <ex_file />
-                    </media_question_types>
                     <date_time_question_types>
                         <date />
                         <date_nocalendar />
@@ -126,21 +109,7 @@
                         <time />
                         <date_time />
                         <date_time_nocalendar />
-                        <ethiopian_date />
-                        <coptic_date />
-                        <islamic_date />
-                        <bikram_sambat_date />
-                        <myanmar_date />
-                        <persian_date />
-                        <buddhist_date />
                     </date_time_question_types>
-                    <geo_question_types>
-                        <geopoint />
-                        <geopoint_placementmap />
-                        <geopoint_maps />
-                        <geotrace />
-                        <geoshape />
-                    </geo_question_types>
                     <select_one_question_types>
                         <select_one />
                         <select_one_minimal />
@@ -153,7 +122,6 @@
                         <select_one_image_map />
                         <likert />
                         <map />
-                        <select_one_final_note />
                     </select_one_question_types>
                     <select_multi_question_types>
                         <select_multi />
@@ -164,7 +132,6 @@
                         <grid_multi_columns_no_buttons />
                         <select_multi_minimal />
                         <select_multi_image_map />
-                        <select_multiple_final_note />
                     </select_multi_question_types>
                     <table_list>
                         <table_list_label />
@@ -174,10 +141,6 @@
                         <list />
                         <list_multi />
                     </table_list>
-                    <other_question_types>
-                        <rank />
-                        <my_trigger />
-                    </other_question_types>
                     <meta>
                         <instanceID />
                     </meta>
@@ -331,22 +294,16 @@
                 </root>
             </instance>
             <bind
-                nodeset="/data/text_question_types/string"
+                nodeset="/data/text_question_types/superstring"
                 type="string" />
             <bind
-                nodeset="/data/text_question_types/string_number"
+                nodeset="/data/text_question_types/text_question_types/string"
                 type="string" />
             <bind
-                nodeset="/data/text_question_types/url"
+                nodeset="/data/text_question_types/text_question_types/string_number"
                 type="string" />
             <bind
-                nodeset="/data/text_question_types/ex_string"
-                type="string" />
-            <bind
-                nodeset="/data/text_question_types/string_masked"
-                type="string" />
-            <bind
-                nodeset="/data/text_question_types/printer"
+                nodeset="/data/text_question_types/text_question_types/string_masked"
                 type="string" />
             <bind
                 nodeset="/data/numerical_question_types/integer"
@@ -355,19 +312,10 @@
                 nodeset="/data/numerical_question_types/integer_thousands_sep"
                 type="int" />
             <bind
-                nodeset="/data/numerical_question_types/ex_integer"
-                type="int" />
-            <bind
                 nodeset="/data/numerical_question_types/counter"
                 type="int" />
             <bind
                 nodeset="/data/numerical_question_types/decimal"
-                type="decimal" />
-            <bind
-                nodeset="/data/numerical_question_types/ex_decimal"
-                type="decimal" />
-            <bind
-                nodeset="/data/numerical_question_types/bearing"
                 type="decimal" />
             <bind
                 nodeset="/data/range_question_types/range_integer"
@@ -397,12 +345,6 @@
                 nodeset="/data/image_question_types/selfie_image"
                 type="binary" />
             <bind
-                nodeset="/data/image_question_types/ex_image"
-                type="binary" />
-            <bind
-                nodeset="/data/image_question_types/image_custom_app"
-                type="binary" />
-            <bind
                 nodeset="/data/image_question_types/draw_image"
                 type="binary" />
             <bind
@@ -410,30 +352,6 @@
                 type="binary" />
             <bind
                 nodeset="/data/image_question_types/signature"
-                type="binary" />
-            <bind
-                nodeset="/data/media_question_types/barcode"
-                type="barcode" />
-            <bind
-                nodeset="/data/media_question_types/barcode_hidden_answer"
-                type="barcode" />
-            <bind
-                nodeset="/data/media_question_types/audio"
-                type="binary" />
-            <bind
-                nodeset="/data/media_question_types/ex_audio"
-                type="binary" />
-            <bind
-                nodeset="/data/media_question_types/video"
-                type="binary" />
-            <bind
-                nodeset="/data/media_question_types/ex_video"
-                type="binary" />
-            <bind
-                nodeset="/data/media_question_types/file"
-                type="binary" />
-            <bind
-                nodeset="/data/media_question_types/ex_file"
                 type="binary" />
             <bind
                 nodeset="/data/date_time_question_types/date"
@@ -456,42 +374,6 @@
             <bind
                 nodeset="/data/date_time_question_types/date_time_nocalendar"
                 type="dateTime" />
-            <bind
-                nodeset="/data/date_time_question_types/ethiopian_date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/coptic_date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/islamic_date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/bikram_sambat_date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/myanmar_date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/persian_date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/buddhist_date"
-                type="date" />
-            <bind
-                nodeset="/data/geo_question_types/geopoint"
-                type="geopoint" />
-            <bind
-                nodeset="/data/geo_question_types/geopoint_placementmap"
-                type="geopoint" />
-            <bind
-                nodeset="/data/geo_question_types/geopoint_maps"
-                type="geopoint" />
-            <bind
-                nodeset="/data/geo_question_types/geotrace"
-                type="geotrace" />
-            <bind
-                nodeset="/data/geo_question_types/geoshape"
-                type="geoshape" />
             <bind
                 nodeset="/data/select_one_question_types/select_one"
                 type="string" />
@@ -526,10 +408,6 @@
                 nodeset="/data/select_one_question_types/map"
                 type="string" />
             <bind
-                nodeset="/data/select_one_question_types/select_one_final_note"
-                readonly="true()"
-                type="string" />
-            <bind
                 nodeset="/data/select_multi_question_types/select_multi"
                 type="string" />
             <bind
@@ -554,10 +432,6 @@
                 nodeset="/data/select_multi_question_types/select_multi_image_map"
                 type="string" />
             <bind
-                nodeset="/data/select_multi_question_types/select_multiple_final_note"
-                readonly="true()"
-                type="string" />
-            <bind
                 nodeset="/data/table_list/table_list_label"
                 type="string" />
             <bind
@@ -576,9 +450,6 @@
                 nodeset="/data/table_list/list_multi"
                 type="string" />
             <bind
-                nodeset="/data/other_question_types/rank"
-                type="odk:rank" />
-            <bind
                 nodeset="/data/meta/instanceID"
                 readonly="true()"
                 type="string"
@@ -587,45 +458,30 @@
     </h:head>
     <h:body>
         <group ref="/data/text_question_types">
-            <label>Text question types</label>
-            <input ref="/data/text_question_types/string">
-                <label>String</label>
+            <label>Super Super Super Super Super Super Super</label>
+            <input ref="/data/text_question_types/superstring">
+                <label>Super string</label>
                 <hint>text type</hint>
             </input>
-            <input
-                appearance="numbers"
-                ref="/data/text_question_types/string_number">
-                <label>String number</label>
-                <hint>text type with numbers appearance</hint>
-            </input>
-            <input
-                appearance="url"
-                ref="/data/text_question_types/url">
-                <label>URL</label>
-                <hint>text type with url appearance and default value of http://getodk.org/</hint>
-            </input>
-            <input
-                appearance="ex:change.uw.android.BREATHCOUNT"
-                ref="/data/text_question_types/ex_string">
-                <label>String from external application</label>
-                <hint>text type with ex:change.uw.android.BREATHCOUNT appearance (can use other
-                    external apps)
-                </hint>
-            </input>
-            <input
-                appearance="masked"
-                ref="/data/text_question_types/string_masked">
-                <label>String masked</label>
-                <hint>text type with masked appearance</hint>
-            </input>
-            <input
-                appearance="printer"
-                ref="/data/text_question_types/printer">
-                <label>Print</label>
-                <hint>text type with printer appearance and default of &lt;p&gt;123456789&lt;/p&gt;&lt;qrcode&gt;some
-                    text&lt;/qrcode&gt;
-                </hint>
-            </input>
+            <group ref="/data/text_question_types/text_question_types">
+                <label>Text question types</label>
+                <input ref="/data/text_question_types/text_question_types/string">
+                    <label>String</label>
+                    <hint>text type</hint>
+                </input>
+                <input
+                    appearance="numbers"
+                    ref="/data/text_question_types/text_question_types/string_number">
+                    <label>String number</label>
+                    <hint>text type with numbers appearance</hint>
+                </input>
+                <input
+                    appearance="masked"
+                    ref="/data/text_question_types/text_question_types/string_masked">
+                    <label>String masked</label>
+                    <hint>text type with masked appearance</hint>
+                </input>
+            </group>
         </group>
         <group ref="/data/numerical_question_types">
             <label>Numerical question types</label>
@@ -642,14 +498,6 @@
                 </hint>
             </input>
             <input
-                appearance="ex:change.uw.android.BREATHCOUNT"
-                ref="/data/numerical_question_types/ex_integer">
-                <label>Integer from external application</label>
-                <hint>integer type with ex:change.uw.android.BREATHCOUNT appearance (can use other
-                    external apps)
-                </hint>
-            </input>
-            <input
                 appearance="counter"
                 ref="/data/numerical_question_types/counter">
                 <label>Counter</label>
@@ -658,20 +506,6 @@
             <input ref="/data/numerical_question_types/decimal">
                 <label>Decimal</label>
                 <hint>decimal type with no appearance</hint>
-            </input>
-            <input
-                appearance="ex:change.uw.android.BREATHCOUNT"
-                ref="/data/numerical_question_types/ex_decimal">
-                <label>Decimal from external application</label>
-                <hint>decimal type with ex:change.uw.android.BREATHCOUNT appearance (can use other
-                    external apps)
-                </hint>
-            </input>
-            <input
-                appearance="bearing"
-                ref="/data/numerical_question_types/bearing">
-                <label>Bearing</label>
-                <hint>decimal type with bearing appearance</hint>
             </input>
         </group>
         <group ref="/data/range_question_types">
@@ -762,22 +596,6 @@
                 <hint>image type with selfie appearance</hint>
             </upload>
             <upload
-                appearance="ex:com.example.collectanswersprovider(questionImage='')"
-                mediatype="image/*"
-                ref="/data/image_question_types/ex_image">
-                <label>Image from external application</label>
-                <hint>image type with ex:com.example.collectanswersprovider(questionImage='')
-                    appearance (can use other external apps)
-                </hint>
-            </upload>
-            <upload
-                intent="com.jeyluta.timestampcamerafree"
-                mediatype="image/*"
-                ref="/data/image_question_types/image_custom_app">
-                <label>Image from alternate camera app</label>
-                <hint>image type with parameter app=com.jeyluta.timestampcamerafree</hint>
-            </upload>
-            <upload
                 appearance="draw"
                 mediatype="image/*"
                 ref="/data/image_question_types/draw_image">
@@ -797,67 +615,6 @@
                 ref="/data/image_question_types/signature">
                 <label>Signature</label>
                 <hint>image type with signature appearance</hint>
-            </upload>
-        </group>
-        <group ref="/data/media_question_types">
-            <label>Media question types</label>
-            <input ref="/data/media_question_types/barcode">
-                <label>Barcode</label>
-                <hint>barcode type with no appearance</hint>
-            </input>
-            <input
-                appearance="hidden-answer"
-                ref="/data/media_question_types/barcode_hidden_answer">
-                <label>Barcode with hidden answer</label>
-                <hint>barcode type with hidden-answer appearance</hint>
-            </input>
-            <upload
-                mediatype="audio/*"
-                ref="/data/media_question_types/audio">
-                <label>Audio</label>
-                <hint>audio type with no appearance</hint>
-            </upload>
-            <upload
-                appearance="ex:com.example.collectanswersprovider(questionAudio='')"
-                mediatype="audio/*"
-                ref="/data/media_question_types/ex_audio">
-                <label>External audio</label>
-                <hint>audio type with ex:com.example.collectanswersprovider(questionAudio='')
-                    appearance (can use other external apps)
-                </hint>
-            </upload>
-            <upload
-                mediatype="video/*"
-                ref="/data/media_question_types/video">
-                <label>Video</label>
-                <hint>video type with no appearance</hint>
-            </upload>
-            <upload
-                appearance="ex:com.example.collectanswersprovider(questionVideo='')"
-                mediatype="video/*"
-                ref="/data/media_question_types/ex_video">
-                <label>External video</label>
-                <hint>video type with ex:com.example.collectanswersprovider(questionVideo='')
-                    appearance (can use other external apps)
-                </hint>
-            </upload>
-            <upload
-                mediatype="application/*"
-                ref="/data/media_question_types/file">
-                <label>File</label>
-                <hint>file type with no appearance &lt;br/&gt; WARNING: any kind of file could be
-                    uploaded including files that contain viruses or other malware. Be sure to take
-                    proper precautions when downloading files from server.
-                </hint>
-            </upload>
-            <upload
-                appearance="ex:com.example.collectanswersprovider(questionFile='')"
-                mediatype="application/*"
-                ref="/data/media_question_types/ex_file">
-                <label>External file</label>
-                <hint>file type with ex:com.example.collectanswersprovider(questionFile='')
-                    appearance (can use other external apps)
-                </hint>
             </upload>
         </group>
         <group ref="/data/date_time_question_types">
@@ -897,78 +654,6 @@
                 ref="/data/date_time_question_types/date_time_nocalendar">
                 <label>Date time</label>
                 <hint>dateTime type with no-calendar appearance</hint>
-            </input>
-            <input
-                appearance="ethiopian"
-                ref="/data/date_time_question_types/ethiopian_date">
-                <label>Ethiopian date</label>
-                <hint>date type ethiopian appearance</hint>
-            </input>
-            <input
-                appearance="coptic"
-                ref="/data/date_time_question_types/coptic_date">
-                <label>Coptic date</label>
-                <hint>date type coptic appearance</hint>
-            </input>
-            <input
-                appearance="islamic"
-                ref="/data/date_time_question_types/islamic_date">
-                <label>Islamic date</label>
-                <hint>date type islamic appearance</hint>
-            </input>
-            <input
-                appearance="bikram-sambat"
-                ref="/data/date_time_question_types/bikram_sambat_date">
-                <label>Bikram Sambat date</label>
-                <hint>date type bikram-sambat appearance</hint>
-            </input>
-            <input
-                appearance="myanmar"
-                ref="/data/date_time_question_types/myanmar_date">
-                <label>Myanmar date</label>
-                <hint>date type myanmar appearance</hint>
-            </input>
-            <input
-                appearance="persian"
-                ref="/data/date_time_question_types/persian_date">
-                <label>Persian date</label>
-                <hint>date type persian appearance</hint>
-            </input>
-            <input
-                appearance="buddhist"
-                ref="/data/date_time_question_types/buddhist_date">
-                <label>Buddhist date</label>
-                <hint>date type buddhist appearance</hint>
-            </input>
-        </group>
-        <group ref="/data/geo_question_types">
-            <label>Geospatial question types</label>
-            <input ref="/data/geo_question_types/geopoint">
-                <label>Point with user confirmation</label>
-                <hint>geopoint type with no appearance</hint>
-            </input>
-            <input
-                appearance="placement-map"
-                ref="/data/geo_question_types/geopoint_placementmap">
-                <label>Point that can be manually-entered on map</label>
-                <hint>geopoint type with placement-map appearance</hint>
-            </input>
-            <input
-                appearance="maps"
-                ref="/data/geo_question_types/geopoint_maps">
-                <label>Point with user confirmation on map</label>
-                <hint>geopoint type with maps appearance</hint>
-            </input>
-            <input ref="/data/geo_question_types/geotrace">
-                <label>Line that can be either manually-entered or automatically recorded on a map
-                </label>
-                <hint>geotrace type with no appearance</hint>
-            </input>
-            <input ref="/data/geo_question_types/geoshape">
-                <label>Polygon that can be either manually-entered or automatically recorded on a
-                    map
-                </label>
-                <hint>geoshape type with no appearance</hint>
             </input>
         </group>
         <group ref="/data/select_one_question_types">
@@ -1095,13 +780,6 @@
                     <label ref="title" />
                 </itemset>
             </select1>
-            <input ref="/data/select_one_question_types/select_one_final_note">
-                <label>You can mix multiple appearances together. It's difficult to present all
-                    possible combinations because it would make this form huge so we showed you just
-                    those basic ones. For example you can even use a combination like:
-                </label>
-                <hint>minimal no-buttons columns-3 autocomplete quick</hint>
-            </input>
         </group>
         <group ref="/data/select_multi_question_types">
             <label>Select multi question types</label>
@@ -1185,13 +863,6 @@
                     <label ref="label" />
                 </itemset>
             </select>
-            <input ref="/data/select_multi_question_types/select_multiple_final_note">
-                <label>You can mix multiple appearances together. It's difficult to present all
-                    possible combinations because it would make this form huge so we showed you just
-                    those basic ones. For example you can even use a combination like:
-                </label>
-                <hint>minimal no-buttons columns-3 autocomplete</hint>
-            </input>
         </group>
         <group
             appearance="field-list"
@@ -1269,25 +940,6 @@
                     <label ref="label" />
                 </itemset>
             </select>
-        </group>
-        <group ref="/data/other_question_types">
-            <label>Other question types</label>
-            <odk:rank ref="/data/other_question_types/rank">
-                <label>Rank</label>
-                <hint>rank type with no appearance, 4 text choices. Long press on a choice and drag
-                    it to change its position.
-                </hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </odk:rank>
-            <trigger ref="/data/other_question_types/my_trigger">
-                <label>Trigger</label>
-                <hint>Prompts for confirmation. Useful to combine with required or relevant.
-                    (type=trigger)
-                </hint>
-            </trigger>
         </group>
     </h:body>
 </h:html>

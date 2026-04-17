@@ -127,10 +127,10 @@ fun BackNextRow() {
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val formInput = LocalActivity.current as FormInput
+        val formControl = LocalActivity.current as FormControl
         var isBackEnabled by remember {
             mutableStateOf(
-                formInput.event != FormEntryController.EVENT_BEGINNING_OF_FORM
+                formControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
             )
         }
         val buttonColors = ButtonColors(
@@ -147,11 +147,11 @@ fun BackNextRow() {
             border = borderStroke,
             enabled = isBackEnabled,
             onClick = {
-                formInput.onBack()
-                isBackEnabled = formInput.event > 0
+                formControl.onBack()
+                isBackEnabled = formControl.event > 0
                 if (true) return@OutlinedButton
                 scope.launch {
-                    formInput.getNumbers4_().collect { value ->
+                    formControl.getNumbers4_().collect { value ->
                         val val4 = value
                         println("R1: val4 = $val4")
                         scope.launch {
@@ -171,11 +171,11 @@ fun BackNextRow() {
             colors = buttonColors,
             border = borderStroke,
             onClick = {
-                formInput.onNext()
-                isBackEnabled = formInput.event > 0
+                formControl.onNext()
+                isBackEnabled = formControl.event > 0
                 if (true) return@OutlinedButton
                 scope.launch {
-                    formInput.getNumbers4_().collect { value ->
+                    formControl.getNumbers4_().collect { value ->
                         println("R1: value = $value")
                     }
                 }
