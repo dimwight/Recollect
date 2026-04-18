@@ -41,10 +41,10 @@ val myBlue = Color(62, 159, 208)
 @Composable
 private fun HeaderRows() {
     Column(
-        Modifier.background(Color.LightGray).fillMaxWidth(),
+        Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Top,
         /*
+        verticalArrangement = Arrangement.Top,
            modifier = Modifier.fillMaxSize(),
            */
     ) {
@@ -74,17 +74,12 @@ fun ImePage() {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             HeaderRows()
             val focusRequester = remember { FocusRequester() }
             FocusedTextField(focusRequester)
             focusRequester.requestFocus()
-            Box(
-                Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-            )
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
