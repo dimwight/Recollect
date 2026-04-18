@@ -30,8 +30,9 @@ fun getNumbers1_(): Flow<Int> = flow {
 }
 
 @Composable
-fun scaleStyle(src: TextStyle, by: Double): TextStyle =
-    src.copy(fontSize = src.fontSize.times(by))
+fun TextStyle.scale(by: Double): TextStyle =
+    copy(fontSize = fontSize.times(by),
+        lineHeight = lineHeight.times(by))
 
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),

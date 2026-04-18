@@ -159,7 +159,7 @@ fun BackNextRow() {
             Color.LightGray
         )
         val borderStroke = BorderStroke(1.dp, Color.LightGray)
-        val textStyle = scaleStyle(typography.bodySmall, 1.2)
+        val textStyle = typography.bodySmall.scale(1.2)
         val scope = rememberCoroutineScope()
         OutlinedButton(
             colors = buttonColors,

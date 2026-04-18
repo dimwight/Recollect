@@ -4,7 +4,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -43,18 +43,18 @@ fun FocusedTextField(focusRequester: FocusRequester) {
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Companion.Default, showKeyboardOnFocus = true
         ),
-        textStyle = scaleStyle(MaterialTheme.typography.bodySmall, 1.5),
+        textStyle = typography.bodySmall.scale(1.5),
         onKeyboardAction = { form.onNext() },
         label = {
             Column() {
                 Text(
                     questionSpec.questionDef.labelInnerText,
-                    style = scaleStyle(MaterialTheme.typography.bodyMedium, 1.5),
+                    style = typography.bodyMedium.scale(1.5),
                     fontWeight = FontWeight.Companion.Bold
                 )
                 Text(
                     questionSpec.questionDef.helpText,
-                    style = scaleStyle(MaterialTheme.typography.bodySmall, 1.5)
+                    style = typography.bodySmall.scale(1.5)
                 )
             }
         })
