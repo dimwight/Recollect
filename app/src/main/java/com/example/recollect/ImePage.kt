@@ -141,7 +141,8 @@ fun getImeHeight(): Int {
 @Composable
 fun BackNextRow() {
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val formControl = LocalActivity.current as FormControl
         var isBackEnabled by remember {
@@ -158,7 +159,7 @@ fun BackNextRow() {
         val borderStroke = BorderStroke(1.dp, Color.LightGray)
         val paddingValues = PaddingValues(50.dp, 15.dp)
         val scope = rememberCoroutineScope()
-        val onClickBack: () -> Unit = {
+        var onClick: () -> Unit = {
             formControl.onBack()
             isBackEnabled = formControl.event > 0
             if (false) scope.launch {
@@ -180,14 +181,14 @@ fun BackNextRow() {
             border = borderStroke,
             contentPadding = paddingValues,
             enabled = isBackEnabled,
-            onClick = onClickBack
+            onClick = onClick
         ) {
             Text(
                 text,
                 style = mySmallStyle()
             )
         }
-        val onClickNext = {
+        onClick = {
             formControl.onNext()
             isBackEnabled = formControl.event > 0
             if (false) {
@@ -196,6 +197,7 @@ fun BackNextRow() {
                         println("R1: value = $value")
                     }
                 }
+
                 scope.launch {
                     getNumbers1_().collect { value ->
                         println("R1: value = $value")
@@ -208,7 +210,7 @@ fun BackNextRow() {
             colors = buttonColors,
             border = borderStroke,
             contentPadding = paddingValues,
-            onClick = onClickNext
+            onClick = onClick
         ) {
             Text(
                 text,
