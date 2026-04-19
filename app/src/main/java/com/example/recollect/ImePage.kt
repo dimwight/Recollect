@@ -158,7 +158,6 @@ fun BackNextRow() {
         val borderStroke = BorderStroke(1.dp, Color.LightGray)
         val paddingValues = PaddingValues(50.dp, 15.dp)
         val scope = rememberCoroutineScope()
-        val text = "<  Back"
         val onClickBack: () -> Unit = {
             formControl.onBack()
             isBackEnabled = formControl.event > 0
@@ -175,6 +174,7 @@ fun BackNextRow() {
                 }
             }
         }
+        var text = "<  Back"
         OutlinedButton(
             colors = buttonColors,
             border = borderStroke,
@@ -203,6 +203,7 @@ fun BackNextRow() {
                 }
             }
         }
+        text = "Next  >"
         OutlinedButton(
             colors = buttonColors,
             border = borderStroke,
@@ -210,7 +211,7 @@ fun BackNextRow() {
             onClick = onClickNext
         ) {
             Text(
-                "Next  >",
+                text,
                 style = mySmallStyle().copy(myBlue)
             )
         }
