@@ -181,7 +181,7 @@ fun BackNextRow() {
         } else {
             mySmallStyle()
         }
-        BackNextButton(isBackEnabled)
+        BackNextButton(isBackEnabled,onClick)
         onClick = {
             formControl.onNext()
             isBackEnabled = formControl.event > 0
@@ -217,7 +217,8 @@ fun BackNextRow() {
 
 @Composable
 private fun BackNextButton(
-    enabled: Boolean
+    enabled: Boolean,
+    onClick: () -> Unit
 ) {
     var isBackEnabled1 = enabled
     val buttonColors = ButtonColors(
@@ -230,22 +231,6 @@ private fun BackNextButton(
     val paddingValues = PaddingValues(50.dp, 15.dp)
     val formControl = LocalActivity.current as FormControl
     val scope = rememberCoroutineScope()
-    var onClick: () -> Unit = {
-        formControl.onBack()
-        isBackEnabled1 = formControl.event > 0
-        if (false) scope.launch {
-            formControl.getNumbers4_().collect { value ->
-                val val4 = value
-                println("R1: val4 = $val4")
-                scope.launch {
-                    getNumbers1_().collect { value ->
-                        val val14 = value + val4
-                        println("R1: val14 = $val14")
-                    }
-                }
-            }
-        }
-    }
     var text = "<  Back"
     var style = if (true || isBackEnabled1) {
         mySmallStyle().copy(myBlue)
