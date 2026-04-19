@@ -181,7 +181,7 @@ fun BackNextRow() {
         } else {
             mySmallStyle()
         }
-        BackNextButton(isBackEnabled,onClick)
+        BackNextButton(text, isBackEnabled,onClick)
         onClick = {
             formControl.onNext()
             isBackEnabled = formControl.event > 0
@@ -217,31 +217,25 @@ fun BackNextRow() {
 
 @Composable
 private fun BackNextButton(
-    enabled: Boolean,
+    text: String,
+    enabled: Boolean=true,
     onClick: () -> Unit
 ) {
-    var isBackEnabled1 = enabled
-    val buttonColors = ButtonColors(
-        Color.White,
-        myBlue,
-        Color.White,
-        Color.LightGray
-    )
-    val borderStroke = BorderStroke(1.dp, Color.LightGray)
-    val paddingValues = PaddingValues(50.dp, 15.dp)
-    val formControl = LocalActivity.current as FormControl
-    val scope = rememberCoroutineScope()
-    var text = "<  Back"
-    var style = if (true || isBackEnabled1) {
+    var style = if (enabled) {
         mySmallStyle().copy(myBlue)
     } else {
         mySmallStyle()
     }
     OutlinedButton(
-        colors = buttonColors,
-        border = borderStroke,
-        contentPadding = paddingValues,
-        enabled = isBackEnabled1,
+        colors = ButtonColors(
+            Color.White,
+            myBlue,
+            Color.White,
+            Color.LightGray
+        ),
+        border = BorderStroke(1.dp, Color.LightGray),
+        contentPadding = PaddingValues(50.dp, 15.dp),
+        enabled = enabled,
         onClick = onClick
     ) {
         Text(
