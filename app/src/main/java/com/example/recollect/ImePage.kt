@@ -150,14 +150,6 @@ fun BackNextRow() {
                 formControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
             )
         }
-        val buttonColors = ButtonColors(
-            Color.White,
-            myBlue,
-            Color.White,
-            Color.LightGray
-        )
-        val borderStroke = BorderStroke(1.dp, Color.LightGray)
-        val paddingValues = PaddingValues(50.dp, 15.dp)
         val scope = rememberCoroutineScope()
         var onClick: () -> Unit = {
             formControl.onBack()
@@ -175,14 +167,8 @@ fun BackNextRow() {
                 }
             }
         }
-        var text = "<  Back"
-        var style = if (true || isBackEnabled) {
-            mySmallStyle().copy(myBlue)
-        } else {
-            mySmallStyle()
-        }
-        BackNextButton(text, isBackEnabled,onClick)
-        onClick = {
+        BackNextButton("<  Back", isBackEnabled, onClick)
+        var onClick1: () -> Unit = {
             formControl.onNext()
             isBackEnabled = formControl.event > 0
             if (false) {
@@ -191,7 +177,6 @@ fun BackNextRow() {
                         println("R1: value = $value")
                     }
                 }
-
                 scope.launch {
                     getNumbers1_().collect { value ->
                         println("R1: value = $value")
@@ -199,33 +184,16 @@ fun BackNextRow() {
                 }
             }
         }
-        text = "Next  >"
-        style = mySmallStyle().copy(myBlue)
-        OutlinedButton(
-            colors = buttonColors,
-            border = borderStroke,
-            contentPadding = paddingValues,
-            onClick = onClick
-        ) {
-            Text(
-                text,
-                style = style
-            )
-        }
+        BackNextButton("Next  >", isBackEnabled, onClick1)
     }
 }
 
 @Composable
 private fun BackNextButton(
     text: String,
-    enabled: Boolean=true,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    var style = if (enabled) {
-        mySmallStyle().copy(myBlue)
-    } else {
-        mySmallStyle()
-    }
     OutlinedButton(
         colors = ButtonColors(
             Color.White,
@@ -240,7 +208,11 @@ private fun BackNextButton(
     ) {
         Text(
             text,
-            style = style
+            style = if (enabled) {
+                mySmallStyle().copy(myBlue)
+            } else {
+                mySmallStyle()
+            }
         )
     }
 }
