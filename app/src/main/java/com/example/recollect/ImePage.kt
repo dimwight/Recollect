@@ -45,19 +45,21 @@ private fun HeaderRows() {
         horizontalAlignment = Alignment.Start,
     ) {
         val spec = (LocalActivity.current as FormControl).questionSpec
-        Row(Modifier.height(65.dp),
+        Row(
+            Modifier.height(65.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(spec.formDef.title, style = myMediumStyle(true))
         }
-        FlowRow(Modifier.height(50.dp),
+        FlowRow(
+            Modifier.height(50.dp),
 //            verticalArrangement = Arrangement.Center
         ) {
             val labels = spec.captions.mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
             for ((at: Int, next) in labels.withIndex()) {
-                if (at < labels.size - 1) Text("$next >",style = mySmallStyle())
+                if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
             }
         }
     }
@@ -139,7 +141,8 @@ fun getImeHeight(): Int {
 @Composable
 fun BackNextRow() {
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val formControl = LocalActivity.current as FormControl
         var isBackEnabled by remember {
@@ -147,50 +150,27 @@ fun BackNextRow() {
                 formControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
             )
         }
-        val buttonColors = ButtonColors(
-            Color.White,
-            myBlue,
-            Color.White,
-            Color.LightGray
-        )
-        val borderStroke = BorderStroke(1.dp, Color.LightGray)
-        val paddingValues = PaddingValues(50.dp, 15.dp)
         val scope = rememberCoroutineScope()
-        OutlinedButton(
-            colors = buttonColors,
-            border = borderStroke,
-            enabled = isBackEnabled,
-            contentPadding = paddingValues,
-            onClick = {
-                formControl.onBack()
-                isBackEnabled = formControl.event > 0
-                if (true) return@OutlinedButton
-                scope.launch {
-                    formControl.getNumbers4_().collect { value ->
-                        val val4 = value
-                        println("R1: val4 = $val4")
-                        scope.launch {
-                            getNumbers1_().collect { value ->
-                                val val14 = value + val4
-                                println("R1: val14 = $val14")
-                            }
+        BackNextButton("<  Back", isBackEnabled) {
+            formControl.onBack()
+            isBackEnabled = formControl.event > 0
+            if (false) scope.launch {
+                formControl.getNumbers4_().collect { value ->
+                    val val4 = value
+                    println("R1: val4 = $val4")
+                    scope.launch {
+                        getNumbers1_().collect { value ->
+                            val val14 = value + val4
+                            println("R1: val14 = $val14")
                         }
                     }
                 }
-            }) {
-            Text(
-                "<  Back",
-                style = mySmallStyle()
-            )
+            }
         }
-        OutlinedButton(
-            colors = buttonColors,
-            border = borderStroke,
-            contentPadding = paddingValues,
-            onClick = {
-                formControl.onNext()
-                isBackEnabled = formControl.event > 0
-                if (true) return@OutlinedButton
+        BackNextButton("Next  >") {
+            formControl.onNext()
+            isBackEnabled = formControl.event > 0
+            if (false) {
                 scope.launch {
                     formControl.getNumbers4_().collect { value ->
                         println("R1: value = $value")
@@ -201,12 +181,37 @@ fun BackNextRow() {
                         println("R1: value = $value")
                     }
                 }
-            }) {
-            Text(
-                "Next  >",
-                style = mySmallStyle().copy(myBlue)
-            )
+            }
         }
+    }
+}
+
+@Composable
+private fun BackNextButton(
+    text: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        colors = ButtonColors(
+            Color.White,
+            myBlue,
+            Color.White,
+            Color.LightGray
+        ),
+        border = BorderStroke(1.dp, Color.LightGray),
+        contentPadding = PaddingValues(50.dp, 15.dp),
+        enabled = enabled,
+        onClick = onClick
+    ) {
+        Text(
+            text,
+            style = if (enabled) {
+                mySmallStyle().copy(myBlue)
+            } else {
+                mySmallStyle()
+            }
+        )
     }
 }
 
