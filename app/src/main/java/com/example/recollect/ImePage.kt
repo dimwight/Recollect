@@ -176,23 +176,12 @@ fun BackNextRow() {
             }
         }
         var text = "<  Back"
-        var style = if (true|| isBackEnabled) {
+        var style = if (true || isBackEnabled) {
             mySmallStyle().copy(myBlue)
         } else {
             mySmallStyle()
         }
-        OutlinedButton(
-            colors = buttonColors,
-            border = borderStroke,
-            contentPadding = paddingValues,
-            enabled = isBackEnabled,
-            onClick = onClick
-        ) {
-            Text(
-                text,
-                style = style
-            )
-        }
+        BackNextButton(isBackEnabled)
         onClick = {
             formControl.onNext()
             isBackEnabled = formControl.event > 0
@@ -223,6 +212,57 @@ fun BackNextRow() {
                 style = style
             )
         }
+    }
+}
+
+@Composable
+private fun BackNextButton(
+    enabled: Boolean
+) {
+    var isBackEnabled1 = enabled
+    val buttonColors = ButtonColors(
+        Color.White,
+        myBlue,
+        Color.White,
+        Color.LightGray
+    )
+    val borderStroke = BorderStroke(1.dp, Color.LightGray)
+    val paddingValues = PaddingValues(50.dp, 15.dp)
+    val formControl = LocalActivity.current as FormControl
+    val scope = rememberCoroutineScope()
+    var onClick: () -> Unit = {
+        formControl.onBack()
+        isBackEnabled1 = formControl.event > 0
+        if (false) scope.launch {
+            formControl.getNumbers4_().collect { value ->
+                val val4 = value
+                println("R1: val4 = $val4")
+                scope.launch {
+                    getNumbers1_().collect { value ->
+                        val val14 = value + val4
+                        println("R1: val14 = $val14")
+                    }
+                }
+            }
+        }
+    }
+    var text = "<  Back"
+    var style = if (true || isBackEnabled1) {
+        mySmallStyle().copy(myBlue)
+    } else {
+        mySmallStyle()
+    }
+    OutlinedButton(
+        colors = buttonColors,
+        border = borderStroke,
+        contentPadding = paddingValues,
+        enabled = isBackEnabled1,
+        onClick = onClick
+    ) {
+        Text(
+            text,
+            style = style
+        )
     }
 }
 
