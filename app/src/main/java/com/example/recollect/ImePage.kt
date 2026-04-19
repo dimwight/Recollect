@@ -158,6 +158,7 @@ fun BackNextRow() {
         val borderStroke = BorderStroke(1.dp, Color.LightGray)
         val paddingValues = PaddingValues(50.dp, 15.dp)
         val scope = rememberCoroutineScope()
+        val text = "<  Back"
         val onClickBack: () -> Unit = {
             formControl.onBack()
             isBackEnabled = formControl.event > 0
@@ -182,7 +183,7 @@ fun BackNextRow() {
             onClick = onClickBack
         ) {
             Text(
-                "<  Back",
+                text,
                 style = mySmallStyle()
             )
         }
