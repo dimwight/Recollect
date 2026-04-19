@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,21 +43,21 @@ private fun HeaderRows() {
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
-        /*
-        verticalArrangement = Arrangement.Top,
-           modifier = Modifier.fillMaxSize(),
-           */
     ) {
         val spec = (LocalActivity.current as FormControl).questionSpec
-        Row() {
-            Text(spec.formDef.title)
+        Row(Modifier.height(65.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(spec.formDef.title, style = myMediumStyle(true))
         }
-        FlowRow() {
+        FlowRow(Modifier.height(50.dp),
+//            verticalArrangement = Arrangement.Center
+        ) {
             val labels = spec.captions.mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
             for ((at: Int, next) in labels.withIndex()) {
-                if (at < labels.size - 1) Text("$next >")
+                if (at < labels.size - 1) Text("$next >",style = mySmallStyle())
             }
         }
     }
@@ -154,12 +154,13 @@ fun BackNextRow() {
             Color.LightGray
         )
         val borderStroke = BorderStroke(1.dp, Color.LightGray)
-        val textStyle = typography.bodySmall.scale(1.2)
+        val paddingValues = PaddingValues(50.dp, 15.dp)
         val scope = rememberCoroutineScope()
         OutlinedButton(
             colors = buttonColors,
             border = borderStroke,
             enabled = isBackEnabled,
+            contentPadding = paddingValues,
             onClick = {
                 formControl.onBack()
                 isBackEnabled = formControl.event > 0
@@ -179,12 +180,13 @@ fun BackNextRow() {
             }) {
             Text(
                 "<  Back",
-                style = textStyle
+                style = mySmallStyle()
             )
         }
         OutlinedButton(
             colors = buttonColors,
             border = borderStroke,
+            contentPadding = paddingValues,
             onClick = {
                 formControl.onNext()
                 isBackEnabled = formControl.event > 0
@@ -202,11 +204,12 @@ fun BackNextRow() {
             }) {
             Text(
                 "Next  >",
-                style = textStyle
+                style = mySmallStyle().copy(myBlue)
             )
         }
     }
 }
+
 
 
 

@@ -5,8 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -30,9 +33,29 @@ fun getNumbers1_(): Flow<Int> = flow {
 }
 
 @Composable
-fun TextStyle.scale(by: Double): TextStyle =
-    copy(fontSize = fontSize.times(by),
-        lineHeight = lineHeight.times(by))
+fun TextStyle.scale(
+    by: Double,
+    bold: Boolean=false
+): TextStyle {
+    return if (bold)
+        copy(
+            fontSize = fontSize.times(by),
+            lineHeight = lineHeight.times(by),
+            fontWeight = FontWeight.Bold
+        ) else
+        copy(
+            fontSize = fontSize.times(by),
+            lineHeight = lineHeight.times(by),
+        )
+}
+
+@Composable
+fun mySmallStyle(): TextStyle =
+    typography.bodySmall.scale(1.3).copy(Color.Gray)
+
+@Composable
+fun myMediumStyle(bold: Boolean=false): TextStyle =
+    typography.bodyMedium.scale(1.45, bold)
 
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
@@ -54,9 +77,10 @@ class FormControl : ComponentActivity() {
             emit(i)
         }
     }
+
     private lateinit var controller: FormEntryController
     var event: Int = -1
-    private var emitBad: Boolean=false
+    private var emitBad: Boolean = false
     private lateinit var checkResult: (Int) -> Unit
     lateinit var questionSpec: QuestionSpec
     private fun traceEventOrQuestion(spec: QuestionSpec? = null) {
@@ -64,6 +88,7 @@ class FormControl : ComponentActivity() {
         if (spec == null) return
         println("R1: spec = ${spec.toString()}")
     }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +113,7 @@ class FormControl : ComponentActivity() {
         update()
         setInputContent()
     }
+
     private fun setInputContent() {
         setContent {
             RecollectTheme {
@@ -95,9 +121,11 @@ class FormControl : ComponentActivity() {
             }
         }
     }
+
     fun setResultCheck(check: (Int) -> Unit) {
         checkResult = check
     }
+
     private fun update() {
         val model = controller.model
         questionSpec = QuestionSpec(
@@ -107,11 +135,12 @@ class FormControl : ComponentActivity() {
         )
         traceEventOrQuestion(questionSpec)
     }
+
     fun onNext() {
         val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
-        emitBad=!emitBad
-        checkResult(result-(if (emitBad)1 else 0))
+        emitBad = !emitBad
+        checkResult(result - (if (emitBad) 1 else 0))
         if (false) return
 
         event = controller.stepToNextEvent()
@@ -120,15 +149,11 @@ class FormControl : ComponentActivity() {
         }
         traceEventOrQuestion()
     }
+
     fun onBack() {
         event = controller.stepToPreviousEvent()
     }
 }
-
-
-
-
-
 
 
 

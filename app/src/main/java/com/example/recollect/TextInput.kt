@@ -1,11 +1,11 @@
 package com.example.recollect
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -15,14 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import org.javarosa.form.api.FormEntryController
 
 @Composable
@@ -32,13 +31,14 @@ fun FocusedTextField(focusRequester: FocusRequester) {
     Column{
         Text(
             questionSpec.questionDef.labelInnerText,
-            style = typography.bodyMedium.scale(1.5),
+            style = myMediumStyle(true),
             fontWeight = FontWeight.Bold,
         )
         Text(
             questionSpec.questionDef.helpText,
-            style = typography.bodySmall.scale(1.5)
+            style = mySmallStyle()
         )
+        Spacer(Modifier.height(10.dp))
     }
     var indicateBad by remember { mutableStateOf(false) }
     form.setResultCheck { result: Int ->
@@ -57,7 +57,7 @@ fun FocusedTextField(focusRequester: FocusRequester) {
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Companion.Default, showKeyboardOnFocus = true
         ),
-        textStyle = typography.bodySmall.scale(1.5),
+        textStyle = myMediumStyle(),
         onKeyboardAction = { form.onNext() },
         label = {        })
 
