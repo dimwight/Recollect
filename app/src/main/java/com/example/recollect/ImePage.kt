@@ -151,7 +151,7 @@ fun BackNextRow() {
             )
         }
         val scope = rememberCoroutineScope()
-        var onClick: () -> Unit = {
+        BackNextButton("<  Back", isBackEnabled) {
             formControl.onBack()
             isBackEnabled = formControl.event > 0
             if (false) scope.launch {
@@ -167,8 +167,7 @@ fun BackNextRow() {
                 }
             }
         }
-        BackNextButton("<  Back", isBackEnabled, onClick)
-        var onClick1: () -> Unit = {
+        BackNextButton("Next  >") {
             formControl.onNext()
             isBackEnabled = formControl.event > 0
             if (false) {
@@ -184,7 +183,6 @@ fun BackNextRow() {
                 }
             }
         }
-        BackNextButton("Next  >", isBackEnabled, onClick1)
     }
 }
 
