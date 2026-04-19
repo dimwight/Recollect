@@ -176,6 +176,11 @@ fun BackNextRow() {
             }
         }
         var text = "<  Back"
+        var style = if (true|| isBackEnabled) {
+            mySmallStyle().copy(myBlue)
+        } else {
+            mySmallStyle()
+        }
         OutlinedButton(
             colors = buttonColors,
             border = borderStroke,
@@ -185,7 +190,7 @@ fun BackNextRow() {
         ) {
             Text(
                 text,
-                style = mySmallStyle()
+                style = style
             )
         }
         onClick = {
@@ -206,6 +211,7 @@ fun BackNextRow() {
             }
         }
         text = "Next  >"
+        style = mySmallStyle().copy(myBlue)
         OutlinedButton(
             colors = buttonColors,
             border = borderStroke,
@@ -214,7 +220,7 @@ fun BackNextRow() {
         ) {
             Text(
                 text,
-                style = mySmallStyle().copy(myBlue)
+                style = style
             )
         }
     }
