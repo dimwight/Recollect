@@ -116,7 +116,7 @@ class FormControl : ComponentActivity() {
     }
 
     private fun setInputContent() {
-//        enableEdgeToEdge()
+        enableEdgeToEdge()
         setContent {
             RecollectTheme {
                 ImePage()
