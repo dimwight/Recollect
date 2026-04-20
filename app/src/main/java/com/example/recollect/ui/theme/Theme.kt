@@ -10,6 +10,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.recollect.scale
 
@@ -42,6 +44,19 @@ fun RecollectTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    /*val systemUiController = rememberSystemUiController()
+    val useDarkIcons = MaterialTheme.colorScheme.isLight
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = useDarkIcons
+        )
+        systemUiController.setNavigationBarColor(
+            color = Color.Black,
+            darkIcons = !useDarkIcons
+        )
+    }*/
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

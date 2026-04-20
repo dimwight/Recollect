@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,15 +47,13 @@ private fun HeaderRows() {
     ) {
         val spec = (LocalActivity.current as FormControl).questionSpec
         Row(
-            Modifier.height(65.dp),
+            Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(spec.formDef.title, style = myMediumStyle(true))
         }
-        FlowRow(
-            Modifier.height(50.dp),
-//            verticalArrangement = Arrangement.Center
-        ) {
+        Spacer(Modifier.height(5.dp))
+        FlowRow(Modifier.padding(vertical = 0.dp)) {
             val labels = spec.captions.mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
@@ -62,6 +61,7 @@ private fun HeaderRows() {
                 if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
             }
         }
+        Spacer(Modifier.height(15.dp))
     }
 }
 
@@ -90,6 +90,7 @@ fun ImePage() {
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     BackNextRow()
+                    Spacer(Modifier.height(10.dp))
                     Box(
                         Modifier
                             .height(getImeHeight().dp)
@@ -200,7 +201,7 @@ private fun BackNextButton(
             Color.LightGray
         ),
         border = BorderStroke(1.dp, Color.LightGray),
-        contentPadding = PaddingValues(50.dp, 15.dp),
+        contentPadding = PaddingValues(60.dp, 15.dp),
         enabled = enabled,
         onClick = onClick
     ) {

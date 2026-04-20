@@ -57,98 +57,31 @@
                         <value>Strongly Agree</value>
                         <value form="image">jr://images/famous.png</value>
                     </text>
-                    <text id="/data/select_one_question_types/select_one_image_map:label">
-                        <value>Image select one</value>
-                        <value form="image">jr://images/body.svg</value>
-                    </text>
-                    <text id="/data/select_multi_question_types/select_multi_image_map:label">
-                        <value>Image select multiple</value>
-                        <value form="image">jr://images/body.svg</value>
-                    </text>
                 </translation>
             </itext>
             <instance>
                 <data
                     id="all-question-types"
-                    version="B2">
-                    <text_question_types>
-                        <superstring />
-                        <text_question_types>
+                    version="C1">
+                    <outer>
+                        <outer_string />
+                        <inner>
                             <string />
                             <string_number />
                             <string_masked />
-                        </text_question_types>
-                    </text_question_types>
+                        </inner>
+                    </outer>
                     <numerical_question_types>
                         <integer />
                         <integer_thousands_sep />
                         <counter />
                         <decimal />
                     </numerical_question_types>
-                    <range_question_types>
-                        <range_integer />
-                        <range_decimal />
-                        <range_integer_no_ticks />
-                        <range_integer_vertical />
-                        <range_integer_picker />
-                        <range_integer_rating />
-                    </range_question_types>
-                    <image_question_types>
-                        <image />
-                        <image_no_choose />
-                        <selfie_image />
-                        <draw_image />
-                        <annotate_image />
-                        <signature />
-                    </image_question_types>
-                    <date_time_question_types>
-                        <date />
-                        <date_nocalendar />
-                        <date_month_year />
-                        <date_year />
-                        <time />
-                        <date_time />
-                        <date_time_nocalendar />
-                    </date_time_question_types>
-                    <select_one_question_types>
-                        <select_one />
-                        <select_one_minimal />
-                        <select_one_autoadvance />
-                        <select_one_autocomplete />
-                        <grid_columns_pack />
-                        <grid_columns />
-                        <grid_columns2 />
-                        <grid_columns_no_buttons />
-                        <select_one_image_map />
-                        <likert />
-                        <map />
-                    </select_one_question_types>
-                    <select_multi_question_types>
-                        <select_multi />
-                        <select_multi_autocomplete />
-                        <grid_multi_columns_pack />
-                        <grid_multi_columns />
-                        <grid_multi_columns2 />
-                        <grid_multi_columns_no_buttons />
-                        <select_multi_minimal />
-                        <select_multi_image_map />
-                    </select_multi_question_types>
-                    <table_list>
-                        <table_list_label />
-                        <table_list_label_2 />
-                        <table_list_1 />
-                        <table_list_2 />
-                        <list />
-                        <list_multi />
-                    </table_list>
                     <meta>
                         <instanceID />
                     </meta>
                 </data>
             </instance>
-            <instance
-                id="cities"
-                src="jr://file/cities.geojson" />
             <instance id="opt_abcd">
                 <root>
                     <item>
@@ -294,16 +227,16 @@
                 </root>
             </instance>
             <bind
-                nodeset="/data/text_question_types/superstring"
+                nodeset="/data/outer/outer_string"
                 type="string" />
             <bind
-                nodeset="/data/text_question_types/text_question_types/string"
+                nodeset="/data/outer/inner/string"
                 type="string" />
             <bind
-                nodeset="/data/text_question_types/text_question_types/string_number"
+                nodeset="/data/outer/inner/string_number"
                 type="string" />
             <bind
-                nodeset="/data/text_question_types/text_question_types/string_masked"
+                nodeset="/data/outer/inner/string_masked"
                 type="string" />
             <bind
                 nodeset="/data/numerical_question_types/integer"
@@ -318,138 +251,6 @@
                 nodeset="/data/numerical_question_types/decimal"
                 type="decimal" />
             <bind
-                nodeset="/data/range_question_types/range_integer"
-                type="int" />
-            <bind
-                nodeset="/data/range_question_types/range_decimal"
-                type="decimal" />
-            <bind
-                nodeset="/data/range_question_types/range_integer_no_ticks"
-                type="int" />
-            <bind
-                nodeset="/data/range_question_types/range_integer_vertical"
-                type="int" />
-            <bind
-                nodeset="/data/range_question_types/range_integer_picker"
-                type="int" />
-            <bind
-                nodeset="/data/range_question_types/range_integer_rating"
-                type="int" />
-            <bind
-                nodeset="/data/image_question_types/image"
-                type="binary" />
-            <bind
-                nodeset="/data/image_question_types/image_no_choose"
-                type="binary" />
-            <bind
-                nodeset="/data/image_question_types/selfie_image"
-                type="binary" />
-            <bind
-                nodeset="/data/image_question_types/draw_image"
-                type="binary" />
-            <bind
-                nodeset="/data/image_question_types/annotate_image"
-                type="binary" />
-            <bind
-                nodeset="/data/image_question_types/signature"
-                type="binary" />
-            <bind
-                nodeset="/data/date_time_question_types/date"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/date_nocalendar"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/date_month_year"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/date_year"
-                type="date" />
-            <bind
-                nodeset="/data/date_time_question_types/time"
-                type="time" />
-            <bind
-                nodeset="/data/date_time_question_types/date_time"
-                type="dateTime" />
-            <bind
-                nodeset="/data/date_time_question_types/date_time_nocalendar"
-                type="dateTime" />
-            <bind
-                nodeset="/data/select_one_question_types/select_one"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/select_one_minimal"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/select_one_autoadvance"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/select_one_autocomplete"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/grid_columns_pack"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/grid_columns"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/grid_columns2"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/grid_columns_no_buttons"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/select_one_image_map"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/likert"
-                type="string" />
-            <bind
-                nodeset="/data/select_one_question_types/map"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/select_multi"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/select_multi_autocomplete"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/grid_multi_columns_pack"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/grid_multi_columns"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/grid_multi_columns2"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/grid_multi_columns_no_buttons"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/select_multi_minimal"
-                type="string" />
-            <bind
-                nodeset="/data/select_multi_question_types/select_multi_image_map"
-                type="string" />
-            <bind
-                nodeset="/data/table_list/table_list_label"
-                type="string" />
-            <bind
-                nodeset="/data/table_list/table_list_label_2"
-                type="string" />
-            <bind
-                nodeset="/data/table_list/table_list_1"
-                type="string" />
-            <bind
-                nodeset="/data/table_list/table_list_2"
-                type="string" />
-            <bind
-                nodeset="/data/table_list/list"
-                type="string" />
-            <bind
-                nodeset="/data/table_list/list_multi"
-                type="string" />
-            <bind
                 nodeset="/data/meta/instanceID"
                 readonly="true()"
                 type="string"
@@ -457,27 +258,27 @@
         </model>
     </h:head>
     <h:body>
-        <group ref="/data/text_question_types">
-            <label>Super Super Super Super Super Super Super</label>
-            <input ref="/data/text_question_types/superstring">
-                <label>Super string</label>
+        <group ref="/data/outer">
+            <label>Outer outer outer outer outer outer outer outer surface outer</label>
+            <input ref="/data/outer/outer_string">
+                <label>Outer string</label>
                 <hint>text type</hint>
             </input>
-            <group ref="/data/text_question_types/text_question_types">
-                <label>Text question types</label>
-                <input ref="/data/text_question_types/text_question_types/string">
+            <group ref="/data/outer/inner">
+                <label>Inner inner inner inner inner inner inner inner inner</label>
+                <input ref="/data/outer/inner/string">
                     <label>String</label>
                     <hint>text type</hint>
                 </input>
                 <input
                     appearance="numbers"
-                    ref="/data/text_question_types/text_question_types/string_number">
+                    ref="/data/outer/inner/string_number">
                     <label>String number</label>
                     <hint>text type with numbers appearance</hint>
                 </input>
                 <input
                     appearance="masked"
-                    ref="/data/text_question_types/text_question_types/string_masked">
+                    ref="/data/outer/inner/string_masked">
                     <label>String masked</label>
                     <hint>text type with masked appearance</hint>
                 </input>
@@ -507,439 +308,6 @@
                 <label>Decimal</label>
                 <hint>decimal type with no appearance</hint>
             </input>
-        </group>
-        <group ref="/data/range_question_types">
-            <label>Range question types</label>
-            <range
-                end="10"
-                ref="/data/range_question_types/range_integer"
-                start="1"
-                step="1">
-                <label>Range integer</label>
-                <hint>range integer with no appearance</hint>
-            </range>
-            <range
-                end="5.5"
-                ref="/data/range_question_types/range_decimal"
-                start="1.5"
-                step="0.5">
-                <label>Range decimal</label>
-                <hint>range decimal with no appearance</hint>
-            </range>
-            <range
-                appearance="no-ticks"
-                end="10"
-                ref="/data/range_question_types/range_integer_no_ticks"
-                start="1"
-                step="1">
-                <label>Range no-ticks integer</label>
-                <hint>range integer with no-ticks appearance. This appearance can also be applied to
-                    a decimal range.
-                </hint>
-            </range>
-            <range
-                appearance="vertical"
-                end="10"
-                ref="/data/range_question_types/range_integer_vertical"
-                start="1"
-                step="1">
-                <label>Range vertical integer</label>
-                <hint>range integer with vertical appearance. This appearance can also be applied to
-                    a decimal range.
-                </hint>
-            </range>
-            <range
-                appearance="picker"
-                end="10"
-                ref="/data/range_question_types/range_integer_picker"
-                start="1"
-                step="1">
-                <label>Range picker integer</label>
-                <hint>range integer with picker appearance. This appearance can also be applied to a
-                    decimal range.
-                </hint>
-            </range>
-            <range
-                appearance="rating"
-                end="5"
-                ref="/data/range_question_types/range_integer_rating"
-                start="1"
-                step="1">
-                <label>Range rating integer</label>
-                <hint>range integer with rating appearance. This appearance can also be applied to a
-                    decimal range.
-                </hint>
-            </range>
-        </group>
-        <group ref="/data/image_question_types">
-            <label>Image question types</label>
-            <upload
-                mediatype="image/*"
-                ref="/data/image_question_types/image">
-                <label>Image</label>
-                <hint>image type with no appearance</hint>
-            </upload>
-            <upload
-                appearance="new"
-                mediatype="image/*"
-                ref="/data/image_question_types/image_no_choose">
-                <label>Image without Choose button</label>
-                <hint>image type with new appearance (can also be added with annotate appearance and
-                    on audio and video types)
-                </hint>
-            </upload>
-            <upload
-                appearance="selfie"
-                mediatype="image/*"
-                ref="/data/image_question_types/selfie_image">
-                <label>Selfie</label>
-                <hint>image type with selfie appearance</hint>
-            </upload>
-            <upload
-                appearance="draw"
-                mediatype="image/*"
-                ref="/data/image_question_types/draw_image">
-                <label>Draw</label>
-                <hint>image type with draw appearance</hint>
-            </upload>
-            <upload
-                appearance="annotate"
-                mediatype="image/*"
-                ref="/data/image_question_types/annotate_image">
-                <label>Annotate</label>
-                <hint>image type with annotate appearance</hint>
-            </upload>
-            <upload
-                appearance="signature"
-                mediatype="image/*"
-                ref="/data/image_question_types/signature">
-                <label>Signature</label>
-                <hint>image type with signature appearance</hint>
-            </upload>
-        </group>
-        <group ref="/data/date_time_question_types">
-            <label>Date and time question types</label>
-            <input ref="/data/date_time_question_types/date">
-                <label>Date</label>
-                <hint>date type with no appearance</hint>
-            </input>
-            <input
-                appearance="no-calendar"
-                ref="/data/date_time_question_types/date_nocalendar">
-                <label>Date</label>
-                <hint>date type with no-calendar appearance</hint>
-            </input>
-            <input
-                appearance="month-year"
-                ref="/data/date_time_question_types/date_month_year">
-                <label>Date</label>
-                <hint>date type with month-year appearance</hint>
-            </input>
-            <input
-                appearance="year"
-                ref="/data/date_time_question_types/date_year">
-                <label>Date</label>
-                <hint>date type with year appearance</hint>
-            </input>
-            <input ref="/data/date_time_question_types/time">
-                <label>Time</label>
-                <hint>time type with no appearance</hint>
-            </input>
-            <input ref="/data/date_time_question_types/date_time">
-                <label>Date time</label>
-                <hint>dateTime type with no appearance</hint>
-            </input>
-            <input
-                appearance="no-calendar"
-                ref="/data/date_time_question_types/date_time_nocalendar">
-                <label>Date time</label>
-                <hint>dateTime type with no-calendar appearance</hint>
-            </input>
-        </group>
-        <group ref="/data/select_one_question_types">
-            <label>Select one question types</label>
-            <select1 ref="/data/select_one_question_types/select_one">
-                <label>Select one</label>
-                <hint>select_one type with no appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="minimal"
-                ref="/data/select_one_question_types/select_one_minimal">
-                <label>Select one minimal</label>
-                <hint>select_one type with minimal appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="quick"
-                ref="/data/select_one_question_types/select_one_autoadvance">
-                <label>Select one autoadvance</label>
-                <hint>select_one type with quick appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="search"
-                ref="/data/select_one_question_types/select_one_autocomplete">
-                <label>Select one search</label>
-                <hint>select_one type with search appearance, 4 text choices (appearance
-                    "autocomplete" does the same thing)
-                </hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="columns-pack"
-                ref="/data/select_one_question_types/grid_columns_pack">
-                <label>Select one with packed columns</label>
-                <hint>select_one type with columns-pack appearance, 4 text choices. Choices are
-                    packed in to fit horizontal space with minimal padding.
-                </hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="columns"
-                ref="/data/select_one_question_types/grid_columns">
-                <label>Select one with fixed columns</label>
-                <hint>select_one type with columns appearance, 4 text + image choices. Choices are
-                    layed out in fixed-width columns based on screen width.
-                </hint>
-                <itemset nodeset="instance('abcd_icon')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="columns-2"
-                ref="/data/select_one_question_types/grid_columns2">
-                <label>Select one with fixed column count</label>
-                <hint>select_one type with columns-2 appearance, 4 text + image choices. The
-                    available screen width is divided into 2 columns of the same width. Column
-                    counts between 1 and 10 are allowed.
-                </hint>
-                <itemset nodeset="instance('abcd_icon')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="columns-pack no-buttons"
-                ref="/data/select_one_question_types/grid_columns_no_buttons">
-                <label>Select one with packed columns and no buttons</label>
-                <hint>select_one type with columns-pack no-buttons appearance, 4 image choices.
-                    Choices are packed in to fit horizontal space with minimal padding and no
-                    buttons are displayed.
-                </hint>
-                <itemset nodeset="instance('abcd_icon')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="image-map"
-                ref="/data/select_one_question_types/select_one_image_map">
-                <label ref="jr:itext('/data/select_one_question_types/select_one_image_map:label')" />
-                <hint>select_one with type image-map appearance and image body.svg</hint>
-                <itemset nodeset="instance('body_parts')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="likert"
-                ref="/data/select_one_question_types/likert">
-                <label>Likert</label>
-                <hint>Images made by Pixel Perfect and downloaded from flaticon.com</hint>
-                <itemset nodeset="instance('likert_options')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select1>
-            <select1
-                appearance="map"
-                ref="/data/select_one_question_types/map">
-                <label>Map</label>
-                <hint>select_one type with map appearance. Choices are loaded from a GeoJSON
-                    attachment
-                </hint>
-                <itemset nodeset="instance('cities')/root/item">
-                    <value ref="id" />
-                    <label ref="title" />
-                </itemset>
-            </select1>
-        </group>
-        <group ref="/data/select_multi_question_types">
-            <label>Select multi question types</label>
-            <select ref="/data/select_multi_question_types/select_multi">
-                <label>Multi select</label>
-                <hint>select_multiple type with no appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-            <select
-                appearance="autocomplete"
-                ref="/data/select_multi_question_types/select_multi_autocomplete">
-                <label>Multi select autocomplete</label>
-                <hint>select_multiple type with autocomplete appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-            <select
-                appearance="columns-pack"
-                ref="/data/select_multi_question_types/grid_multi_columns_pack">
-                <label>Select multiple with packed columns</label>
-                <hint>select_multiple type with columns-pack appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-            <select
-                appearance="columns"
-                ref="/data/select_multi_question_types/grid_multi_columns">
-                <label>Select multiple with fixed columns</label>
-                <hint>select_multiple type with columns appearance, 4 text + image choices</hint>
-                <itemset nodeset="instance('abcd_icon')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select>
-            <select
-                appearance="columns-2"
-                ref="/data/select_multi_question_types/grid_multi_columns2">
-                <label>Select multiple with fixed column count</label>
-                <hint>select_multiple type with columns-2 appearance, 4 text + image choices</hint>
-                <itemset nodeset="instance('abcd_icon')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select>
-            <select
-                appearance="columns-pack no-buttons"
-                ref="/data/select_multi_question_types/grid_multi_columns_no_buttons">
-                <label>Select multiple with packed columns and no buttons</label>
-                <hint>select_multiple type with columns-pack no-buttons appearance, 4 image
-                    choices
-                </hint>
-                <itemset nodeset="instance('abcd_icon')/root/item">
-                    <value ref="name" />
-                    <label ref="jr:itext(itextId)" />
-                </itemset>
-            </select>
-            <select
-                appearance="minimal"
-                ref="/data/select_multi_question_types/select_multi_minimal">
-                <label>Select multiple minimal</label>
-                <hint>select_multiple type with minimal appearance, 4 text choices</hint>
-                <itemset nodeset="instance('opt_abcd')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-            <select
-                appearance="image-map"
-                ref="/data/select_multi_question_types/select_multi_image_map">
-                <label ref="jr:itext('/data/select_multi_question_types/select_multi_image_map:label')" />
-                <hint>select_multiple type with image-map appearance and image body.svg</hint>
-                <itemset nodeset="instance('body_parts')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-        </group>
-        <group
-            appearance="field-list"
-            ref="/data/table_list">
-            <label>List group</label>
-            <select1
-                appearance="label"
-                ref="/data/table_list/table_list_label">
-                <label>Label</label>
-                <hint>Show only the labels of these options and not the inputs (type=select_one
-                    yes_no, appearance=label)
-                </hint>
-                <itemset nodeset="instance('yes_no')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select
-                appearance="label"
-                ref="/data/table_list/table_list_label_2">
-                <label>Label multi</label>
-                <hint>Show only the labels of these options and not the inputs (type=select_multiple
-                    yes_no, appearance=label)
-                </hint>
-                <itemset nodeset="instance('yes_no')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-            <select1
-                appearance="list-nolabel"
-                ref="/data/table_list/table_list_1">
-                <label>List</label>
-                <hint>Show only the inputs of these options and not the labels (type=select_one
-                    yes_no, appearance=list-nolabel)
-                </hint>
-                <itemset nodeset="instance('yes_no')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select
-                appearance="list-nolabel"
-                ref="/data/table_list/table_list_2">
-                <label>List multi</label>
-                <hint>Show only the inputs of these options and not the labels (type=select_multiple
-                    yes_no, appearance=list-nolabel)
-                </hint>
-                <itemset nodeset="instance('yes_no')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
-            <select1
-                appearance="list"
-                ref="/data/table_list/list">
-                <label>List</label>
-                <hint>This is a normal list question type with (type = select_one, appearance =
-                    list)
-                </hint>
-                <itemset nodeset="instance('yes_no')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select1>
-            <select
-                appearance="list"
-                ref="/data/table_list/list_multi">
-                <label>List multi</label>
-                <hint>This is a normal list question type with (type = select_multiple, appearance =
-                    list)
-                </hint>
-                <itemset nodeset="instance('yes_no')/root/item">
-                    <value ref="name" />
-                    <label ref="label" />
-                </itemset>
-            </select>
         </group>
     </h:body>
 </h:html>
