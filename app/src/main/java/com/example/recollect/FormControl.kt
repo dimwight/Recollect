@@ -3,6 +3,7 @@ package com.example.recollect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
@@ -115,6 +116,7 @@ class FormControl : ComponentActivity() {
     }
 
     private fun setInputContent() {
+//        enableEdgeToEdge()
         setContent {
             RecollectTheme {
                 ImePage()
