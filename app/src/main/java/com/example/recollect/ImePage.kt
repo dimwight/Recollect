@@ -78,9 +78,10 @@ fun ImePage() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
+            Spacer(Modifier.height(22.dp))
             HeaderRows()
             val focusRequester = remember { FocusRequester() }
-            FocusedTextField(focusRequester)
+            FocusingTextField(focusRequester)
             focusRequester.requestFocus()
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -95,7 +96,9 @@ fun ImePage() {
                         Modifier
                             .height(getImeHeight().dp)
                             .fillMaxWidth()
+                            .background(Color.White)
                     )
+                    Spacer(Modifier.height(25.dp))
                 }
             }
         }
@@ -201,7 +204,7 @@ private fun BackNextButton(
             Color.LightGray
         ),
         border = BorderStroke(1.dp, Color.LightGray),
-        contentPadding = PaddingValues(60.dp, 15.dp),
+        contentPadding = PaddingValues(60.dp, 13.dp),
         enabled = enabled,
         onClick = onClick
     ) {
