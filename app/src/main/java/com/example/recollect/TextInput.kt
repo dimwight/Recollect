@@ -61,7 +61,7 @@ fun FocusingTextField(focusRequester: FocusRequester) {
             imeAction = ImeAction.Default,
             showKeyboardOnFocus = true
         ),
-        textStyle = myMediumStyle(),
+        textStyle = myMediumStyle().scale(.9),
         onKeyboardAction = { form.onNext() },
         label = { }
     )

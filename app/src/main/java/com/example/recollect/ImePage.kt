@@ -128,7 +128,7 @@ fun getImeHeight(): Int {
             }
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction = if (true) .34 else remember
+                val fraction = if (false) .34 else remember*.9
                 (diff * fraction).toInt()
             }
         }
@@ -196,15 +196,16 @@ private fun BackNextButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
+    val disabled = Color.LightGray
     OutlinedButton(
         colors = ButtonColors(
             Color.White,
             myBlue,
             Color.White,
-            Color.LightGray
+            disabled
         ),
-        border = BorderStroke(1.dp, Color.LightGray),
-        contentPadding = PaddingValues(60.dp, 13.dp),
+        border = BorderStroke(1.dp, disabled),
+        contentPadding = PaddingValues(55.dp, 13.dp),
         enabled = enabled,
         onClick = onClick
     ) {
@@ -213,7 +214,7 @@ private fun BackNextButton(
             style = if (enabled) {
                 mySmallStyle().copy(myBlue)
             } else {
-                mySmallStyle()
+                mySmallStyle().copy(disabled)
             }
         )
     }
