@@ -71,7 +71,7 @@ data class QuestionSpec(
     }
 }
 
-class FormControl : ComponentActivity() {
+class InputControl : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
@@ -81,6 +81,8 @@ class FormControl : ComponentActivity() {
 
     private lateinit var controller: FormEntryController
     var event: Int = -1
+    var questionAt= -1
+    var questionStop = 1
     private var emitBad: Boolean = false
     private lateinit var checkResult: (Int) -> Unit
     lateinit var questionSpec: QuestionSpec
@@ -96,8 +98,7 @@ class FormControl : ComponentActivity() {
         val formDef by lazy {
             try {
                 val formId = resources.getIdentifier(
-                    if (false) "form6154" else "all",
-                    "raw", packageName
+                    "all", "raw", packageName
                 )
                 val inputStream: InputStream = resources.openRawResource(formId)
                 return@lazy XFormUtils.getFormFromInputStream(inputStream)

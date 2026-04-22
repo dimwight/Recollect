@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Recollect">
         <activity
-            android:name=".FormControl"
+            android:name=".InputControl"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Recollect">

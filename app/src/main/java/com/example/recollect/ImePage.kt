@@ -45,7 +45,7 @@ private fun HeaderRows() {
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val spec = (LocalActivity.current as FormControl).questionSpec
+        val spec = (LocalActivity.current as InputControl).questionSpec
         Row(
             Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -148,18 +148,18 @@ fun BackNextRow() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val formControl = LocalActivity.current as FormControl
+        val inputControl = LocalActivity.current as InputControl
         var isBackEnabled by remember {
             mutableStateOf(
-                formControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
+                inputControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
             )
         }
         val scope = rememberCoroutineScope()
         BackNextButton("<  Back", isBackEnabled) {
-            formControl.onBack()
-            isBackEnabled = formControl.event > 0
+            inputControl.onBack()
+            isBackEnabled = inputControl.event > 0
             if (false) scope.launch {
-                formControl.getNumbers4_().collect { value ->
+                inputControl.getNumbers4_().collect { value ->
                     val val4 = value
                     println("R1: val4 = $val4")
                     scope.launch {
@@ -172,11 +172,11 @@ fun BackNextRow() {
             }
         }
         BackNextButton("Next  >") {
-            formControl.onNext()
-            isBackEnabled = formControl.event > 0
+            inputControl.onNext()
+            isBackEnabled = inputControl.event > 0
             if (false) {
                 scope.launch {
-                    formControl.getNumbers4_().collect { value ->
+                    inputControl.getNumbers4_().collect { value ->
                         println("R1: value = $value")
                     }
                 }

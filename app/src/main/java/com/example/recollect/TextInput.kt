@@ -26,7 +26,7 @@ import org.javarosa.form.api.FormEntryController
 
 @Composable
 fun FocusingTextField(focusRequester: FocusRequester) {
-    val form = LocalActivity.current as FormControl
+    val form = LocalActivity.current as InputControl
     val questionSpec = form.questionSpec
     Column {
         Text(
