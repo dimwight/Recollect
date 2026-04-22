@@ -45,16 +45,16 @@ private fun HeaderRows() {
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val spec = (LocalActivity.current as InputControl).questionSpec
+        val question = (LocalActivity.current as InputControl).questionDetails
         Row(
             Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(spec.formDef.title, style = myMediumStyle(true))
+            Text(text = question.formTitle, style = myMediumStyle(true))
         }
         Spacer(Modifier.height(5.dp))
         FlowRow(Modifier.padding(vertical = 0.dp)) {
-            val labels = spec.captions.mapTo(ArrayList<String>()) {
+            val labels = question.captions.mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
             for ((at: Int, next) in labels.withIndex()) {
@@ -81,7 +81,7 @@ fun ImePage() {
             Spacer(Modifier.height(22.dp))
             HeaderRows()
             val focusRequester = remember { FocusRequester() }
-            FocusingTextField(focusRequester)
+            QuestionTextField(focusRequester)
             focusRequester.requestFocus()
             Box(
                 modifier = Modifier.fillMaxSize()

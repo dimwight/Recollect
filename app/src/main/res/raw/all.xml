@@ -62,12 +62,12 @@
             <instance>
                 <data
                     id="all-question-types"
-                    version="C1">
+                    version="D1">
                     <outer>
                         <outer_string />
+                        <string_number />
                         <inner>
                             <string />
-                            <string_number />
                             <string_masked />
                         </inner>
                     </outer>
@@ -230,10 +230,10 @@
                 nodeset="/data/outer/outer_string"
                 type="string" />
             <bind
-                nodeset="/data/outer/inner/string"
+                nodeset="/data/outer/string_number"
                 type="string" />
             <bind
-                nodeset="/data/outer/inner/string_number"
+                nodeset="/data/outer/inner/string"
                 type="string" />
             <bind
                 nodeset="/data/outer/inner/string_masked"
@@ -264,17 +264,17 @@
                 <label>Outer string</label>
                 <hint>text type</hint>
             </input>
+            <input
+                appearance="numbers"
+                ref="/data/outer/string_number">
+                <label>String number</label>
+                <hint>text type with numbers appearance</hint>
+            </input>
             <group ref="/data/outer/inner">
                 <label>Inner inner inner inner inner inner inner inner inner</label>
                 <input ref="/data/outer/inner/string">
                     <label>String</label>
                     <hint>text type</hint>
-                </input>
-                <input
-                    appearance="numbers"
-                    ref="/data/outer/inner/string_number">
-                    <label>String number</label>
-                    <hint>text type with numbers appearance</hint>
                 </input>
                 <input
                     appearance="masked"
