@@ -41,7 +41,7 @@ fun FocusingTextField(focusRequester: FocusRequester) {
         Spacer(Modifier.height(10.dp))
     }
     var indicateBad by remember { mutableStateOf(false) }
-    form.setResultCheck { result: Int ->
+    form.setResultNotice { result: Int ->
         indicateBad = result != FormEntryController.ANSWER_OK
     }
     val containerColor = Color(242, 242, 242)
@@ -62,8 +62,8 @@ fun FocusingTextField(focusRequester: FocusRequester) {
             showKeyboardOnFocus = true
         ),
         textStyle = myMediumStyle().scale(.9),
-        onKeyboardAction = { form.onNext() },
-        label = { }
+//        onKeyboardAction = { form.onNext() },
+//        label = { }
     )
 
 

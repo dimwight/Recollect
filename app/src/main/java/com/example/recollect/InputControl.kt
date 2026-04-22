@@ -20,6 +20,7 @@ import org.javarosa.core.model.QuestionDef
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
+import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
 import java.io.InputStream
@@ -84,10 +85,10 @@ class InputControl : ComponentActivity() {
     var questionAt= -1
     var questionStop = 1
     private var emitBad: Boolean = false
-    private lateinit var checkResult: (Int) -> Unit
     lateinit var questionSpec: QuestionSpec
     private fun traceEventOrQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
+        println("R1: questionAt = $questionAt")
         if (spec == null) return
         println("R1: spec = ${spec.toString()}")
     }
@@ -109,13 +110,9 @@ class InputControl : ComponentActivity() {
         if (false) println("R1: formDef = $formDef")
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (event != FormEntryController.EVENT_QUESTION)
-            event = controller.stepToNextEvent()
-
-        update()
+        nextQuestion()
         setInputContent()
     }
-
     private fun setInputContent() {
         enableEdgeToEdge()
         setContent {
@@ -124,11 +121,15 @@ class InputControl : ComponentActivity() {
             }
         }
     }
-
-    fun setResultCheck(check: (Int) -> Unit) {
-        checkResult = check
+    private fun nextQuestion() {
+        while (event != EVENT_QUESTION) {
+            event = controller.stepToNextEvent()
+            traceEventOrQuestion()
+        }
+        questionAt++
+        if (questionAt>questionStop)return
+        update()
     }
-
     private fun update() {
         val model = controller.model
         questionSpec = QuestionSpec(
@@ -138,19 +139,16 @@ class InputControl : ComponentActivity() {
         )
         traceEventOrQuestion(questionSpec)
     }
-
+    private lateinit var resultNotice: (Int) -> Unit
+    fun setResultNotice(notice: (Int) -> Unit) {
+        resultNotice = notice
+    }
     fun onNext() {
         val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
         emitBad = !emitBad
-        checkResult(result - (if (emitBad) 1 else 0))
-        if (false) return
-
-        event = controller.stepToNextEvent()
-        if (event == FormEntryController.EVENT_QUESTION) {
-            update()
-        }
-        traceEventOrQuestion()
+        resultNotice.invoke(result - (if (emitBad) 1 else 0))
+        if (!emitBad) nextQuestion()
     }
 
     fun onBack() {
