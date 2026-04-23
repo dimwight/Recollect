@@ -45,7 +45,7 @@ private fun HeaderRows() {
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val question = (LocalActivity.current as InputControl).questionDetails
+        val question = (LocalActivity.current as InputControl).questionSpec
         Row(
             Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically

@@ -27,7 +27,8 @@ import org.javarosa.form.api.FormEntryController
 @Composable
 fun QuestionTextField(focusRequester: FocusRequester) {
     val form = LocalActivity.current as InputControl
-    val question = remember { mutableStateOf(form.questionDetails) }
+    var question = remember { mutableStateOf(form.questionSpec) }
+    question.value=form.questionSpec
     Column {
         Text(
             question.value.labelText,
@@ -47,7 +48,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
     val containerColor = Color(242, 242, 242)
     TextField(
         question.value.textFieldState,
-        Modifier.Companion
+        Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.colors().copy(

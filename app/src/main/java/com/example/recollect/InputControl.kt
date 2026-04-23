@@ -58,7 +58,7 @@ fun mySmallStyle(): TextStyle =
 fun myMediumStyle(bold: Boolean = false): TextStyle =
     typography.bodyMedium.scale(1.45, bold)
 
-data class QuestionDetails(
+data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val captions: Array<FormEntryCaption>,
     val labelText: String,
@@ -85,8 +85,8 @@ class InputControl : ComponentActivity() {
     var questionAt = -1
     var questionStop = 1
     private var emitBad: Boolean = false
-    lateinit var questionDetails: QuestionDetails
-    private fun traceEventAndQuestion(spec: QuestionDetails? = null) {
+    lateinit var questionSpec: QuestionSpec
+    private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
 //        println("R1: questionAt = $questionAt")
         if (spec != null)
@@ -113,7 +113,7 @@ class InputControl : ComponentActivity() {
             event = controller.stepToNextEvent()
             if (event == EVENT_QUESTION) {
                 buildQuestionDetails()
-                traceEventAndQuestion(questionDetails)
+                traceEventAndQuestion(questionSpec)
             } else traceEventAndQuestion()
         }
         event = controller.model.event
@@ -124,7 +124,7 @@ class InputControl : ComponentActivity() {
     private fun buildQuestionDetails() {
         val model = controller.model
         val questionDef = model.questionPrompt.question
-        questionDetails = QuestionDetails(
+        questionSpec = QuestionSpec(
             captions = model.captionHierarchy,
             labelText = questionDef.labelInnerText,
             helpText = questionDef.helpText,
@@ -152,7 +152,7 @@ class InputControl : ComponentActivity() {
             questionAt > questionStop
         ) return
         buildQuestionDetails()
-        traceEventAndQuestion(questionDetails)
+        traceEventAndQuestion(questionSpec)
     }
 
     private lateinit var resultNotice: (Int) -> Unit
@@ -161,9 +161,9 @@ class InputControl : ComponentActivity() {
     }
 
     fun onNext() {
-        val answer = StringData(questionDetails.textFieldState.text as String)
+        val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
-        emitBad = !emitBad
+        if (false) emitBad = !emitBad
         resultNotice.invoke(result - (if (emitBad) 1 else 0))
         if (!emitBad) nextQuestion()
     }
