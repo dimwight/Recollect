@@ -45,16 +45,16 @@ private fun HeaderRows() {
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val spec = (LocalActivity.current as FormControl).questionSpec
+        val question = (LocalActivity.current as InputControl).questionSpec
         Row(
             Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(spec.formDef.title, style = myMediumStyle(true))
+            Text(text = question.formTitle, style = myMediumStyle(true))
         }
         Spacer(Modifier.height(5.dp))
         FlowRow(Modifier.padding(vertical = 0.dp)) {
-            val labels = spec.captions.mapTo(ArrayList<String>()) {
+            val labels = question.captions.mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
             for ((at: Int, next) in labels.withIndex()) {
@@ -81,7 +81,7 @@ fun ImePage() {
             Spacer(Modifier.height(22.dp))
             HeaderRows()
             val focusRequester = remember { FocusRequester() }
-            FocusingTextField(focusRequester)
+            QuestionTextField(focusRequester)
             focusRequester.requestFocus()
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -128,7 +128,7 @@ fun getImeHeight(): Int {
             }
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction = if (true) .34 else remember
+                val fraction = if (false) .34 else remember*.9
                 (diff * fraction).toInt()
             }
         }
@@ -148,18 +148,18 @@ fun BackNextRow() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val formControl = LocalActivity.current as FormControl
+        val inputControl = LocalActivity.current as InputControl
         var isBackEnabled by remember {
             mutableStateOf(
-                formControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
+                inputControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
             )
         }
         val scope = rememberCoroutineScope()
         BackNextButton("<  Back", isBackEnabled) {
-            formControl.onBack()
-            isBackEnabled = formControl.event > 0
+            inputControl.onBack()
+            isBackEnabled = inputControl.event > 0
             if (false) scope.launch {
-                formControl.getNumbers4_().collect { value ->
+                inputControl.getNumbers4_().collect { value ->
                     val val4 = value
                     println("R1: val4 = $val4")
                     scope.launch {
@@ -172,11 +172,11 @@ fun BackNextRow() {
             }
         }
         BackNextButton("Next  >") {
-            formControl.onNext()
-            isBackEnabled = formControl.event > 0
+            inputControl.onNext()
+            isBackEnabled = inputControl.event > 0
             if (false) {
                 scope.launch {
-                    formControl.getNumbers4_().collect { value ->
+                    inputControl.getNumbers4_().collect { value ->
                         println("R1: value = $value")
                     }
                 }
@@ -196,15 +196,16 @@ private fun BackNextButton(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
+    val disabled = Color.LightGray
     OutlinedButton(
         colors = ButtonColors(
             Color.White,
             myBlue,
             Color.White,
-            Color.LightGray
+            disabled
         ),
-        border = BorderStroke(1.dp, Color.LightGray),
-        contentPadding = PaddingValues(60.dp, 13.dp),
+        border = BorderStroke(1.dp, disabled),
+        contentPadding = PaddingValues(55.dp, 13.dp),
         enabled = enabled,
         onClick = onClick
     ) {
@@ -213,7 +214,7 @@ private fun BackNextButton(
             style = if (enabled) {
                 mySmallStyle().copy(myBlue)
             } else {
-                mySmallStyle()
+                mySmallStyle().copy(disabled)
             }
         )
     }

@@ -16,10 +16,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.javarosa.core.model.FormDef
-import org.javarosa.core.model.QuestionDef
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
+import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
 import java.io.InputStream
@@ -36,7 +36,7 @@ fun getNumbers1_(): Flow<Int> = flow {
 @Composable
 fun TextStyle.scale(
     by: Double,
-    bold: Boolean=false
+    bold: Boolean = false
 ): TextStyle {
     return if (bold)
         copy(
@@ -55,23 +55,24 @@ fun mySmallStyle(): TextStyle =
     typography.bodySmall.scale(1.3).copy(Color.Gray)
 
 @Composable
-fun myMediumStyle(bold: Boolean=false): TextStyle =
+fun myMediumStyle(bold: Boolean = false): TextStyle =
     typography.bodyMedium.scale(1.45, bold)
 
 data class QuestionSpec(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val formDef: FormDef,
-    val questionDef: QuestionDef,
-    val captions: Array<FormEntryCaption>
+    val captions: Array<FormEntryCaption>,
+    val labelText: String,
+    val helpText: String,
+    val formTitle: String
 ) {
     override fun toString(): String {
-        return questionDef.run {
-            "label: ${labelInnerText} hint: ${helpText}"
+        return this.run {
+            "label: $labelText help: ${helpText}"
         }
     }
 }
 
-class FormControl : ComponentActivity() {
+class InputControl : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
@@ -81,13 +82,15 @@ class FormControl : ComponentActivity() {
 
     private lateinit var controller: FormEntryController
     var event: Int = -1
+    var questionAt = -1
+    var questionStop = 1
     private var emitBad: Boolean = false
-    private lateinit var checkResult: (Int) -> Unit
     lateinit var questionSpec: QuestionSpec
-    private fun traceEventOrQuestion(spec: QuestionSpec? = null) {
+    private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
-        if (spec == null) return
-        println("R1: spec = ${spec.toString()}")
+//        println("R1: questionAt = $questionAt")
+        if (spec != null)
+            println("R1: spec = $spec")
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -96,8 +99,7 @@ class FormControl : ComponentActivity() {
         val formDef by lazy {
             try {
                 val formId = resources.getIdentifier(
-                    if (false) "form6154" else "all",
-                    "raw", packageName
+                    "all", "raw", packageName
                 )
                 val inputStream: InputStream = resources.openRawResource(formId)
                 return@lazy XFormUtils.getFormFromInputStream(inputStream)
@@ -105,14 +107,29 @@ class FormControl : ComponentActivity() {
                 println("R1: = $e")
             }
         }
-        if (false) println("R1: formDef = $formDef")
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
-        event = controller.model.event
-        while (event != FormEntryController.EVENT_QUESTION)
+       if (false)
+        for (at in 0..3) {
             event = controller.stepToNextEvent()
-
-        update()
+            if (event == EVENT_QUESTION) {
+                buildQuestionDetails()
+                traceEventAndQuestion(questionSpec)
+            } else traceEventAndQuestion()
+        }
+        event = controller.model.event
+        nextQuestion()
         setInputContent()
+    }
+
+    private fun buildQuestionDetails() {
+        val model = controller.model
+        val questionDef = model.questionPrompt.question
+        questionSpec = QuestionSpec(
+            captions = model.captionHierarchy,
+            labelText = questionDef.labelInnerText,
+            helpText = questionDef.helpText,
+            formTitle = model.formTitle
+        )
     }
 
     private fun setInputContent() {
@@ -124,32 +141,31 @@ class FormControl : ComponentActivity() {
         }
     }
 
-    fun setResultCheck(check: (Int) -> Unit) {
-        checkResult = check
+    private fun nextQuestion() {
+        do {
+            event = controller.stepToNextEvent()
+            traceEventAndQuestion()
+        } while (event != EVENT_QUESTION)
+        questionAt++
+        traceEventAndQuestion()
+        if (false &&
+            questionAt > questionStop
+        ) return
+        buildQuestionDetails()
+        traceEventAndQuestion(questionSpec)
     }
 
-    private fun update() {
-        val model = controller.model
-        questionSpec = QuestionSpec(
-            formDef = model.form,
-            questionDef = model.questionPrompt.question,
-            captions = model.captionHierarchy
-        )
-        traceEventOrQuestion(questionSpec)
+    private lateinit var resultNotice: (Int) -> Unit
+    fun setResultNotice(notice: (Int) -> Unit) {
+        resultNotice = notice
     }
 
     fun onNext() {
         val answer = StringData(questionSpec.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
-        emitBad = !emitBad
-        checkResult(result - (if (emitBad) 1 else 0))
-        if (false) return
-
-        event = controller.stepToNextEvent()
-        if (event == FormEntryController.EVENT_QUESTION) {
-            update()
-        }
-        traceEventOrQuestion()
+        if (false) emitBad = !emitBad
+        resultNotice.invoke(result - (if (emitBad) 1 else 0))
+        if (!emitBad) nextQuestion()
     }
 
     fun onBack() {

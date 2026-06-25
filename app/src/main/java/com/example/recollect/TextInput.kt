@@ -25,29 +25,30 @@ import androidx.compose.ui.unit.dp
 import org.javarosa.form.api.FormEntryController
 
 @Composable
-fun FocusingTextField(focusRequester: FocusRequester) {
-    val form = LocalActivity.current as FormControl
-    val questionSpec = form.questionSpec
+fun QuestionTextField(focusRequester: FocusRequester) {
+    val form = LocalActivity.current as InputControl
+    var question = remember { mutableStateOf(form.questionSpec) }
+    question.value=form.questionSpec
     Column {
         Text(
-            questionSpec.questionDef.labelInnerText,
+            question.value.labelText,
             style = myMediumStyle(true),
             fontWeight = FontWeight.Bold,
         )
         Text(
-            questionSpec.questionDef.helpText,
+            question.value.helpText,
             style = mySmallStyle()
         )
         Spacer(Modifier.height(10.dp))
     }
     var indicateBad by remember { mutableStateOf(false) }
-    form.setResultCheck { result: Int ->
+    form.setResultNotice { result: Int ->
         indicateBad = result != FormEntryController.ANSWER_OK
     }
     val containerColor = Color(242, 242, 242)
     TextField(
-        questionSpec.textFieldState,
-        Modifier.Companion
+        question.value.textFieldState,
+        Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.colors().copy(
@@ -61,9 +62,9 @@ fun FocusingTextField(focusRequester: FocusRequester) {
             imeAction = ImeAction.Default,
             showKeyboardOnFocus = true
         ),
-        textStyle = myMediumStyle(),
-        onKeyboardAction = { form.onNext() },
-        label = { }
+        textStyle = myMediumStyle().scale(.9),
+//        onKeyboardAction = { form.onNext() },
+//        label = { }
     )
 
 
