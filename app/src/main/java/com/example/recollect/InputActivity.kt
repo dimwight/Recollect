@@ -14,7 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
 import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
@@ -59,10 +63,10 @@ fun myMediumStyle(bold: Boolean = false): TextStyle =
     typography.bodyMedium.scale(1.45, bold)
 
 data class QuestionSpec(
-    val captions: Array<FormEntryCaption>,
-    val labelText: String,
-    val helpText: String,
-    val formTitle: String
+    val captions: Array<FormEntryCaption> =emptyArray(),
+    val labelText: String="",
+    val helpText: String="",
+    val formTitle: String=""
 ) {
     override fun toString(): String {
         return this.run {
@@ -72,7 +76,8 @@ data class QuestionSpec(
 }
 data class PageState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionSpec: QuestionSpec
+    val questionSpec: QuestionSpec= QuestionSpec(),
+    val hasError: Boolean=false
 )
 
 class InputActivity : ComponentActivity() {
@@ -88,7 +93,8 @@ class InputActivity : ComponentActivity() {
     var questionAt = -1
     var questionStop = 1
     private var emitBad: Boolean = false
-    lateinit var pageState: PageState
+    private val _pageState = MutableStateFlow(PageState())
+    val pageState: StateFlow<PageState> = _pageState.asStateFlow()
     private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
 //        println("R1: questionAt = $questionAt")
@@ -114,11 +120,11 @@ class InputActivity : ComponentActivity() {
        if (false)
         for (at in 0..3) {
             event = controller.stepToNextEvent()
-            if (event == EVENT_QUESTION) {
-                buildQuestionDetails()
-                traceEventAndQuestion(pageState.questionSpec)
-            } else traceEventAndQuestion()
-        }
+                if (event == EVENT_QUESTION) {
+                    buildQuestionDetails()
+                    traceEventAndQuestion(_pageState.value.questionSpec)
+                } else traceEventAndQuestion()
+            }
         event = controller.model.event
         nextQuestion()
         setInputContent()
@@ -127,13 +133,16 @@ class InputActivity : ComponentActivity() {
     private fun buildQuestionDetails() {
         val model = controller.model
         val questionDef = model.questionPrompt.question
-        pageState = PageState(TextFieldState(initialText = ""),
-            QuestionSpec(
-            captions = model.captionHierarchy,
-            labelText = questionDef.labelInnerText,
-            helpText = questionDef.helpText,
-            formTitle = model.formTitle
-        ))
+        _pageState.update {
+            it.copy(
+                questionSpec = QuestionSpec(
+                    captions = model.captionHierarchy,
+                    labelText = questionDef.labelInnerText,
+                    helpText = questionDef.helpText,
+                    formTitle = model.formTitle
+                )
+            )
+        }
     }
 
     private fun setInputContent() {
@@ -156,7 +165,7 @@ class InputActivity : ComponentActivity() {
             questionAt > questionStop
         ) return
         buildQuestionDetails()
-        traceEventAndQuestion(pageState.questionSpec)
+        traceEventAndQuestion(_pageState.value.questionSpec)
     }
 
     private lateinit var resultNotice: (Int) -> Unit
@@ -165,7 +174,8 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onNext() {
-        val answer = StringData(pageState.textFieldState.text as String)
+        val answer = StringData(_pageState.value.textFieldState.text
+                as String)
         val result = controller.answerQuestion(answer, true)
         if (false) emitBad = !emitBad
         resultNotice.invoke(result - (if (emitBad) 1 else 0))

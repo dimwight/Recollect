@@ -11,6 +11,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,11 +27,10 @@ import org.javarosa.form.api.FormEntryController
 
 @Composable
 fun QuestionTextField(focusRequester: FocusRequester) {
-    val form = LocalActivity.current as InputActivity
-    var state = remember { mutableStateOf(form.pageState) }
-//    question.value=form.pageState.questionSpec
+    val input = LocalActivity.current as InputActivity
+    var page = input.pageState
+    val question = page.collectAsState().value.questionSpec
     Column {
-        val question = state.value.questionSpec
         Text(
             question.labelText,
             style = myMediumStyle(true),
@@ -43,12 +43,12 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         Spacer(Modifier.height(10.dp))
     }
     var indicateBad by remember { mutableStateOf(false) }
-    form.setResultNotice { result: Int ->
+    input.setResultNotice { result: Int ->
         indicateBad = result != FormEntryController.ANSWER_OK
     }
     val containerColor = Color(242, 242, 242)
     TextField(
-        state.value.textFieldState,
+        page.collectAsState().value.textFieldState,
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),

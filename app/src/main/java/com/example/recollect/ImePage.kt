@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +46,8 @@ private fun HeaderRows() {
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val question = (LocalActivity.current as InputActivity).pageState.questionSpec
+        val question = (LocalActivity.current as InputActivity)
+            .pageState.collectAsState().value.questionSpec
         Row(
             Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
