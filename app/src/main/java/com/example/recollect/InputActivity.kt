@@ -59,7 +59,6 @@ fun myMediumStyle(bold: Boolean = false): TextStyle =
     typography.bodyMedium.scale(1.45, bold)
 
 data class QuestionSpec(
-    val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val captions: Array<FormEntryCaption>,
     val labelText: String,
     val helpText: String,
@@ -71,6 +70,10 @@ data class QuestionSpec(
         }
     }
 }
+data class PageState(
+    val textFieldState: TextFieldState = TextFieldState("[A string]"),
+    val questionSpec: QuestionSpec
+)
 
 class InputActivity : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
@@ -85,7 +88,7 @@ class InputActivity : ComponentActivity() {
     var questionAt = -1
     var questionStop = 1
     private var emitBad: Boolean = false
-    lateinit var questionSpec: QuestionSpec
+    lateinit var pageState: PageState
     private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
 //        println("R1: questionAt = $questionAt")
@@ -113,7 +116,7 @@ class InputActivity : ComponentActivity() {
             event = controller.stepToNextEvent()
             if (event == EVENT_QUESTION) {
                 buildQuestionDetails()
-                traceEventAndQuestion(questionSpec)
+                traceEventAndQuestion(pageState.questionSpec)
             } else traceEventAndQuestion()
         }
         event = controller.model.event
@@ -124,12 +127,13 @@ class InputActivity : ComponentActivity() {
     private fun buildQuestionDetails() {
         val model = controller.model
         val questionDef = model.questionPrompt.question
-        questionSpec = QuestionSpec(
+        pageState = PageState(TextFieldState(initialText = ""),
+            QuestionSpec(
             captions = model.captionHierarchy,
             labelText = questionDef.labelInnerText,
             helpText = questionDef.helpText,
             formTitle = model.formTitle
-        )
+        ))
     }
 
     private fun setInputContent() {
@@ -152,7 +156,7 @@ class InputActivity : ComponentActivity() {
             questionAt > questionStop
         ) return
         buildQuestionDetails()
-        traceEventAndQuestion(questionSpec)
+        traceEventAndQuestion(pageState.questionSpec)
     }
 
     private lateinit var resultNotice: (Int) -> Unit
@@ -161,7 +165,7 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onNext() {
-        val answer = StringData(questionSpec.textFieldState.text as String)
+        val answer = StringData(pageState.textFieldState.text as String)
         val result = controller.answerQuestion(answer, true)
         if (false) emitBad = !emitBad
         resultNotice.invoke(result - (if (emitBad) 1 else 0))
