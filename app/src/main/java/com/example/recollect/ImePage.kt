@@ -45,7 +45,7 @@ private fun HeaderRows() {
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val question = (LocalActivity.current as InputControl).questionSpec
+        val question = (LocalActivity.current as InputActivity).questionSpec
         Row(
             Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -148,7 +148,7 @@ fun BackNextRow() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val inputControl = LocalActivity.current as InputControl
+        val inputControl = LocalActivity.current as InputActivity
         var isBackEnabled by remember {
             mutableStateOf(
                 inputControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM

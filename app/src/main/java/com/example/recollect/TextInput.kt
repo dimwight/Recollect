@@ -26,7 +26,7 @@ import org.javarosa.form.api.FormEntryController
 
 @Composable
 fun QuestionTextField(focusRequester: FocusRequester) {
-    val form = LocalActivity.current as InputControl
+    val form = LocalActivity.current as InputActivity
     var question = remember { mutableStateOf(form.questionSpec) }
     question.value=form.questionSpec
     Column {

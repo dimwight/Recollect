@@ -72,7 +72,7 @@ data class QuestionSpec(
     }
 }
 
-class InputControl : ComponentActivity() {
+class InputActivity : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000)
