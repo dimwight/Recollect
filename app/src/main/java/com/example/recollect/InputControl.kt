@@ -67,7 +67,7 @@ data class QuestionSpec(
 ) {
     override fun toString(): String {
         return this.run {
-            "label: $labelText help: ${helpText}"
+            "label: $labelText help: $helpText"
         }
     }
 }
