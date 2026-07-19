@@ -24,6 +24,7 @@ import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM
+import org.javarosa.form.api.FormEntryController.EVENT_END_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
@@ -80,7 +81,8 @@ data class PageState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val questionSpec: QuestionSpec = QuestionSpec(),
     val hasError: Boolean = false,
-    val isBackEnabled: Boolean = false
+    val isBackEnabled: Boolean = false,
+    val atFormEnd: Boolean = false
 )
 
 class InputActivity : ComponentActivity() {
@@ -120,16 +122,8 @@ class InputActivity : ComponentActivity() {
             }
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
-        if (false)
-            for (at in 0..10) {
-                event = controller.stepToNextEvent()
-                if (event == EVENT_QUESTION) {
-                    updateQuestionSpec()
-                } else traceEventAndQuestion()
-                if (questionAt>3)break
-            }
         event = controller.model.event
-        while (questionAt<4) nextQuestion()
+        while (questionAt < 6) nextQuestion()
         nextQuestion()
         setInputContent()
     }
@@ -163,13 +157,21 @@ class InputActivity : ComponentActivity() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
+            if (event == EVENT_END_OF_FORM) {
+                setFormEnd(true)
+                return
+            }
         } while (event != EVENT_QUESTION)
         questionAt++
         traceEventAndQuestion()
-        if (false &&
-            questionAt > questionStop
-        ) return
         updateQuestionSpec()
+    }
+
+    fun setFormEnd(on: Boolean) {
+        _pageState.update {
+            it.copy(atFormEnd = on)
+        }
+        if (!on)previousQuestion()
     }
 
     private fun previousQuestion() {

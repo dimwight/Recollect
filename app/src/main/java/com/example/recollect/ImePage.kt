@@ -65,6 +65,14 @@ private fun HeaderRows() {
 
 @Composable
 fun ImePage() {
+   val activity = LocalActivity.current as InputActivity
+    val atFormEnd = activity.pageState.collectAsState().value.atFormEnd
+    if (atFormEnd){
+        BackNextButton("Go") {
+            activity.setFormEnd(false)
+        }
+        return
+    }
     Box(
         modifier = Modifier
             .background(Color.White)
