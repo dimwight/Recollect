@@ -23,6 +23,7 @@ import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
+import org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.xform.util.XFormUtils
@@ -78,7 +79,8 @@ data class QuestionSpec(
 data class PageState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val questionSpec: QuestionSpec = QuestionSpec(),
-    val hasError: Boolean = false
+    val hasError: Boolean = false,
+    val isBackEnabled: Boolean = false
 )
 
 class InputActivity : ComponentActivity() {
@@ -98,7 +100,7 @@ class InputActivity : ComponentActivity() {
     val pageState: StateFlow<PageState> = _pageState.asStateFlow()
     private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: event = $event")
-//        println("R1: questionAt = $questionAt")
+        println("R1: questionAt = $questionAt")
         if (spec != null)
             println("R1: spec = $spec")
     }
@@ -119,14 +121,15 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         if (false)
-            for (at in 0..3) {
+            for (at in 0..10) {
                 event = controller.stepToNextEvent()
                 if (event == EVENT_QUESTION) {
                     updateQuestionSpec()
-                    traceEventAndQuestion(_pageState.value.questionSpec)
                 } else traceEventAndQuestion()
+                if (questionAt>3)break
             }
         event = controller.model.event
+        while (questionAt<4) nextQuestion()
         nextQuestion()
         setInputContent()
     }
@@ -144,6 +147,7 @@ class InputActivity : ComponentActivity() {
                 )
             )
         }
+        traceEventAndQuestion(_pageState.value.questionSpec)
     }
 
     private fun setInputContent() {
@@ -166,7 +170,15 @@ class InputActivity : ComponentActivity() {
             questionAt > questionStop
         ) return
         updateQuestionSpec()
-        traceEventAndQuestion(_pageState.value.questionSpec)
+    }
+
+    private fun previousQuestion() {
+        do {
+            event = controller.stepToPreviousEvent()
+            traceEventAndQuestion()
+        } while (event != EVENT_QUESTION)
+        questionAt--
+        updateQuestionSpec()
     }
 
     fun onNext() {
@@ -175,16 +187,25 @@ class InputActivity : ComponentActivity() {
                     as String
         )
         val result = controller.answerQuestion(answer, true)
-        if (true) hasError = !hasError
+        if (false) hasError = !hasError
         _pageState.update {
-            it.copy(hasError = hasError
+            it.copy(
+                hasError = hasError,
+                isBackEnabled = true
             )
         }
         if (!hasError) nextQuestion()
     }
 
     fun onBack() {
-        event = controller.stepToPreviousEvent()
+        previousQuestion()
+        _pageState.update {
+            it.copy(
+                isBackEnabled =
+                    questionAt > 0 &&
+                            event != EVENT_BEGINNING_OF_FORM
+            )
+        }
     }
 }
 

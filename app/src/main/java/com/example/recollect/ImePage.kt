@@ -22,12 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -36,7 +33,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.javarosa.form.api.FormEntryController
 
 val myBlue = Color(62, 159, 208)
 
@@ -150,35 +146,18 @@ fun BackNextRow() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val inputControl = LocalActivity.current as InputActivity
-        var isBackEnabled by remember {
-            mutableStateOf(
-                inputControl.event != FormEntryController.EVENT_BEGINNING_OF_FORM
-            )
+        val inputActivity = LocalActivity.current as InputActivity
+        BackNextButton("<  Back",
+            inputActivity.pageState.collectAsState().value.isBackEnabled
+        ) {
+            inputActivity.onBack()
         }
         val scope = rememberCoroutineScope()
-        BackNextButton("<  Back", isBackEnabled) {
-            inputControl.onBack()
-            isBackEnabled = inputControl.event > 0
-            if (false) scope.launch {
-                inputControl.getNumbers4_().collect { value ->
-                    val val4 = value
-                    println("R1: val4 = $val4")
-                    scope.launch {
-                        getNumbers1_().collect { value ->
-                            val val14 = value + val4
-                            println("R1: val14 = $val14")
-                        }
-                    }
-                }
-            }
-        }
         BackNextButton("Next  >") {
-            inputControl.onNext()
-            isBackEnabled = inputControl.event > 0
+            inputActivity.onNext()
             if (false) {
                 scope.launch {
-                    inputControl.getNumbers4_().collect { value ->
+                    inputActivity.getNumbers4_().collect { value ->
                         println("R1: value = $value")
                     }
                 }
