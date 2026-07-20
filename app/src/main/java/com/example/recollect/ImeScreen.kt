@@ -37,19 +37,12 @@ import kotlinx.coroutines.launch
 val myBlue = Color(62, 159, 208)
 
 @Composable
-private fun HeaderRows() {
+private fun HeaderRows(question: QuestionSpec) {
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val question = (LocalActivity.current as InputActivity)
-            .pageState.collectAsState().value.questionSpec
-        Row(
-            Modifier.padding(vertical = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = question.formTitle, style = myMediumStyle(true))
-        }
+        FormTitleRow(question)
         Spacer(Modifier.height(5.dp))
         FlowRow(Modifier.padding(vertical = 0.dp)) {
             val labels = question.captions.mapTo(ArrayList<String>()) {
@@ -64,15 +57,17 @@ private fun HeaderRows() {
 }
 
 @Composable
-fun ImePage() {
-   val activity = LocalActivity.current as InputActivity
-    val atFormEnd = activity.pageState.collectAsState().value.atFormEnd
-    if (atFormEnd){
-        BackNextButton("Go") {
-            activity.setFormEnd(false)
-        }
-        return
+fun FormTitleRow(question: QuestionSpec) {
+    Row(
+        Modifier.padding(vertical = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = question.formTitle, style = myMediumStyle(true))
     }
+}
+
+@Composable
+fun ImeScreen() {
     Box(
         modifier = Modifier
             .background(Color.White)
@@ -85,7 +80,9 @@ fun ImePage() {
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(Modifier.height(22.dp))
-            HeaderRows()
+            val question = (LocalActivity.current as InputActivity)
+                .pageState.collectAsState().value.questionSpec
+            HeaderRows(question)
             val focusRequester = remember { FocusRequester() }
             QuestionTextField(focusRequester)
             focusRequester.requestFocus()
@@ -180,7 +177,7 @@ fun BackNextRow() {
 }
 
 @Composable
-private fun BackNextButton(
+fun BackNextButton(
     text: String,
     enabled: Boolean = true,
     onClick: () -> Unit

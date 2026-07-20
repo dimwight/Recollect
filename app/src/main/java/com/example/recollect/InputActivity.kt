@@ -123,7 +123,7 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 6) nextQuestion()
+        while (questionAt < 7) nextQuestion()
         nextQuestion()
         setInputContent()
     }
@@ -148,7 +148,7 @@ class InputActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
-                ImePage()
+                Screens(this)
             }
         }
     }
