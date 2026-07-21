@@ -111,7 +111,6 @@ class InputActivity : ComponentActivity() {
             println("R1: spec = $spec")
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val formDef by lazy {
