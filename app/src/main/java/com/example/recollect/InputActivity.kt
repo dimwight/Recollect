@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import org.javarosa.core.model.FormDef
+import org.javarosa.core.model.Constants
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
@@ -68,7 +70,8 @@ data class QuestionSpec(
     val captions: Array<FormEntryCaption> = emptyArray(),
     val labelText: String = "",
     val helpText: String = "",
-    val formTitle: String = ""
+    val formTitle: String = "",
+    val keyboard : KeyboardType = KeyboardType.Unspecified
 ) {
     override fun toString(): String {
         return this.run {
@@ -81,7 +84,7 @@ data class PageState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val questionSpec: QuestionSpec = QuestionSpec(),
     val hasError: Boolean = false,
-    val isBackEnabled: Boolean = false,
+    val isBackEnabled: Boolean = true,
     val atFormEnd: Boolean = false
 )
 
@@ -101,8 +104,9 @@ class InputActivity : ComponentActivity() {
     private val _pageState = MutableStateFlow(PageState())
     val pageState: StateFlow<PageState> = _pageState.asStateFlow()
     private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
-        println("R1: event = $event")
         println("R1: questionAt = $questionAt")
+        if (true)return
+        println("R1: event = $event")
         if (spec != null)
             println("R1: spec = $spec")
     }
@@ -113,7 +117,7 @@ class InputActivity : ComponentActivity() {
         val formDef by lazy {
             try {
                 val formId = resources.getIdentifier(
-                    "all", "raw", packageName
+                    "end", "raw", packageName
                 )
                 val inputStream: InputStream = resources.openRawResource(formId)
                 return@lazy XFormUtils.getFormFromInputStream(inputStream)
@@ -123,21 +127,28 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 7) nextQuestion()
-        nextQuestion()
+        while (questionAt < 0) nextQuestion()
         setInputContent()
     }
 
     private fun updateQuestionSpec() {
         val model = controller.model
-        val questionDef = model.questionPrompt.question
+        val questionPrompt = model.questionPrompt
+        val dataType = questionPrompt.dataType
+        val questionDef = questionPrompt.question
         _pageState.update {
             it.copy(
                 questionSpec = QuestionSpec(
+                    formTitle = model.formTitle,
                     captions = model.captionHierarchy,
                     labelText = questionDef.labelInnerText,
                     helpText = questionDef.helpText,
-                    formTitle = model.formTitle
+                    keyboard = when (dataType) {
+                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
+                        Constants.DATATYPE_TEXT -> KeyboardType.Text
+                        Constants.DATATYPE_INTEGER -> KeyboardType.Number
+                        else -> KeyboardType.Unspecified
+                    }
                 )
             )
         }

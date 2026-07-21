@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -52,10 +53,10 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
+            keyboardType = question.keyboard,
             imeAction = ImeAction.Default,
             showKeyboardOnFocus = true
         ),
-        textStyle = myMediumStyle().scale(.9),
 //        onKeyboardAction = { form.onNext() },
 //        label = { }
     )

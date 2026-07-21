@@ -43,7 +43,6 @@ private fun HeaderRows(question: QuestionSpec) {
         horizontalAlignment = Alignment.Start,
     ) {
         FormTitleRow(question)
-        Spacer(Modifier.height(5.dp))
         FlowRow(Modifier.padding(vertical = 0.dp)) {
             val labels = question.captions.mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
@@ -59,7 +58,7 @@ private fun HeaderRows(question: QuestionSpec) {
 @Composable
 fun FormTitleRow(question: QuestionSpec) {
     Row(
-        Modifier.padding(vertical = 20.dp),
+        Modifier.padding(vertical = 35.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = question.formTitle, style = myMediumStyle(true))
@@ -123,7 +122,7 @@ fun getImeHeight(): Int {
             val rectY = if (false) rect.height() else rect.bottom
             val diff = screenHeight - rectY
             val ratio = screenHeight.toFloat() / rectY
-            if (false) {
+            if (true) {
                 println("R1: rect = $rect")
                 println("R1: screen = $screenHeight")
                 println("R1: diff = $diff")

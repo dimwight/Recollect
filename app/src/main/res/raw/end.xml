@@ -62,19 +62,10 @@
             <instance>
                 <data
                     id="all-question-types"
-                    version="D1">
-                    <outer>
-                        <outer_string />
-                        <string_number />
-                        <inner>
-                            <string />
-                            <string_masked />
-                        </inner>
-                    </outer>
+                    version="H">
                     <numerical_question_types>
-                        <integer />
-                        <integer_thousands_sep />
-                        <counter />
+                        <outer_string />
+                        <string />
                         <decimal />
                     </numerical_question_types>
                     <meta>
@@ -227,26 +218,11 @@
                 </root>
             </instance>
             <bind
-                nodeset="/data/outer/outer_string"
+                nodeset="/data/numerical_question_types/outer_string"
                 type="string" />
             <bind
-                nodeset="/data/outer/string_number"
+                nodeset="/data/numerical_question_types/string"
                 type="string" />
-            <bind
-                nodeset="/data/outer/inner/string"
-                type="string" />
-            <bind
-                nodeset="/data/outer/inner/string_masked"
-                type="string" />
-            <bind
-                nodeset="/data/numerical_question_types/integer"
-                type="int" />
-            <bind
-                nodeset="/data/numerical_question_types/integer_thousands_sep"
-                type="int" />
-            <bind
-                nodeset="/data/numerical_question_types/counter"
-                type="int" />
             <bind
                 nodeset="/data/numerical_question_types/decimal"
                 type="decimal" />
@@ -258,51 +234,15 @@
         </model>
     </h:head>
     <h:body>
-        <group ref="/data/outer">
-            <label>Outer outer outer outer outer outer outer outer surface outer</label>
-            <input ref="/data/outer/outer_string">
-                <label>Outer string</label>
+        <group ref="/data/numerical_question_types">
+            <label>Question types</label>
+            <input ref="/data/numerical_question_types/outer_string">
+                <label>A string</label>
                 <hint>text type</hint>
             </input>
-            <input
-                appearance="numbers"
-                ref="/data/outer/string_number">
-                <label>String number</label>
-                <hint>text type with numbers appearance</hint>
-            </input>
-            <group ref="/data/outer/inner">
-                <label>Inner inner inner inner inner inner inner inner inner</label>
-                <input ref="/data/outer/inner/string">
-                    <label>String</label>
-                    <hint>text type</hint>
-                </input>
-                <input
-                    appearance="masked"
-                    ref="/data/outer/inner/string_masked">
-                    <label>String masked</label>
-                    <hint>text type with masked appearance</hint>
-                </input>
-            </group>
-        </group>
-        <group ref="/data/numerical_question_types">
-            <label>Numerical question types</label>
-            <input ref="/data/numerical_question_types/integer">
-                <label>Integer</label>
-                <hint>integer type with no appearance</hint>
-            </input>
-            <input
-                appearance="thousands-sep"
-                ref="/data/numerical_question_types/integer_thousands_sep">
-                <label>Integer with thousands separators</label>
-                <hint>integer type with thousands-sep appearance. This appearance can also be
-                    applied to decimal and string numbers question types
-                </hint>
-            </input>
-            <input
-                appearance="counter"
-                ref="/data/numerical_question_types/counter">
-                <label>Counter</label>
-                <hint>integer type with counter appearance</hint>
+            <input ref="/data/numerical_question_types/string">
+                <label>Another string</label>
+                <hint>text type</hint>
             </input>
             <input ref="/data/numerical_question_types/decimal">
                 <label>Decimal</label>
