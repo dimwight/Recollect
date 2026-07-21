@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
@@ -84,7 +87,10 @@ fun ImeScreen() {
             HeaderRows(question)
             val focusRequester = remember { FocusRequester() }
             QuestionTextField(focusRequester)
-            focusRequester.requestFocus()
+            LaunchedEffect(Unit) {
+                delay(1300.milliseconds)
+                focusRequester.requestFocus()
+            }
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {

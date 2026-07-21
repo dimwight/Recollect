@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -80,11 +79,12 @@ data class QuestionSpec(
     }
 }
 
-data class PageState(
+data class InputState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
     val questionSpec: QuestionSpec = QuestionSpec(),
     val hasError: Boolean = false,
-    val isBackEnabled: Boolean = true,
+    val showBack: Boolean = false,
+    val showNext: Boolean = false,
     val atFormEnd: Boolean = false
 )
 
@@ -101,8 +101,8 @@ class InputActivity : ComponentActivity() {
     var questionAt = -1
     var questionStop = 1
     private var hasError: Boolean = false
-    private val _pageState = MutableStateFlow(PageState())
-    val pageState: StateFlow<PageState> = _pageState.asStateFlow()
+    private val _pageState = MutableStateFlow(InputState())
+    val pageState: StateFlow<InputState> = _pageState.asStateFlow()
     private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: questionAt = $questionAt")
         if (true)return
@@ -137,6 +137,7 @@ class InputActivity : ComponentActivity() {
         val questionDef = questionPrompt.question
         _pageState.update {
             it.copy(
+                showBack = questionAt>0,
                 questionSpec = QuestionSpec(
                     formTitle = model.formTitle,
                     captions = model.captionHierarchy,
@@ -203,7 +204,7 @@ class InputActivity : ComponentActivity() {
         _pageState.update {
             it.copy(
                 hasError = hasError,
-                isBackEnabled = true
+                showBack = true
             )
         }
         if (!hasError) nextQuestion()
@@ -213,7 +214,7 @@ class InputActivity : ComponentActivity() {
         previousQuestion()
         _pageState.update {
             it.copy(
-                isBackEnabled =
+                showBack =
                     questionAt > 0 &&
                             event != EVENT_BEGINNING_OF_FORM
             )
