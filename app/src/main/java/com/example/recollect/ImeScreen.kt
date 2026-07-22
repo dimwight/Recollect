@@ -40,14 +40,15 @@ import kotlin.time.Duration.Companion.milliseconds
 val myBlue = Color(62, 159, 208)
 
 @Composable
-private fun HeaderRows(question: QuestionSpec) {
+private fun HeaderRows(screenState: ScreenState) {
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        FormTitleRow(question)
+        val question = screenState.questionSpec?:null
+        FormTitleRow(screenState)
         FlowRow(Modifier.padding(vertical = 0.dp)) {
-            val labels = question.captions.mapTo(ArrayList<String>()) {
+            val labels = (question?.captions?:emptyArray()).mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
             for ((at: Int, next) in labels.withIndex()) {
@@ -59,12 +60,12 @@ private fun HeaderRows(question: QuestionSpec) {
 }
 
 @Composable
-fun FormTitleRow(question: QuestionSpec) {
+fun FormTitleRow(screenState: ScreenState) {
     Row(
         Modifier.padding(vertical = 35.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = question.formTitle, style = myMediumStyle(true))
+        Text(text = screenState.formTitle, style = myMediumStyle(true))
     }
 }
 
@@ -76,19 +77,19 @@ fun ImeScreen() {
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
+        val screenState = (LocalActivity.current as InputActivity)
+            .screenState.collectAsState().value
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(Modifier.height(22.dp))
-            val question = (LocalActivity.current as InputActivity)
-                .pageState.collectAsState().value.questionSpec
-            HeaderRows(question)
+            HeaderRows(screenState)
             val focusRequester = remember { FocusRequester() }
             QuestionTextField(focusRequester)
             LaunchedEffect(Unit) {
-                delay(1300.milliseconds)
+                delay(2300.milliseconds)
                 focusRequester.requestFocus()
             }
             Box(
@@ -128,7 +129,7 @@ fun getImeHeight(): Int {
             val rectY = if (false) rect.height() else rect.bottom
             val diff = screenHeight - rectY
             val ratio = screenHeight.toFloat() / rectY
-            if (true) {
+            if (false) {
                 println("R1: rect = $rect")
                 println("R1: screen = $screenHeight")
                 println("R1: diff = $diff")
@@ -158,7 +159,7 @@ fun BackNextRow() {
     ) {
         val inputActivity = LocalActivity.current as InputActivity
         BackNextButton("<  Back",
-            inputActivity.pageState.collectAsState().value.isBackEnabled
+            inputActivity.screenState.collectAsState().value.showBack
         ) {
             inputActivity.onBack()
         }

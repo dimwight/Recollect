@@ -24,16 +24,16 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun QuestionTextField(focusRequester: FocusRequester) {
     val state = (LocalActivity.current as InputActivity)
-        .pageState.collectAsState().value
+        .screenState.collectAsState().value
     val question = state.questionSpec
     Column {
         Text(
-            question.labelText,
+            question?.labelText?:"",
             style = myMediumStyle(true),
             fontWeight = FontWeight.Bold,
         )
         Text(
-            question.helpText,
+            question?.helpText?:"",
             style = mySmallStyle()
         )
         Spacer(Modifier.height(10.dp))
@@ -53,7 +53,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
-            keyboardType = question.keyboard,
+            keyboardType = question?.keyboard?: KeyboardType.Unspecified,
             imeAction = ImeAction.Default,
             showKeyboardOnFocus = true
         ),

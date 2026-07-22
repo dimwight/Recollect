@@ -28,6 +28,7 @@ import org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_END_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
 import org.javarosa.form.api.FormEntryModel
+import org.javarosa.form.api.FormEntryPrompt
 import org.javarosa.xform.util.XFormUtils
 import java.io.InputStream
 import kotlin.time.TimeSource.Monotonic
@@ -69,8 +70,7 @@ data class QuestionSpec(
     val captions: Array<FormEntryCaption> = emptyArray(),
     val labelText: String = "",
     val helpText: String = "",
-    val formTitle: String = "",
-    val keyboard : KeyboardType = KeyboardType.Unspecified
+    val keyboard: KeyboardType = KeyboardType.Unspecified
 ) {
     override fun toString(): String {
         return this.run {
@@ -79,9 +79,10 @@ data class QuestionSpec(
     }
 }
 
-data class InputState(
+data class ScreenState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionSpec: QuestionSpec = QuestionSpec(),
+    val questionSpec: QuestionSpec? = QuestionSpec(),
+    val formTitle: String = "",
     val hasError: Boolean = false,
     val showBack: Boolean = false,
     val showNext: Boolean = false,
@@ -97,12 +98,13 @@ class InputActivity : ComponentActivity() {
     }
 
     private lateinit var controller: FormEntryController
+    private lateinit var firstQuestionPrompt: FormEntryPrompt
     var event: Int = -1
     var questionAt = -1
     var questionStop = 1
     private var hasError: Boolean = false
-    private val _pageState = MutableStateFlow(InputState())
-    val pageState: StateFlow<InputState> = _pageState.asStateFlow()
+    private val _screenState = MutableStateFlow(ScreenState())
+    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
     private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
         println("R1: questionAt = $questionAt")
         if (true)return
@@ -126,20 +128,37 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 0) nextQuestion()
-        setInputContent()
+        while (questionAt < 2) nextQuestion()
+        enableEdgeToEdge()
+        setContent {
+            RecollectTheme {
+                Screens(this)
+            }
+        }
     }
 
-    private fun updateQuestionSpec() {
+    private fun updateScreenState() {
         val model = controller.model
         val questionPrompt = model.questionPrompt
+        if (questionAt==0){
+            firstQuestionPrompt=questionPrompt
+        }
         val dataType = questionPrompt.dataType
         val questionDef = questionPrompt.question
-        _pageState.update {
+        val atFormEnd = event == EVENT_END_OF_FORM
+        _screenState.update {
             it.copy(
-                showBack = questionAt>0,
-                questionSpec = QuestionSpec(
-                    formTitle = model.formTitle,
+                showBack =
+                    questionAt > 0 &&
+                            event != EVENT_BEGINNING_OF_FORM
+            )
+        }
+        _screenState.update {
+            it.copy(
+                atFormEnd = atFormEnd,
+                showBack = questionPrompt!=firstQuestionPrompt||atFormEnd,
+                formTitle = model.formTitle,
+                questionSpec = if (atFormEnd)null else QuestionSpec(
                     captions = model.captionHierarchy,
                     labelText = questionDef.labelInnerText,
                     helpText = questionDef.helpText,
@@ -152,37 +171,17 @@ class InputActivity : ComponentActivity() {
                 )
             )
         }
-        traceEventAndQuestion(_pageState.value.questionSpec)
-    }
-
-    private fun setInputContent() {
-        enableEdgeToEdge()
-        setContent {
-            RecollectTheme {
-                Screens(this)
-            }
-        }
+        traceEventAndQuestion(_screenState.value.questionSpec)
     }
 
     private fun nextQuestion() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
-            if (event == EVENT_END_OF_FORM) {
-                setFormEnd(true)
-                return
-            }
         } while (event != EVENT_QUESTION)
         questionAt++
         traceEventAndQuestion()
-        updateQuestionSpec()
-    }
-
-    fun setFormEnd(on: Boolean) {
-        _pageState.update {
-            it.copy(atFormEnd = on)
-        }
-        if (!on)previousQuestion()
+        updateScreenState()
     }
 
     private fun previousQuestion() {
@@ -191,17 +190,17 @@ class InputActivity : ComponentActivity() {
             traceEventAndQuestion()
         } while (event != EVENT_QUESTION)
         questionAt--
-        updateQuestionSpec()
+        updateScreenState()
     }
 
     fun onNext() {
         val answer = StringData(
-            _pageState.value.textFieldState.text
+            _screenState.value.textFieldState.text
                     as String
         )
         val result = controller.answerQuestion(answer, true)
         if (false) hasError = !hasError
-        _pageState.update {
+        _screenState.update {
             it.copy(
                 hasError = hasError,
                 showBack = true
@@ -212,13 +211,6 @@ class InputActivity : ComponentActivity() {
 
     fun onBack() {
         previousQuestion()
-        _pageState.update {
-            it.copy(
-                showBack =
-                    questionAt > 0 &&
-                            event != EVENT_BEGINNING_OF_FORM
-            )
-        }
     }
 }
 
