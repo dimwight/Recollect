@@ -28,7 +28,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
     val question = state.questionSpec
     Column {
         Text(
-            question?.labelText?:"",
+            question.labelText,
             style = myMediumStyle(true),
             fontWeight = FontWeight.Bold,
         )

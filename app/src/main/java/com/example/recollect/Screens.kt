@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Screens(activity: InputActivity) {
-    val atFormEnd = activity.screenState.collectAsState().value.atFormEnd
-    if (atFormEnd){
+    val endOfForm = activity.screenState.collectAsState().value.endOfForm
+    if (endOfForm){
         FormEndScreen(activity)
     }
-    else ImeScreen()
+    else ImeScreen(activity)
 }
 
 @Composable
@@ -39,8 +39,8 @@ private fun FormEndScreen(activity: InputActivity){
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(Modifier.height(22.dp))
-            val screenState = (LocalActivity.current as InputActivity)
-                .screenState.collectAsState().value
+            val use = if (false)activity else LocalActivity.current as InputActivity
+            val screenState = use.screenState.collectAsState().value
             FormTitleRow(screenState)
             Spacer(Modifier.height(5.dp))
             Box(
@@ -50,7 +50,7 @@ private fun FormEndScreen(activity: InputActivity){
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    BackNextRow()
+                    BackNextRow(screenState)
                     Spacer(Modifier.height(10.dp))
                     Spacer(Modifier.height(25.dp))
                 }

@@ -40,15 +40,16 @@ import kotlin.time.Duration.Companion.milliseconds
 val myBlue = Color(62, 159, 208)
 
 @Composable
-private fun HeaderRows(screenState: ScreenState) {
+private fun HeaderRows(inputActivity: InputActivity) {
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        val question = screenState.questionSpec?:null
+        val screenState = inputActivity.screenState.collectAsState().value
         FormTitleRow(screenState)
         FlowRow(Modifier.padding(vertical = 0.dp)) {
-            val labels = (question?.captions?:emptyArray()).mapTo(ArrayList<String>()) {
+            val labels = screenState.questionSpec.captions
+                .mapTo(ArrayList<String>()) {
                 it.formElement.labelInnerText
             }
             for ((at: Int, next) in labels.withIndex()) {
@@ -70,22 +71,21 @@ fun FormTitleRow(screenState: ScreenState) {
 }
 
 @Composable
-fun ImeScreen() {
+fun ImeScreen(inputActivity: InputActivity) {
     Box(
         modifier = Modifier
             .background(Color.White)
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
-        val screenState = (LocalActivity.current as InputActivity)
-            .screenState.collectAsState().value
+        val screenState = inputActivity.screenState.collectAsState().value
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(Modifier.height(22.dp))
-            HeaderRows(screenState)
+            HeaderRows(inputActivity)
             val focusRequester = remember { FocusRequester() }
             QuestionTextField(focusRequester)
             LaunchedEffect(Unit) {
@@ -99,7 +99,7 @@ fun ImeScreen() {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    BackNextRow()
+                    BackNextRow(screenState)
                     Spacer(Modifier.height(10.dp))
                     Box(
                         Modifier
@@ -152,19 +152,17 @@ fun getImeHeight(): Int {
 }
 
 @Composable
-fun BackNextRow() {
+fun BackNextRow(screenState: ScreenState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val inputActivity = LocalActivity.current as InputActivity
-        BackNextButton("<  Back",
-            inputActivity.screenState.collectAsState().value.showBack
-        ) {
+        BackNextButton("<  Back", screenState.showBack) {
             inputActivity.onBack()
         }
         val scope = rememberCoroutineScope()
-        BackNextButton("Next  >") {
+        BackNextButton("Next  >", screenState.showNext) {
             inputActivity.onNext()
             if (false) {
                 scope.launch {

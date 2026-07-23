@@ -24,7 +24,6 @@ import org.javarosa.core.model.Constants
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
-import org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_END_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
 import org.javarosa.form.api.FormEntryModel
@@ -81,12 +80,12 @@ data class QuestionSpec(
 
 data class ScreenState(
     val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionSpec: QuestionSpec? = QuestionSpec(),
+    val questionSpec: QuestionSpec = QuestionSpec(),
     val formTitle: String = "",
     val hasError: Boolean = false,
     val showBack: Boolean = false,
     val showNext: Boolean = false,
-    val atFormEnd: Boolean = false
+    val endOfForm: Boolean = false
 )
 
 class InputActivity : ComponentActivity() {
@@ -137,7 +136,7 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    private fun updateScreenState() {
+    private fun updateScreenState(endOfForm: Boolean=false) {
         val model = controller.model
         val questionPrompt = model.questionPrompt
         if (questionAt==0){
@@ -145,14 +144,13 @@ class InputActivity : ComponentActivity() {
         }
         val dataType = questionPrompt.dataType
         val questionDef = questionPrompt.question
-        val atFormEnd = event == EVENT_END_OF_FORM
         _screenState.update {
             it.copy(
-                atFormEnd = atFormEnd,
-                showBack = questionPrompt!=firstQuestionPrompt||atFormEnd,
-                showNext = !atFormEnd,
+                endOfForm = endOfForm,
+                showBack = questionPrompt!=firstQuestionPrompt,
+                showNext = !endOfForm,
                 formTitle = model.formTitle,
-                questionSpec = if (atFormEnd)null else QuestionSpec(
+                questionSpec = QuestionSpec(
                     captions = model.captionHierarchy,
                     labelText = questionDef.labelInnerText,
                     helpText = questionDef.helpText,
@@ -167,13 +165,26 @@ class InputActivity : ComponentActivity() {
         }
         traceEventAndQuestion(_screenState.value.questionSpec)
     }
+    private fun updateScreenState_(endOfForm: Boolean=true) {
+        _screenState.update {
+            it.copy(
+                endOfForm = endOfForm,
+                showBack =  endOfForm,
+                showNext = !endOfForm,
+                formTitle = controller.model.formTitle,
+                questionSpec =  QuestionSpec()
+            )
+        }
+        traceEventAndQuestion(_screenState.value.questionSpec)
+    }
 
     private fun nextQuestion() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
             if (event == EVENT_END_OF_FORM) {
-                break
+                updateScreenState_()
+                return
             }
         } while (event != EVENT_QUESTION)
         questionAt++
