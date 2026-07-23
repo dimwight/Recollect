@@ -148,22 +148,16 @@ class InputActivity : ComponentActivity() {
         val atFormEnd = event == EVENT_END_OF_FORM
         _screenState.update {
             it.copy(
-                showBack =
-                    questionAt > 0 &&
-                            event != EVENT_BEGINNING_OF_FORM
-            )
-        }
-        _screenState.update {
-            it.copy(
                 atFormEnd = atFormEnd,
                 showBack = questionPrompt!=firstQuestionPrompt||atFormEnd,
+                showNext = !atFormEnd,
                 formTitle = model.formTitle,
                 questionSpec = if (atFormEnd)null else QuestionSpec(
                     captions = model.captionHierarchy,
                     labelText = questionDef.labelInnerText,
                     helpText = questionDef.helpText,
                     keyboard = when (dataType) {
-                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
+//                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
                         Constants.DATATYPE_TEXT -> KeyboardType.Text
                         Constants.DATATYPE_INTEGER -> KeyboardType.Number
                         else -> KeyboardType.Unspecified
@@ -178,6 +172,9 @@ class InputActivity : ComponentActivity() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
+            if (event == EVENT_END_OF_FORM) {
+                break
+            }
         } while (event != EVENT_QUESTION)
         questionAt++
         traceEventAndQuestion()
@@ -206,7 +203,9 @@ class InputActivity : ComponentActivity() {
                 showBack = true
             )
         }
-        if (!hasError) nextQuestion()
+        if (!hasError) {
+            nextQuestion()
+        }
     }
 
     fun onBack() {
