@@ -86,7 +86,11 @@ data class ScreenState(
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false
-)
+){
+    override fun toString(): String {
+        return "showBack = $showBack showNext = $showNext "
+    }
+}
 
 class InputActivity : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
@@ -97,19 +101,18 @@ class InputActivity : ComponentActivity() {
     }
 
     private lateinit var controller: FormEntryController
-    private lateinit var firstQuestionPrompt: FormEntryPrompt
+    private var firstQuestionPrompt: FormEntryPrompt?=null
     var event: Int = -1
     var questionAt = -1
-    var questionStop = 1
     private var hasError: Boolean = false
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
-    private fun traceEventAndQuestion(spec: QuestionSpec? = null) {
+    private fun traceEventAndQuestion(state: ScreenState? = null) {
         println("R1: questionAt = $questionAt")
-        if (true)return
+        if (false)return
         println("R1: event = $event")
-        if (spec != null)
-            println("R1: spec = $spec")
+        if (state == null)return
+        println("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,22 +142,25 @@ class InputActivity : ComponentActivity() {
     private fun updateScreenState(endOfForm: Boolean=false) {
         val model = controller.model
         val questionPrompt = model.questionPrompt
-        if (questionAt==0){
+        val formElement = questionPrompt.formElement
+        if (questionAt==0&&firstQuestionPrompt==null){
             firstQuestionPrompt=questionPrompt
         }
-        val dataType = questionPrompt.dataType
-        val questionDef = questionPrompt.question
+        val showBack = if (true)
+            formElement != firstQuestionPrompt?.formElement
+        else questionAt!=0
+        val question = questionPrompt.question
         _screenState.update {
             it.copy(
                 endOfForm = endOfForm,
-                showBack = questionPrompt!=firstQuestionPrompt,
+                showBack = showBack,
                 showNext = !endOfForm,
                 formTitle = model.formTitle,
                 questionSpec = QuestionSpec(
                     captions = model.captionHierarchy,
-                    labelText = questionDef.labelInnerText,
-                    helpText = questionDef.helpText,
-                    keyboard = when (dataType) {
+                    labelText = question.labelInnerText,
+                    helpText = question.helpText,
+                    keyboard = when (questionPrompt.dataType) {
 //                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
                         Constants.DATATYPE_TEXT -> KeyboardType.Text
                         Constants.DATATYPE_INTEGER -> KeyboardType.Number
@@ -163,7 +169,7 @@ class InputActivity : ComponentActivity() {
                 )
             )
         }
-        traceEventAndQuestion(_screenState.value.questionSpec)
+        traceEventAndQuestion(_screenState.value)
     }
     private fun updateScreenState_(endOfForm: Boolean=true) {
         _screenState.update {
@@ -175,14 +181,14 @@ class InputActivity : ComponentActivity() {
                 questionSpec =  QuestionSpec()
             )
         }
-        traceEventAndQuestion(_screenState.value.questionSpec)
+        traceEventAndQuestion(_screenState.value)
     }
 
     private fun nextQuestion() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
-            if (event == EVENT_END_OF_FORM) {
+            if (atFormEnd()) {
                 updateScreenState_()
                 return
             }
@@ -192,12 +198,15 @@ class InputActivity : ComponentActivity() {
         updateScreenState()
     }
 
+    private fun atFormEnd(): Boolean = event == EVENT_END_OF_FORM
+
     private fun previousQuestion() {
+        val atFormEnd = atFormEnd()
         do {
             event = controller.stepToPreviousEvent()
             traceEventAndQuestion()
         } while (event != EVENT_QUESTION)
-        questionAt--
+        if(!atFormEnd) questionAt--
         updateScreenState()
     }
 
