@@ -2,7 +2,6 @@ package com.example.recollect
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.visible
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -87,10 +88,12 @@ fun ImeScreen(inputActivity: InputActivity) {
             Spacer(Modifier.height(22.dp))
             HeaderRows(inputActivity)
             val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
             QuestionTextField(focusRequester)
-            LaunchedEffect(Unit) {
-                delay(2000.milliseconds)
-                focusRequester.requestFocus()
+            LaunchedEffect(screenState) {
+                focusManager.clearFocus(true)
+                delay(1000.milliseconds)
+//                focusRequester.requestFocus()
             }
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -99,8 +102,8 @@ fun ImeScreen(inputActivity: InputActivity) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    BackNextRow(screenState)
-                    Spacer(Modifier.height(10.dp))
+                    BackNextRow(inputActivity,screenState)
+                    Spacer(Modifier.height(20.dp))
                     Box(
                         Modifier
                             .height(getImeHeight().dp)
@@ -129,10 +132,10 @@ fun getImeHeight(): Int {
             val rectY = if (false) rect.height() else rect.bottom
             val diff = screenHeight - rectY
             val ratio = screenHeight.toFloat() / rectY
-            if (false) {
-                println("R1: rect = $rect")
-                println("R1: screen = $screenHeight")
-                println("R1: diff = $diff")
+            if (true) {
+//                println("R1: rect = $rect")
+//                println("R1: screen = $screenHeight")
+//                println("R1: diff = $diff")
                 println("R1: ratio = ${(ratio * 100).toInt()}")
             }
             height.intValue = if (ratio < 1.5) 0
@@ -152,12 +155,11 @@ fun getImeHeight(): Int {
 }
 
 @Composable
-fun BackNextRow(screenState: ScreenState) {
+fun BackNextRow(inputActivity: InputActivity, screenState: ScreenState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val inputActivity = LocalActivity.current as InputActivity
         BackNextButton("<  Back", screenState.showBack) {
             inputActivity.onBack()
         }
@@ -183,30 +185,22 @@ fun BackNextRow(screenState: ScreenState) {
 @Composable
 fun BackNextButton(
     text: String,
-    enabled: Boolean = true,
+    show: Boolean = true,
     onClick: () -> Unit
 ) {
-    val disabled = Color.LightGray
     OutlinedButton(
+        modifier = Modifier.visible(show),
         colors = ButtonColors(
             Color.White,
             myBlue,
             Color.White,
-            disabled
+            Color.LightGray
         ),
-        border = BorderStroke(1.dp, disabled),
+        border = BorderStroke(1.dp, Color.LightGray),
         contentPadding = PaddingValues(55.dp, 13.dp),
-        enabled = enabled,
         onClick = onClick
     ) {
-        Text(
-            text,
-            style = if (enabled) {
-                mySmallStyle().copy(myBlue)
-            } else {
-                mySmallStyle().copy(disabled)
-            }
-        )
+        Text(text, style = mySmallStyle().copy(myBlue))
     }
 }
 

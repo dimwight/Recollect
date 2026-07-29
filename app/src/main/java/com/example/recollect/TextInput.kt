@@ -18,7 +18,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -44,18 +43,19 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         state.textFieldState,
         Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            ,
         colors = TextFieldDefaults.colors().copy(
             focusedContainerColor = containerColor,
             unfocusedContainerColor = containerColor,
             focusedIndicatorColor =
-                if (indicateError) Color.Companion.Red else myBlue
+                if (indicateError) Color.Red else myBlue
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
-            keyboardType = question.keyboard,
+            keyboardType = question.keyboardType,
             imeAction = ImeAction.Default,
-            showKeyboardOnFocus = true
+//            showKeyboardOnFocus = true
         ),
 //        onKeyboardAction = { form.onNext() },
 //        label = { }

@@ -69,7 +69,7 @@ data class QuestionSpec(
     val captions: Array<FormEntryCaption> = emptyArray(),
     val labelText: String = "",
     val helpText: String = "",
-    val keyboard: KeyboardType = KeyboardType.Unspecified
+    val keyboardType: KeyboardType = KeyboardType.Unspecified
 ) {
     override fun toString(): String {
         return this.run {
@@ -109,8 +109,8 @@ class InputActivity : ComponentActivity() {
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
     private fun traceEventAndQuestion(state: ScreenState? = null) {
         println("R1: questionAt = $questionAt")
-        if (false)return
         println("R1: event = $event")
+        if (true)return
         if (state == null)return
         println("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
     }
@@ -130,7 +130,7 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 2) nextQuestion()
+        while (questionAt < 0) nextQuestion()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -151,16 +151,18 @@ class InputActivity : ComponentActivity() {
         else questionAt!=0
         val question = questionPrompt.question
         _screenState.update {
+            val labelText = question.labelInnerText
             it.copy(
+                textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
                 showBack = showBack,
                 showNext = !endOfForm,
                 formTitle = model.formTitle,
                 questionSpec = QuestionSpec(
                     captions = model.captionHierarchy,
-                    labelText = question.labelInnerText,
+                    labelText = labelText,
                     helpText = question.helpText,
-                    keyboard = when (questionPrompt.dataType) {
+                    keyboardType = when (questionPrompt.dataType) {
                         Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
                         Constants.DATATYPE_TEXT -> KeyboardType.Text
                         Constants.DATATYPE_INTEGER -> KeyboardType.Number

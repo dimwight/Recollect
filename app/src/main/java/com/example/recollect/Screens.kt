@@ -50,9 +50,8 @@ private fun FormEndScreen(activity: InputActivity){
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    BackNextRow(screenState)
-                    Spacer(Modifier.height(10.dp))
-                    Spacer(Modifier.height(25.dp))
+                    BackNextRow(activity, screenState)
+                    Spacer(Modifier.height(45.dp))
                 }
             }
         }
