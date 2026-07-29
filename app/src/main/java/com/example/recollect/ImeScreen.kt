@@ -40,7 +40,7 @@ import kotlin.time.Duration.Companion.milliseconds
 val myBlue = Color(62, 159, 208)
 
 @Composable
-private fun HeaderRows(inputActivity: InputActivity) {
+fun HeaderRows(inputActivity: InputActivity) {
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
@@ -89,7 +89,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             val focusRequester = remember { FocusRequester() }
             QuestionTextField(focusRequester)
             LaunchedEffect(Unit) {
-                delay(2300.milliseconds)
+                delay(2000.milliseconds)
                 focusRequester.requestFocus()
             }
             Box(

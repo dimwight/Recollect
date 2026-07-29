@@ -161,7 +161,7 @@ class InputActivity : ComponentActivity() {
                     labelText = question.labelInnerText,
                     helpText = question.helpText,
                     keyboard = when (questionPrompt.dataType) {
-//                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
+                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
                         Constants.DATATYPE_TEXT -> KeyboardType.Text
                         Constants.DATATYPE_INTEGER -> KeyboardType.Number
                         else -> KeyboardType.Unspecified

@@ -53,7 +53,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
-            keyboardType = question?.keyboard?: KeyboardType.Unspecified,
+            keyboardType = question.keyboard,
             imeAction = ImeAction.Default,
             showKeyboardOnFocus = true
         ),
