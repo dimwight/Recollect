@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.visible
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -41,7 +43,7 @@ import kotlin.time.Duration.Companion.milliseconds
 val myBlue = Color(62, 159, 208)
 
 @Composable
-fun HeaderRows(inputActivity: InputActivity) {
+fun HeaderRows_(inputActivity: InputActivity) {
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
@@ -64,9 +66,9 @@ fun HeaderRows(inputActivity: InputActivity) {
 @Composable
 fun FormTitleRow(screenState: ScreenState) {
     Row(
-        Modifier.padding(vertical = 35.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(Modifier.height(110.dp))
         Text(text = screenState.formTitle, style = myMediumStyle(true))
     }
 }
@@ -79,45 +81,64 @@ fun ImeScreen(inputActivity: InputActivity) {
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
-        val screenState = inputActivity.screenState.collectAsState().value
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Spacer(Modifier.height(22.dp))
-            HeaderRows(inputActivity)
-            val focusRequester = remember { FocusRequester() }
-            val focusManager = LocalFocusManager.current
-            QuestionTextField(focusRequester)
-            LaunchedEffect(screenState) {
-                if (screenState.newWidget) {
-                    focusManager.clearFocus(true)
-                    delay(500.milliseconds)
-                    inputActivity.clearNewWidget()
+            val screenState = inputActivity.screenState.collectAsState().value
+            FormTitleRow(screenState)
+            val oldContent = false
+            if (oldContent) FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = screenState.questionSpec.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex()) {
+                    if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
                 }
-                else {
-                    delay(500.milliseconds)
-                    focusRequester.requestFocus()
-                }
+                Spacer(Modifier.height(15.dp))
             }
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            if (oldContent) {
+                val focusRequester = remember { FocusRequester() }
+                val focusManager = LocalFocusManager.current
+                QuestionTextField(focusRequester)
+                LaunchedEffect(screenState) {
+                    if (screenState.newWidget) {
+                        focusManager.clearFocus(true)
+                        delay(500.milliseconds)
+                        inputActivity.clearNewWidget()
+                    } else if (false) {
+                        delay(500.milliseconds)
+                        focusRequester.requestFocus()
+                    }
+                }
+            } else {
+                val tabs = listOf("Home", "Explore", "Profile")
+                val pagerState = rememberPagerState(pageCount = { tabs.size })
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxWidth()
+                ) { page -> SwipeBox(tabs, page) }
+            }
+            Box {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    if (!screenState.newWidget) {
+                    if (true||
+                        !screenState.newWidget) {
                         BackNextRow(inputActivity, screenState)
                     }
                     Spacer(Modifier.height(20.dp))
-                    Box(
-                        Modifier
-                            .height(getImeHeight().dp)
-                            .fillMaxWidth()
-                            .background(Color.White)
-                    )
+                    if (true||oldContent) {
+                        Box(
+                            Modifier
+                                .height(getImeHeight().dp)
+                                .fillMaxWidth()
+                                .background(Color.White)
+                        )
+                    }
                     Spacer(Modifier.height(25.dp))
                 }
             }
