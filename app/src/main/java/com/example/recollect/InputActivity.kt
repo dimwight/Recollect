@@ -85,8 +85,9 @@ data class ScreenState(
     val hasError: Boolean = false,
     val showBack: Boolean = false,
     val showNext: Boolean = false,
-    val endOfForm: Boolean = false
-){
+    val endOfForm: Boolean = false,
+    val newWidget: Boolean = true
+) {
     override fun toString(): String {
         return "showBack = $showBack showNext = $showNext "
     }
@@ -101,7 +102,7 @@ class InputActivity : ComponentActivity() {
     }
 
     private lateinit var controller: FormEntryController
-    private var firstQuestionPrompt: FormEntryPrompt?=null
+    private var firstQuestionPrompt: FormEntryPrompt? = null
     var event: Int = -1
     var questionAt = -1
     private var hasError: Boolean = false
@@ -110,8 +111,8 @@ class InputActivity : ComponentActivity() {
     private fun traceEventAndQuestion(state: ScreenState? = null) {
         println("R1: questionAt = $questionAt")
         println("R1: event = $event")
-        if (true)return
-        if (state == null)return
+        if (true) return
+        if (state == null) return
         println("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
     }
 
@@ -139,20 +140,21 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    private fun updateScreenState(endOfForm: Boolean=false) {
+    private fun updateScreenState(endOfForm: Boolean = false) {
         val model = controller.model
         val questionPrompt = model.questionPrompt
         val formElement = questionPrompt.formElement
-        if (questionAt==0&&firstQuestionPrompt==null){
-            firstQuestionPrompt=questionPrompt
+        if (questionAt == 0 && firstQuestionPrompt == null) {
+            firstQuestionPrompt = questionPrompt
         }
         val showBack = if (true)
             formElement != firstQuestionPrompt?.formElement
-        else questionAt!=0
+        else questionAt != 0
         val question = questionPrompt.question
         _screenState.update {
             val labelText = question.labelInnerText
             it.copy(
+                newWidget = true,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
                 showBack = showBack,
@@ -173,14 +175,22 @@ class InputActivity : ComponentActivity() {
         }
         traceEventAndQuestion(_screenState.value)
     }
-    private fun updateScreenState_(endOfForm: Boolean=true) {
+
+    fun clearNewWidget() {
+        _screenState.update {
+            it.copy(
+                newWidget = false
+            )
+        }
+    }
+    private fun updateScreenState_(endOfForm: Boolean = true) {
         _screenState.update {
             it.copy(
                 endOfForm = endOfForm,
-                showBack =  endOfForm,
+                showBack = endOfForm,
                 showNext = !endOfForm,
                 formTitle = controller.model.formTitle,
-                questionSpec =  QuestionSpec()
+                questionSpec = QuestionSpec()
             )
         }
         traceEventAndQuestion(_screenState.value)
@@ -208,7 +218,7 @@ class InputActivity : ComponentActivity() {
             event = controller.stepToPreviousEvent()
             traceEventAndQuestion()
         } while (event != EVENT_QUESTION)
-        if(!atFormEnd) questionAt--
+        if (!atFormEnd) questionAt--
         updateScreenState()
     }
 
@@ -233,6 +243,7 @@ class InputActivity : ComponentActivity() {
     fun onBack() {
         previousQuestion()
     }
+
 }
 
 

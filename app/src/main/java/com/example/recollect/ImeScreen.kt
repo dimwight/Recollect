@@ -51,8 +51,8 @@ fun HeaderRows(inputActivity: InputActivity) {
         FlowRow(Modifier.padding(vertical = 0.dp)) {
             val labels = screenState.questionSpec.captions
                 .mapTo(ArrayList<String>()) {
-                it.formElement.labelInnerText
-            }
+                    it.formElement.labelInnerText
+                }
             for ((at: Int, next) in labels.withIndex()) {
                 if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
             }
@@ -91,9 +91,15 @@ fun ImeScreen(inputActivity: InputActivity) {
             val focusManager = LocalFocusManager.current
             QuestionTextField(focusRequester)
             LaunchedEffect(screenState) {
-                focusManager.clearFocus(true)
-                delay(1000.milliseconds)
-//                focusRequester.requestFocus()
+                if (screenState.newWidget) {
+                    focusManager.clearFocus(true)
+                    delay(500.milliseconds)
+                    inputActivity.clearNewWidget()
+                }
+                else {
+                    delay(500.milliseconds)
+                    focusRequester.requestFocus()
+                }
             }
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -102,7 +108,9 @@ fun ImeScreen(inputActivity: InputActivity) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    BackNextRow(inputActivity,screenState)
+                    if (!screenState.newWidget) {
+                        BackNextRow(inputActivity, screenState)
+                    }
                     Spacer(Modifier.height(20.dp))
                     Box(
                         Modifier
@@ -140,7 +148,7 @@ fun getImeHeight(): Int {
             }
             height.intValue = if (ratio < 1.5) 0
             else {
-                val fraction = if (false) .34 else remember*.9
+                val fraction = if (false) .34 else remember * .9
                 (diff * fraction).toInt()
             }
         }
