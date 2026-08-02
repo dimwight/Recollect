@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.recollect.bits.TabbedPagerScreen
+import com.example.recollect.bits.WipeDemoScreen
 
 @Composable
 fun Screens(activity: InputActivity) {
@@ -29,7 +30,7 @@ fun Screens(activity: InputActivity) {
             activity.screenState.collectAsState().value.endOfForm
     if (false) {
         Box() {
-            TabbedPagerScreen()
+            WipeDemoScreen()
         }
     } else if (endOfForm) {
         EndOfFormScreen(activity)
@@ -61,17 +62,9 @@ private fun EndOfFormScreen(inputActivity: InputActivity) {
         ) {
             val screenState = inputActivity.screenState.collectAsState().value
             FormTitleRow(screenState)
-            val tabs = listOf("Home", "Explore", "Profile")
-            val pagerState = rememberPagerState(pageCount = { tabs.size })
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-//                        .weight(1f)
-            ) { page -> SwipeBox(tabs, page) }
             Box {
                 Column(
-//                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     BackNextRow(inputActivity, screenState)

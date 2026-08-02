@@ -67,57 +67,48 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             val screenState = inputActivity.screenState.collectAsState().value
             FormTitleRow(screenState)
-            val oldContent = false
-            if (oldContent) FlowRow(Modifier.padding(vertical = 0.dp)) {
-                val labels = screenState.questionSpec.captions
-                    .mapTo(ArrayList()) {
-                        it.formElement.labelInnerText
-                    }
-                for ((at: Int, next) in labels.withIndex()) {
-                    if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
-                }
-                Spacer(Modifier.height(15.dp))
-            }
+            val oldContent = true
             if (oldContent) {
+                FlowRow(Modifier.padding(vertical = 0.dp)) {
+                    val labels = screenState.questionSpec.captions
+                        .mapTo(ArrayList()) {
+                            it.formElement.labelInnerText
+                        }
+                    for ((at: Int, next) in labels.withIndex()) {
+                        if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
+                    }
+                    Spacer(Modifier.height(15.dp))
+                }
                 val focusRequester = remember { FocusRequester() }
                 val focusManager = LocalFocusManager.current
                 QuestionTextField(focusRequester)
                 LaunchedEffect(screenState) {
                     if (screenState.newWidget) {
                         focusManager.clearFocus(true)
-                        delay(500.milliseconds)
+                        delay(200.milliseconds)
                         inputActivity.clearNewWidget()
-                    } else if (false) {
-                        delay(500.milliseconds)
+                    } else if (true) {
+                        delay(200.milliseconds)
                         focusRequester.requestFocus()
                     }
                 }
             } else {
-                val tabs = listOf("Home", "Explore", "Profile")
-                val pagerState = rememberPagerState(pageCount = { tabs.size })
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth()
-                ) { page -> SwipeBox(tabs, page) }
             }
             Box {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    if (true||
-                        !screenState.newWidget) {
+                    if (!screenState.newWidget) {
                         BackNextRow(inputActivity, screenState)
                     }
                     Spacer(Modifier.height(20.dp))
-                    if (true||oldContent) {
-                        Box(
-                            Modifier
-                                .height(getImeHeight().dp)
-                                .fillMaxWidth()
-                                .background(Color.White)
-                        )
-                    }
+                    Box(
+                        Modifier
+                            .height(getImeHeight().dp)
+                            .fillMaxWidth()
+                            .background(Color.White)
+                    )
                     Spacer(Modifier.height(25.dp))
                 }
             }
