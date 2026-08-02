@@ -38,16 +38,6 @@ fun Screens(activity: InputActivity) {
 }
 
 @Composable
-fun SwipeBox(tabs: List<String>, page: Int) {
-    Box {
-        Text(
-            text = "Content for ${tabs[page]}",
-            style = MaterialTheme.typography.headlineMedium
-        )
-    }
-}
-
-@Composable
 private fun EndOfFormScreen(inputActivity: InputActivity) {
     Box(
         modifier = Modifier

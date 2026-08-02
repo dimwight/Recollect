@@ -32,19 +32,18 @@ fun QuestionTextField(focusRequester: FocusRequester) {
             fontWeight = FontWeight.Bold,
         )
         Text(
-            question?.helpText?:"",
+            question.helpText,
             style = mySmallStyle()
         )
         Spacer(Modifier.height(10.dp))
     }
-    var indicateError = state.hasError
+    val indicateError = state.hasError
     val containerColor = Color(242, 242, 242)
     TextField(
         state.textFieldState,
         Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester)
-            ,
+            .focusRequester(focusRequester),
         colors = TextFieldDefaults.colors().copy(
             focusedContainerColor = containerColor,
             unfocusedContainerColor = containerColor,
@@ -55,10 +54,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         keyboardOptions = KeyboardOptions(
             keyboardType = question.keyboardType,
             imeAction = ImeAction.Default,
-//            showKeyboardOnFocus = true
-        ),
-//        onKeyboardAction = { form.onNext() },
-//        label = { }
+        )
     )
 
 

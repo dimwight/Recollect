@@ -12,8 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -51,37 +55,55 @@ fun SlidingWipeContainer(
 
 @Composable
 fun WipeDemoScreen() {
-    var currentScreen by remember { mutableStateOf(0) }
+    var atNow by remember { mutableStateOf(0) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = { currentScreen = if (currentScreen == 0) 1 else 0 }) {
-            Text("Trigger Wipe Transition")
+    Column(modifier = Modifier.fillMaxSize()
+        .background(Color.White)) {
+        Spacer(Modifier.height(50.dp))
+        Button(onClick = {
+            atNow = if (atNow == 0) 1 else 0
+        }) {
+            Text("Wipe")
         }
 
         SlidingWipeContainer(
-            targetState = currentScreen,
+            targetState = atNow,
             modifier = Modifier.fillMaxSize()
-        ) { screenIndex ->
-            when (screenIndex) {
-                0 -> Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Red),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("First Screen", color = Color.White)
-                }
+        ) { at ->
+            when (at) {
+                0 -> AtBox(at)
 
-                1 -> Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Blue),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Second Screen", color = Color.White)
-                }
+                1 -> AtBox(at)
             }
         }
     }
+
 }
+
+@Composable
+private fun AtBox(at: Int) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("$at",
+            color = Color.Red,
+            style = MaterialTheme.typography.headlineLarge
+        )
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 

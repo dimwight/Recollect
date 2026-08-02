@@ -16,11 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.visible
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextFieldLabelPosition.Above
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,16 +69,16 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             val screenState = inputActivity.screenState.collectAsState().value
             FormTitleRow(screenState)
-            val oldContent = true
-            if (oldContent) {
+            val forWipe = false
+            if (!forWipe) {
                 FlowRow(Modifier.padding(vertical = 0.dp)) {
                     val labels = screenState.questionSpec.captions
                         .mapTo(ArrayList()) {
                             it.formElement.labelInnerText
                         }
-                    for ((at: Int, next) in labels.withIndex()) {
-                        if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
-                    }
+                    for ((at: Int, next) in labels.withIndex())
+                        if (at < labels.size - 1)
+                            Text("$next >", style = mySmallStyle())
                     Spacer(Modifier.height(15.dp))
                 }
                 val focusRequester = remember { FocusRequester() }
@@ -85,14 +87,15 @@ fun ImeScreen(inputActivity: InputActivity) {
                 LaunchedEffect(screenState) {
                     if (screenState.newWidget) {
                         focusManager.clearFocus(true)
-                        delay(200.milliseconds)
+                        delay(500.milliseconds)
                         inputActivity.clearNewWidget()
                     } else if (true) {
-                        delay(200.milliseconds)
+                        delay(500.milliseconds)
                         focusRequester.requestFocus()
                     }
                 }
             } else {
+                ForWipe(screenState)
             }
             Box {
                 Column(
@@ -114,6 +117,45 @@ fun ImeScreen(inputActivity: InputActivity) {
             }
         }
     }
+}
+
+@Composable
+private fun ForWipe(screenState: ScreenState) {
+    val question = screenState.questionSpec
+    FlowRow(Modifier.padding(vertical = 0.dp)) {
+        val labels = question.captions
+            .mapTo(ArrayList()) {
+                it.formElement.labelInnerText
+            }
+        for ((at: Int, next) in labels.withIndex())
+            if (at < labels.size - 1)
+                Text("$next >", style = mySmallStyle())
+        Spacer(Modifier.height(15.dp))
+    }
+    Column {
+        Text(
+            question.labelText,
+            style = myMediumStyle(true),
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            question.helpText,
+            style = mySmallStyle()
+        )
+        Spacer(Modifier.height(10.dp))
+    }
+    val containerColor = Color(242, 242, 242)
+    TextField(
+        screenState.textFieldState,
+        Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.colors().copy(
+            focusedContainerColor = containerColor,
+            unfocusedContainerColor = containerColor,
+            focusedIndicatorColor =
+                if (screenState.hasError) Color.Red else myBlue
+        ),
+        labelPosition = Above(),
+    )
 }
 
 @Composable

@@ -86,7 +86,9 @@ data class ScreenState(
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false,
-    val newWidget: Boolean = true
+    val newWidget: Boolean = true,
+    val questionAt: Int = -1,
+    val thenState: ScreenState? = null
 ) {
     override fun toString(): String {
         return "showBack = $showBack showNext = $showNext "
@@ -141,6 +143,7 @@ class InputActivity : ComponentActivity() {
     }
 
     private fun updateScreenState(endOfForm: Boolean = false) {
+        var thenState = screenState.value
         val model = controller.model
         val questionPrompt = model.questionPrompt
         val formElement = questionPrompt.formElement
@@ -154,6 +157,8 @@ class InputActivity : ComponentActivity() {
         _screenState.update {
             val labelText = question.labelInnerText
             it.copy(
+                thenState = thenState,
+                questionAt = questionAt,
                 newWidget = true,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
@@ -183,6 +188,7 @@ class InputActivity : ComponentActivity() {
             )
         }
     }
+
     private fun updateScreenState_(endOfForm: Boolean = true) {
         _screenState.update {
             it.copy(
