@@ -43,27 +43,6 @@ import kotlin.time.Duration.Companion.milliseconds
 val myBlue = Color(62, 159, 208)
 
 @Composable
-fun HeaderRows_(inputActivity: InputActivity) {
-    Column(
-        Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        val screenState = inputActivity.screenState.collectAsState().value
-        FormTitleRow(screenState)
-        FlowRow(Modifier.padding(vertical = 0.dp)) {
-            val labels = screenState.questionSpec.captions
-                .mapTo(ArrayList<String>()) {
-                    it.formElement.labelInnerText
-                }
-            for ((at: Int, next) in labels.withIndex()) {
-                if (at < labels.size - 1) Text("$next >", style = mySmallStyle())
-            }
-        }
-        Spacer(Modifier.height(15.dp))
-    }
-}
-
-@Composable
 fun FormTitleRow(screenState: ScreenState) {
     Row(
         verticalAlignment = Alignment.CenterVertically
