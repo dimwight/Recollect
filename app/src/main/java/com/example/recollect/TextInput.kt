@@ -50,7 +50,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
             focusedIndicatorColor =
                 if (indicateError) Color.Red else myBlue
         ),
-        labelPosition = TextFieldLabelPosition.Above(),
+//        labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
             keyboardType = question.keyboardType,
             imeAction = ImeAction.Default,

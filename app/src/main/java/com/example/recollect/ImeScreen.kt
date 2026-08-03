@@ -26,9 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -38,6 +40,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.recollect.bits.AtBox
+import com.example.recollect.bits.SlidingWipeContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -62,16 +66,20 @@ fun ImeScreen(inputActivity: InputActivity) {
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
+        val screenState = inputActivity.screenState.collectAsState().value
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            val screenState = inputActivity.screenState.collectAsState().value
+            val nowAt = screenState.questionAt
+            val thenAt = screenState.thenState?.questionAt ?: -1
             FormTitleRow(screenState)
-            val forWipe = false
-            if (!forWipe) {
-                FlowRow(Modifier.padding(vertical = 0.dp)) {
+            var wipeState by remember { mutableIntStateOf(0) }
+            val thenState = screenState.thenState != null
+            val forWipe = screenState.forWipe && thenState//&&false
+            if (false&&!forWipe) {
+                if (false)FlowRow(Modifier.padding(vertical = 0.dp)) {
                     val labels = screenState.questionSpec.captions
                         .mapTo(ArrayList()) {
                             it.formElement.labelInnerText
@@ -95,67 +103,123 @@ fun ImeScreen(inputActivity: InputActivity) {
                     }
                 }
             } else {
-                ForWipe(screenState)
-            }
-            Box {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    if (!screenState.newWidget) {
-                        BackNextRow(inputActivity, screenState)
-                    }
-                    Spacer(Modifier.height(20.dp))
-                    Box(
-                        Modifier
-                            .height(getImeHeight().dp)
-                            .fillMaxWidth()
-                            .background(Color.White)
-                    )
-                    Spacer(Modifier.height(25.dp))
+                SlidingWipeContainer(
+                    targetState = screenState.questionAt,
+                    modifier = Modifier.fillMaxSize()
+                ) { at ->
+                   ForWipe(screenState)
                 }
+            }
+            LaunchedEffect(screenState) {
+                delay(500.milliseconds)
+                inputActivity.clearForWipe()
+            }
+        }
+        Box {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                if (!screenState.newWidget) {
+                    BackNextRow(inputActivity, screenState)
+                }
+                Spacer(Modifier.height(20.dp))
+                Box(
+                    Modifier
+                        .height(getImeHeight().dp)
+                        .fillMaxWidth()
+                        .background(Color.White)
+                )
+                Spacer(Modifier.height(25.dp))
             }
         }
     }
 }
 
+
 @Composable
 private fun ForWipe(screenState: ScreenState) {
-    val question = screenState.questionSpec
-    FlowRow(Modifier.padding(vertical = 0.dp)) {
-        val labels = question.captions
-            .mapTo(ArrayList()) {
-                it.formElement.labelInnerText
+    Box() {
+        if (false) Column {
+            AtBox(2)
+        }
+        else Column {
+            val question = screenState.questionSpec
+            FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = question.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex())
+                    if (at < labels.size - 1)
+                        Text("$next >+", style = mySmallStyle())
+                Spacer(Modifier.height(15.dp))
             }
-        for ((at: Int, next) in labels.withIndex())
-            if (at < labels.size - 1)
-                Text("$next >", style = mySmallStyle())
-        Spacer(Modifier.height(15.dp))
+            Text(
+                question.labelText,
+                style = myMediumStyle(true),
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                question.helpText,
+                style = mySmallStyle()
+            )
+            Spacer(Modifier.height(10.dp))
+            val containerColor = Color(242, 242, 242)
+            TextField(
+                screenState.textFieldState,
+                Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors().copy(
+                    focusedContainerColor = containerColor,
+                    unfocusedContainerColor = containerColor,
+                    focusedIndicatorColor =
+                        if (screenState.hasError) Color.Red else myBlue
+                ),
+            )
+        }
     }
-    Column {
-        Text(
-            question.labelText,
-            style = myMediumStyle(true),
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            question.helpText,
-            style = mySmallStyle()
-        )
-        Spacer(Modifier.height(10.dp))
+}
+
+@Composable
+fun ForWipe() {
+    Box() {
+        Column {
+            val screenState = ScreenState()
+            val question = screenState.questionSpec
+            FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = question.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex())
+                    if (at < labels.size - 1)
+                        Text("$next >+", style = mySmallStyle())
+                Spacer(Modifier.height(15.dp))
+            }
+            Text(
+                question.labelText,
+                style = myMediumStyle(true),
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                question.helpText,
+                style = mySmallStyle()
+            )
+            Spacer(Modifier.height(10.dp))
+            val containerColor = Color(242, 242, 242)
+            if (true) TextField(
+                screenState.textFieldState,
+                Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors().copy(
+                    focusedContainerColor = containerColor,
+                    unfocusedContainerColor = containerColor,
+                    focusedIndicatorColor =
+                        if (screenState.hasError) Color.Red else myBlue
+                ),
+                labelPosition = Above(),
+            )
+        }
     }
-    val containerColor = Color(242, 242, 242)
-    TextField(
-        screenState.textFieldState,
-        Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.colors().copy(
-            focusedContainerColor = containerColor,
-            unfocusedContainerColor = containerColor,
-            focusedIndicatorColor =
-                if (screenState.hasError) Color.Red else myBlue
-        ),
-        labelPosition = Above(),
-    )
 }
 
 @Composable
@@ -173,7 +237,7 @@ fun getImeHeight(): Int {
             val rectY = if (false) rect.height() else rect.bottom
             val diff = screenHeight - rectY
             val ratio = screenHeight.toFloat() / rectY
-            if (true) {
+            if (false) {
 //                println("R1: rect = $rect")
 //                println("R1: screen = $screenHeight")
 //                println("R1: diff = $diff")

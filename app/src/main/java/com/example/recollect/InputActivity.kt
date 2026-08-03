@@ -88,7 +88,8 @@ data class ScreenState(
     val endOfForm: Boolean = false,
     val newWidget: Boolean = true,
     val questionAt: Int = -1,
-    val thenState: ScreenState? = null
+    val thenState: ScreenState? = null,
+    val forWipe: Boolean = false
 ) {
     override fun toString(): String {
         return "showBack = $showBack showNext = $showNext "
@@ -160,6 +161,7 @@ class InputActivity : ComponentActivity() {
                 thenState = thenState,
                 questionAt = questionAt,
                 newWidget = true,
+                forWipe = true,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
                 showBack = showBack,
@@ -178,12 +180,24 @@ class InputActivity : ComponentActivity() {
                 )
             )
         }
+        val nowAt = screenState.value.questionAt
+        val thenAt = screenState.value.thenState?.questionAt ?: -1
+        println("R1: nowAt = $nowAt, thenAt = $thenAt")
         traceEventAndQuestion(_screenState.value)
     }
 
     fun clearNewWidget() {
         _screenState.update {
             it.copy(
+                newWidget = false
+            )
+        }
+    }
+
+    fun clearForWipe() {
+        _screenState.update {
+            it.copy(
+                forWipe = false,
                 newWidget = false
             )
         }

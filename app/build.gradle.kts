@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.animation.core)
     implementation(libs.javarosa)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.ktx)

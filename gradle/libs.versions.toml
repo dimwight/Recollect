@@ -10,6 +10,7 @@ kotlin = "2.3.10"
 composeBom = "2026.02.01"
 materialIconsCoreAndroid = "1.7.0"
 foundationLayout = "1.10.6"
+animationCore = "1.11.4"
 
 [libraries]
 #javarosa = { group = "org.getodk", name = "javarosa", version = "5.2.0-2e10861-SNAPSHOT" } # Online
@@ -31,6 +32,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material-icons-core-android = { group = "androidx.compose.material", name = "material-icons-core-android", version.ref = "materialIconsCoreAndroid" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "animationCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
