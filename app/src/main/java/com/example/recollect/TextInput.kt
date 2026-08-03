@@ -11,10 +11,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -22,32 +19,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import org.javarosa.form.api.FormEntryController
 
 @Composable
 fun QuestionTextField(focusRequester: FocusRequester) {
-    val form = LocalActivity.current as InputControl
-    var question = remember { mutableStateOf(form.questionSpec) }
-    question.value=form.questionSpec
+    val state = (LocalActivity.current as InputActivity)
+        .screenState.collectAsState().value
+    val question = state.questionSpec
     Column {
         Text(
-            question.value.labelText,
+            question.labelText,
             style = myMediumStyle(true),
             fontWeight = FontWeight.Bold,
         )
         Text(
-            question.value.helpText,
+            question.helpText,
             style = mySmallStyle()
         )
         Spacer(Modifier.height(10.dp))
     }
-    var indicateBad by remember { mutableStateOf(false) }
-    form.setResultNotice { result: Int ->
-        indicateBad = result != FormEntryController.ANSWER_OK
-    }
+    val indicateError = state.hasError
     val containerColor = Color(242, 242, 242)
     TextField(
-        question.value.textFieldState,
+        state.textFieldState,
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
@@ -55,17 +48,22 @@ fun QuestionTextField(focusRequester: FocusRequester) {
             focusedContainerColor = containerColor,
             unfocusedContainerColor = containerColor,
             focusedIndicatorColor =
-                if (indicateBad) Color.Companion.Red else myBlue
+                if (indicateError) Color.Red else myBlue
         ),
         labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
+            keyboardType = question.keyboardType,
             imeAction = ImeAction.Default,
-            showKeyboardOnFocus = true
-        ),
-        textStyle = myMediumStyle().scale(.9),
-//        onKeyboardAction = { form.onNext() },
-//        label = { }
+        )
     )
 
 
 }
+
+
+
+
+
+
+
+

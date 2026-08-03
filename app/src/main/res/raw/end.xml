@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<h:html xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:odk="http://www.opendatakit.org/xforms"
+    xmlns:orx="http://openrosa.org/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2002/xforms">
+    <h:head>
+        <h:title>All question types</h:title>
+        <model odk:xforms-version="1.0.0">
+            <itext>
+                <translation
+                    default="true()"
+                    lang="default">
+                    <text id="ab_icon-0">
+                        <value>A</value>
+                        <value form="image">jr://images/a.jpg</value>
+                    </text>
+                    <text id="ab_icon-1">
+                        <value>B</value>
+                        <value form="image">jr://images/b.jpg</value>
+                    </text>
+                    <text id="abcd_icon-0">
+                        <value>A</value>
+                        <value form="image">jr://images/a.jpg</value>
+                    </text>
+                    <text id="abcd_icon-1">
+                        <value>B</value>
+                        <value form="image">jr://images/b.jpg</value>
+                    </text>
+                    <text id="abcd_icon-2">
+                        <value>C</value>
+                        <value form="image">jr://images/c.jpg</value>
+                    </text>
+                    <text id="abcd_icon-3">
+                        <value>D</value>
+                        <value form="image">jr://images/d.jpg</value>
+                    </text>
+                    <text id="likert_options-0">
+                        <value>Strongly Disagree</value>
+                        <value form="image">jr://images/angry.png</value>
+                    </text>
+                    <text id="likert_options-1">
+                        <value>Disagree</value>
+                        <value form="image">jr://images/sad.png</value>
+                    </text>
+                    <text id="likert_options-2">
+                        <value>Neutral</value>
+                        <value form="image">jr://images/neutral.png</value>
+                    </text>
+                    <text id="likert_options-3">
+                        <value>Agree</value>
+                        <value form="image">jr://images/smile.png</value>
+                    </text>
+                    <text id="likert_options-4">
+                        <value>Strongly Agree</value>
+                        <value form="image">jr://images/famous.png</value>
+                    </text>
+                </translation>
+            </itext>
+            <instance>
+                <data
+                    id="all-question-types"
+                    version="H">
+                    <numerical_question_types>
+                        <outer_string />
+                        <string />
+                        <decimal />
+                    </numerical_question_types>
+                    <meta>
+                        <instanceID />
+                    </meta>
+                </data>
+            </instance>
+            <instance id="opt_abcd">
+                <root>
+                    <item>
+                        <name>a</name>
+                        <label>A</label>
+                    </item>
+                    <item>
+                        <name>b</name>
+                        <label>B</label>
+                    </item>
+                    <item>
+                        <name>c</name>
+                        <label>C</label>
+                    </item>
+                    <item>
+                        <name>d</name>
+                        <label>D</label>
+                    </item>
+                </root>
+            </instance>
+            <instance id="yes_no">
+                <root>
+                    <item>
+                        <name>yes</name>
+                        <label>Yes</label>
+                    </item>
+                    <item>
+                        <name>no</name>
+                        <label>No</label>
+                    </item>
+                    <item>
+                        <name>dk</name>
+                        <label>Don't Know</label>
+                    </item>
+                    <item>
+                        <name>na</name>
+                        <label>Not Applicable</label>
+                    </item>
+                </root>
+            </instance>
+            <instance id="ab_icon">
+                <root>
+                    <item>
+                        <itextId>ab_icon-0</itextId>
+                        <name>a</name>
+                    </item>
+                    <item>
+                        <itextId>ab_icon-1</itextId>
+                        <name>b</name>
+                    </item>
+                </root>
+            </instance>
+            <instance id="abcd_icon">
+                <root>
+                    <item>
+                        <itextId>abcd_icon-0</itextId>
+                        <name>a</name>
+                    </item>
+                    <item>
+                        <itextId>abcd_icon-1</itextId>
+                        <name>b</name>
+                    </item>
+                    <item>
+                        <itextId>abcd_icon-2</itextId>
+                        <name>c</name>
+                    </item>
+                    <item>
+                        <itextId>abcd_icon-3</itextId>
+                        <name>d</name>
+                    </item>
+                </root>
+            </instance>
+            <instance id="body_parts">
+                <root>
+                    <item>
+                        <name>head</name>
+                        <label>Head</label>
+                    </item>
+                    <item>
+                        <name>neck</name>
+                        <label>Neck</label>
+                    </item>
+                    <item>
+                        <name>lungs</name>
+                        <label>Lungs</label>
+                    </item>
+                    <item>
+                        <name>left_proximal_arm</name>
+                        <label>Left proximal arm</label>
+                    </item>
+                    <item>
+                        <name>left_distal_arm</name>
+                        <label>Left distal arm</label>
+                    </item>
+                    <item>
+                        <name>right_proximal_arm</name>
+                        <label>Right proximal arm</label>
+                    </item>
+                    <item>
+                        <name>right_distal_arm</name>
+                        <label>Right distal arm</label>
+                    </item>
+                    <item>
+                        <name>left_proximal_leg</name>
+                        <label>Left proximal leg</label>
+                    </item>
+                    <item>
+                        <name>left_distal_leg</name>
+                        <label>Left distal leg</label>
+                    </item>
+                    <item>
+                        <name>right_proximal_leg</name>
+                        <label>Right proximal leg</label>
+                    </item>
+                    <item>
+                        <name>right_distal_leg</name>
+                        <label>Right distal leg</label>
+                    </item>
+                </root>
+            </instance>
+            <instance id="likert_options">
+                <root>
+                    <item>
+                        <itextId>likert_options-0</itextId>
+                        <name>strongly_disagree</name>
+                    </item>
+                    <item>
+                        <itextId>likert_options-1</itextId>
+                        <name>disagree</name>
+                    </item>
+                    <item>
+                        <itextId>likert_options-2</itextId>
+                        <name>neutral</name>
+                    </item>
+                    <item>
+                        <itextId>likert_options-3</itextId>
+                        <name>agree</name>
+                    </item>
+                    <item>
+                        <itextId>likert_options-4</itextId>
+                        <name>strongly_agree</name>
+                    </item>
+                </root>
+            </instance>
+            <bind
+                nodeset="/data/numerical_question_types/outer_string"
+                type="string" />
+            <bind
+                nodeset="/data/numerical_question_types/string"
+                type="string" />
+            <bind
+                nodeset="/data/numerical_question_types/decimal"
+                type="decimal" />
+            <bind
+                nodeset="/data/meta/instanceID"
+                readonly="true()"
+                type="string"
+                jr:preload="uid" />
+        </model>
+    </h:head>
+    <h:body>
+        <group ref="/data/numerical_question_types">
+            <label>Question types</label>
+            <input ref="/data/numerical_question_types/outer_string">
+                <label>A string</label>
+                <hint>text type</hint>
+            </input>
+            <input ref="/data/numerical_question_types/string">
+                <label>Another string</label>
+                <hint>text type</hint>
+            </input>
+            <input ref="/data/numerical_question_types/decimal">
+                <label>Decimal</label>
+                <hint>decimal type with no appearance</hint>
+            </input>
+        </group>
+    </h:body>
+</h:html>
