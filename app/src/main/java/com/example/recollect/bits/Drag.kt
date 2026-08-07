@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,8 +25,8 @@ import kotlin.math.abs
 fun DragDirectionDetector() {
     var actionText by remember { mutableStateOf("Swipe me!") }
 
-    // Tracks the total accumulated distance during a single drag session
     var dragAccumulator by remember { mutableStateOf(Offset.Zero) }
+    var startMillis by remember { mutableLongStateOf(0) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -32,40 +34,53 @@ fun DragDirectionDetector() {
     ) {
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(400.dp)
                 .background(Color.DarkGray)
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = {
-                            // Reset accumulator when a new touch begins
+                            println("R1: onDragStart")
                             dragAccumulator = Offset.Zero
+                            startMillis= System.currentTimeMillis()
                         },
                         onDrag = { change, dragAmount ->
+                            println("R1: onDrag")
                             change.consume()
-                            // Add up horizontal and vertical changes
                             dragAccumulator += dragAmount
                         },
                         onDragEnd = {
-                            // 1. Minimum threshold to avoid accidental micro-drags (e.g. 50 pixels)
-                            val threshold = 50f
+                            val dragMillis = System.currentTimeMillis()-startMillis
+                            if (dragMillis>1000){
+                                actionText= "Drag took too long"
+//                                actionText= "Drag ${dragMillis}ms too long"
+                                return@detectDragGestures
+                            }
+                            println("R1: onDragEnd")
+                            val minAbs = 250f
                             val totalX = dragAccumulator.x
                             val totalY = dragAccumulator.y
 
-                            // 2. Evaluate direction based on which axis has a larger movement
-                            if (abs(totalX) > abs(totalY)) {
-                                // Horizontal movement was dominant
-                                if (abs(totalX) > threshold) {
-                                    actionText = if (totalX > 0) "Triggered: RIGHT" else "Triggered: LEFT"
+                            val absX = abs(totalX)
+                            val absY = abs(totalY)
+                            if (absX > absY) {
+                                if (absX > minAbs) {
+                                    actionText =
+                                        if (totalX > 0) "Triggered: RIGHT" else "Triggered: LEFT"
+                                }else {
+                                    actionText="Below threshold"
                                 }
                             } else {
-                                // Vertical movement was dominant
-                                if (abs(totalY) > threshold) {
-                                    actionText = if (totalY > 0) "Triggered: DOWN" else "Triggered: UP"
+                                if (absY > minAbs) {
+                                    actionText = "Bad swipe axis!"
+                                } else {
+                                   actionText="Below threshold"
                                 }
                             }
                         },
                         onDragCancel = {
                             // Handle cases where the gesture is interrupted (e.g. system dialog)
+                            println("R1: onDragCancel")
+                            actionText = "onDragCancel"
                             dragAccumulator = Offset.Zero
                         }
                     )

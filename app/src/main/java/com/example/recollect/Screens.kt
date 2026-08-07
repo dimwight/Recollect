@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.recollect.bits.DragDirectionDetector
 import com.example.recollect.bits.FadeInExample
 import com.example.recollect.bits.WipeDemoScreen
 
@@ -22,9 +23,9 @@ fun Screens(activity: InputActivity) {
     val forceEndOfForm = false
     val endOfForm = forceEndOfForm ||
             activity.screenState.collectAsState().value.endOfForm
-    if (false) {
+    if (true) {
         Box {
-            WipeDemoScreen()
+            DragDirectionDetector()
         }
     } else if (endOfForm) {
         EndOfFormScreen(activity)
