@@ -2,6 +2,12 @@ package com.example.recollect
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,11 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -39,9 +43,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.recollect.bits.AtBox
-import com.example.recollect.bits.SlidingWipeContainer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -72,47 +76,57 @@ fun ImeScreen(inputActivity: InputActivity) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            val nowAt = screenState.questionAt
-            val thenAt = screenState.thenState?.questionAt ?: -1
             FormTitleRow(screenState)
-            var wipeState by remember { mutableIntStateOf(0) }
-            val thenState = screenState.thenState != null
-            val forWipe = screenState.forWipe && thenState//&&false
-            if (false&&!forWipe) {
-                if (false)FlowRow(Modifier.padding(vertical = 0.dp)) {
-                    val labels = screenState.questionSpec.captions
-                        .mapTo(ArrayList()) {
-                            it.formElement.labelInnerText
-                        }
-                    for ((at: Int, next) in labels.withIndex())
-                        if (at < labels.size - 1)
-                            Text("$next >", style = mySmallStyle())
-                    Spacer(Modifier.height(15.dp))
-                }
-                val focusRequester = remember { FocusRequester() }
-                val focusManager = LocalFocusManager.current
-                QuestionTextField(focusRequester)
-                LaunchedEffect(screenState) {
-                    if (screenState.newWidget) {
-                        focusManager.clearFocus(true)
-                        delay(500.milliseconds)
-                        inputActivity.clearNewWidget()
-                    } else if (true) {
-                        delay(500.milliseconds)
-                        focusRequester.requestFocus()
+            val forWipe = screenState.forWipe
+            val wipeMillis = 200
+            AnimatedContent(
+                screenState.questionAt, transitionSpec = {
+                    val slideTween = tween<IntOffset>(
+                        durationMillis = wipeMillis,
+                        easing = LinearEasing
+                    )
+                    if (targetState > initialState) {
+                        slideInHorizontally(slideTween) { it: Int -> it } togetherWith
+                                slideOutHorizontally(slideTween) { -it }
+                    } else {
+                        slideInHorizontally(slideTween) { -it }togetherWith
+                                slideOutHorizontally(slideTween) { it }
                     }
                 }
-            } else {
-                SlidingWipeContainer(
-                    targetState = screenState.questionAt,
-                    modifier = Modifier.fillMaxSize()
-                ) { at ->
-                   ForWipe(screenState)
+            ) { at ->
+                Box() {
+                    Column {
+                        FlowRow(Modifier.padding(vertical = 0.dp)) {
+                            val labels = screenState.questionSpec.captions
+                                .mapTo(ArrayList()) {
+                                    it.formElement.labelInnerText
+                                }
+                            for ((at: Int, next) in labels.withIndex())
+                                if (at < labels.size - 1)
+                                    Text("$next >", style = mySmallStyle())
+                            Spacer(Modifier.height(15.dp))
+                        }
+                        val focusRequester = remember { FocusRequester() }
+                        val focusManager = LocalFocusManager.current
+                        QuestionTextField(focusRequester)
+                        if (!forWipe)
+                            LaunchedEffect(screenState) {
+                                if (screenState.newWidget) {
+                                    focusManager.clearFocus(true)
+                                    if (false) delay(1500.milliseconds)
+                                    inputActivity.clearNewWidget()
+                                } else {
+                                    delay(500.milliseconds)
+                                    focusRequester.requestFocus()
+                                }
+                            }
+                        else
+                            LaunchedEffect(screenState) {
+                                if (true) delay(wipeMillis.milliseconds)
+                                inputActivity.clearForWipe()
+                            }
+                    }
                 }
-            }
-            LaunchedEffect(screenState) {
-                delay(500.milliseconds)
-                inputActivity.clearForWipe()
             }
         }
         Box {

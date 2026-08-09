@@ -23,7 +23,7 @@ fun Screens(activity: InputActivity) {
     val forceEndOfForm = false
     val endOfForm = forceEndOfForm ||
             activity.screenState.collectAsState().value.endOfForm
-    if (true) {
+    if (false) {
         Box {
             DragDirectionDetector()
         }

@@ -135,13 +135,13 @@ fun SlidingWipeContainer(
     content: @Composable (Int) -> Unit,
 ) {
     if (true) {
-        val slideTween = tween<IntOffset>(
-            200,
-            easing = LinearEasing
-        )
         AnimatedContent(
             targetState = targetState,
             transitionSpec = {
+                val slideTween = tween<IntOffset>(
+                    200,
+                    easing = LinearEasing
+                )
                 val initial = initialState
                 if (targetState > initial) {
                     slideInHorizontally(slideTween) { it } /*+ fadeIn()*/ togetherWith

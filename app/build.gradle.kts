@@ -37,6 +37,12 @@ android {
     buildFeatures {
         compose = true
     }
+    flavorDimensions += listOf("Snapshot")
+    productFlavors {
+        create("Drag") {
+            dimension = "Snapshot"
+        }
+    }
 }
 
 dependencies {
