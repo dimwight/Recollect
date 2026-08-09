@@ -126,14 +126,14 @@ class InputActivity : ComponentActivity() {
                     "end", "raw", packageName
                 )
                 val inputStream: InputStream = resources.openRawResource(formId)
-                return@lazy XFormUtils.getFormFromInputStream(inputStream)
+                 return@lazy XFormUtils.getFormFromInputStream(inputStream)
             } catch (e: Exception) {
                 println("R1: = $e")
             }
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 0) nextQuestion()
+        while (questionAt < 2) nextQuestion()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -143,6 +143,19 @@ class InputActivity : ComponentActivity() {
     }
 
     private fun updateScreenState(endOfForm: Boolean = false) {
+        if (endOfForm) {
+            _screenState.update {
+                it.copy(
+                    endOfForm = true,
+                    showBack = true,
+                    showNext = false,
+                    formTitle = controller.model.formTitle,
+                    questionAt = ++questionAt
+                )
+            }
+            traceEventAndQuestion(_screenState.value)
+            return
+        }
         val model = controller.model
         val questionPrompt = model.questionPrompt
         val formElement = questionPrompt.formElement
@@ -197,25 +210,12 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    private fun updateScreenState_(endOfForm: Boolean = true) {
-        _screenState.update {
-            it.copy(
-                endOfForm = endOfForm,
-                showBack = endOfForm,
-                showNext = !endOfForm,
-                formTitle = controller.model.formTitle,
-                questionSpec = QuestionSpec()
-            )
-        }
-        traceEventAndQuestion(_screenState.value)
-    }
-
     private fun nextQuestion() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
-            if (atFormEnd()) {
-                updateScreenState_()
+            if (atEndOfForm()) {
+                updateScreenState(true)
                 return
             }
         } while (event != EVENT_QUESTION)
@@ -224,19 +224,19 @@ class InputActivity : ComponentActivity() {
         updateScreenState()
     }
 
-    private fun atFormEnd(): Boolean = event == EVENT_END_OF_FORM
+    private fun atEndOfForm(): Boolean = event == EVENT_END_OF_FORM
 
     private fun previousQuestion() {
-        val atFormEnd = atFormEnd()
         do {
             event = controller.stepToPreviousEvent()
             traceEventAndQuestion()
         } while (event != EVENT_QUESTION)
-        if (!atFormEnd) questionAt--
+        questionAt--
         updateScreenState()
     }
 
     fun onNext() {
+        if (atEndOfForm()) return
         val answer = StringData(
             _screenState.value.textFieldState.text
                     as String
@@ -255,6 +255,7 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onBack() {
+        if (questionAt==0) return
         previousQuestion()
     }
 

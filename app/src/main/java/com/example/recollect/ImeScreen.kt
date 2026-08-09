@@ -47,8 +47,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -67,7 +69,7 @@ fun FormTitleRow(screenState: ScreenState) {
 }
 
 @Composable
-private fun DragBox(
+fun SwipeBox(
     inputActivity: InputActivity,
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -109,10 +111,10 @@ private fun DragBox(
                                 actionText = "Below threshold"
                             }
                         } else {
-                            if (absY > minAbs) {
-                                actionText = "Bad swipe axis!"
+                            actionText = if (absY > minAbs) {
+                                "Bad swipe axis!"
                             } else {
-                                actionText = "Below threshold"
+                                "Below threshold"
                             }
                         }
                     },
@@ -127,7 +129,7 @@ private fun DragBox(
 
 @Composable
 fun ImeScreen(inputActivity: InputActivity) {
-    DragBox(inputActivity) {
+    SwipeBox(inputActivity) {
         val screenState = inputActivity.screenState.collectAsState().value
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -135,10 +137,10 @@ fun ImeScreen(inputActivity: InputActivity) {
             horizontalAlignment = Alignment.Start
         ) {
             FormTitleRow(screenState)
-            val forWipe = screenState.forWipe
-            val wipeMillis = 200
+            val wipeMillis = 300
             AnimatedContent(
-                screenState.questionAt, transitionSpec = {
+                targetState = screenState.questionAt,
+                transitionSpec = {
                     val slideTween = tween<IntOffset>(
                         durationMillis = wipeMillis,
                         easing = LinearEasing
@@ -152,8 +154,27 @@ fun ImeScreen(inputActivity: InputActivity) {
                     }
                 }
             ) { at ->
-                Box() {
-                    Column {
+                Box {
+                    if (screenState.endOfForm) Column {
+                        Text(
+                            text = "You are at the end of All question types.",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            lineHeight = 32.sp,
+                            color = Color.Black
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        NoticeCard()
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            SaveDraftButton()
+                            FinalizeButton()
+                        }
+                    }
+                    else Column {
                         FlowRow(Modifier.padding(vertical = 0.dp)) {
                             val labels = screenState.questionSpec.captions
                                 .mapTo(ArrayList()) {
@@ -167,20 +188,19 @@ fun ImeScreen(inputActivity: InputActivity) {
                         val focusRequester = remember { FocusRequester() }
                         val focusManager = LocalFocusManager.current
                         QuestionTextField(focusRequester)
-                        if (!forWipe)
+                        if (!screenState.forWipe)
                             LaunchedEffect(screenState) {
                                 if (screenState.newWidget) {
-                                    focusManager.clearFocus(true)
-                                    if (false) delay(1500.milliseconds)
                                     inputActivity.clearNewWidget()
                                 } else {
-                                    delay(500.milliseconds)
+                                    delay(200.milliseconds)
                                     focusRequester.requestFocus()
                                 }
                             }
                         else
                             LaunchedEffect(screenState) {
-                                if (true) delay(wipeMillis.milliseconds)
+                                focusManager.clearFocus(true)
+                                delay(800.milliseconds)
                                 inputActivity.clearForWipe()
                             }
                     }
