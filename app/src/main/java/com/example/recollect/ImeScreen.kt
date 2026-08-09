@@ -2,6 +2,12 @@ package com.example.recollect
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +43,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.recollect.bits.AtBox
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -62,100 +70,170 @@ fun ImeScreen(inputActivity: InputActivity) {
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
+        val screenState = inputActivity.screenState.collectAsState().value
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            val screenState = inputActivity.screenState.collectAsState().value
             FormTitleRow(screenState)
-            val forWipe = false
-            if (!forWipe) {
-                FlowRow(Modifier.padding(vertical = 0.dp)) {
-                    val labels = screenState.questionSpec.captions
-                        .mapTo(ArrayList()) {
-                            it.formElement.labelInnerText
-                        }
-                    for ((at: Int, next) in labels.withIndex())
-                        if (at < labels.size - 1)
-                            Text("$next >", style = mySmallStyle())
-                    Spacer(Modifier.height(15.dp))
-                }
-                val focusRequester = remember { FocusRequester() }
-                val focusManager = LocalFocusManager.current
-                QuestionTextField(focusRequester)
-                LaunchedEffect(screenState) {
-                    if (screenState.newWidget) {
-                        focusManager.clearFocus(true)
-                        delay(500.milliseconds)
-                        inputActivity.clearNewWidget()
-                    } else if (true) {
-                        delay(500.milliseconds)
-                        focusRequester.requestFocus()
-                    }
-                }
-            } else {
-                ForWipe(screenState)
-            }
-            Box {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    if (!screenState.newWidget) {
-                        BackNextRow(inputActivity, screenState)
-                    }
-                    Spacer(Modifier.height(20.dp))
-                    Box(
-                        Modifier
-                            .height(getImeHeight().dp)
-                            .fillMaxWidth()
-                            .background(Color.White)
+            val forWipe = screenState.forWipe
+            val wipeMillis = 200
+            AnimatedContent(
+                screenState.questionAt, transitionSpec = {
+                    val slideTween = tween<IntOffset>(
+                        durationMillis = wipeMillis,
+                        easing = LinearEasing
                     )
-                    Spacer(Modifier.height(25.dp))
+                    if (targetState > initialState) {
+                        slideInHorizontally(slideTween) { it: Int -> it } togetherWith
+                                slideOutHorizontally(slideTween) { -it }
+                    } else {
+                        slideInHorizontally(slideTween) { -it }togetherWith
+                                slideOutHorizontally(slideTween) { it }
+                    }
                 }
+            ) { at ->
+                Box() {
+                    Column {
+                        FlowRow(Modifier.padding(vertical = 0.dp)) {
+                            val labels = screenState.questionSpec.captions
+                                .mapTo(ArrayList()) {
+                                    it.formElement.labelInnerText
+                                }
+                            for ((at: Int, next) in labels.withIndex())
+                                if (at < labels.size - 1)
+                                    Text("$next >", style = mySmallStyle())
+                            Spacer(Modifier.height(15.dp))
+                        }
+                        val focusRequester = remember { FocusRequester() }
+                        val focusManager = LocalFocusManager.current
+                        QuestionTextField(focusRequester)
+                        if (!forWipe)
+                            LaunchedEffect(screenState) {
+                                if (screenState.newWidget) {
+                                    focusManager.clearFocus(true)
+                                    if (false) delay(1500.milliseconds)
+                                    inputActivity.clearNewWidget()
+                                } else {
+                                    delay(500.milliseconds)
+                                    focusRequester.requestFocus()
+                                }
+                            }
+                        else
+                            LaunchedEffect(screenState) {
+                                if (true) delay(wipeMillis.milliseconds)
+                                inputActivity.clearForWipe()
+                            }
+                    }
+                }
+            }
+        }
+        Box {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                if (!screenState.newWidget) {
+                    BackNextRow(inputActivity, screenState)
+                }
+                Spacer(Modifier.height(20.dp))
+                Box(
+                    Modifier
+                        .height(getImeHeight().dp)
+                        .fillMaxWidth()
+                        .background(Color.White)
+                )
+                Spacer(Modifier.height(25.dp))
             }
         }
     }
 }
 
+
 @Composable
 private fun ForWipe(screenState: ScreenState) {
-    val question = screenState.questionSpec
-    FlowRow(Modifier.padding(vertical = 0.dp)) {
-        val labels = question.captions
-            .mapTo(ArrayList()) {
-                it.formElement.labelInnerText
+    Box() {
+        if (false) Column {
+            AtBox(2)
+        }
+        else Column {
+            val question = screenState.questionSpec
+            FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = question.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex())
+                    if (at < labels.size - 1)
+                        Text("$next >+", style = mySmallStyle())
+                Spacer(Modifier.height(15.dp))
             }
-        for ((at: Int, next) in labels.withIndex())
-            if (at < labels.size - 1)
-                Text("$next >", style = mySmallStyle())
-        Spacer(Modifier.height(15.dp))
+            Text(
+                question.labelText,
+                style = myMediumStyle(true),
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                question.helpText,
+                style = mySmallStyle()
+            )
+            Spacer(Modifier.height(10.dp))
+            val containerColor = Color(242, 242, 242)
+            TextField(
+                screenState.textFieldState,
+                Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors().copy(
+                    focusedContainerColor = containerColor,
+                    unfocusedContainerColor = containerColor,
+                    focusedIndicatorColor =
+                        if (screenState.hasError) Color.Red else myBlue
+                ),
+            )
+        }
     }
-    Column {
-        Text(
-            question.labelText,
-            style = myMediumStyle(true),
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            question.helpText,
-            style = mySmallStyle()
-        )
-        Spacer(Modifier.height(10.dp))
+}
+
+@Composable
+fun ForWipe() {
+    Box() {
+        Column {
+            val screenState = ScreenState()
+            val question = screenState.questionSpec
+            FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = question.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex())
+                    if (at < labels.size - 1)
+                        Text("$next >+", style = mySmallStyle())
+                Spacer(Modifier.height(15.dp))
+            }
+            Text(
+                question.labelText,
+                style = myMediumStyle(true),
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                question.helpText,
+                style = mySmallStyle()
+            )
+            Spacer(Modifier.height(10.dp))
+            val containerColor = Color(242, 242, 242)
+            if (true) TextField(
+                screenState.textFieldState,
+                Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors().copy(
+                    focusedContainerColor = containerColor,
+                    unfocusedContainerColor = containerColor,
+                    focusedIndicatorColor =
+                        if (screenState.hasError) Color.Red else myBlue
+                ),
+                labelPosition = Above(),
+            )
+        }
     }
-    val containerColor = Color(242, 242, 242)
-    TextField(
-        screenState.textFieldState,
-        Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.colors().copy(
-            focusedContainerColor = containerColor,
-            unfocusedContainerColor = containerColor,
-            focusedIndicatorColor =
-                if (screenState.hasError) Color.Red else myBlue
-        ),
-        labelPosition = Above(),
-    )
 }
 
 @Composable
@@ -173,7 +251,7 @@ fun getImeHeight(): Int {
             val rectY = if (false) rect.height() else rect.bottom
             val diff = screenHeight - rectY
             val ratio = screenHeight.toFloat() / rectY
-            if (true) {
+            if (false) {
 //                println("R1: rect = $rect")
 //                println("R1: screen = $screenHeight")
 //                println("R1: diff = $diff")

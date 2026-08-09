@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -22,9 +21,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun QuestionTextField(focusRequester: FocusRequester) {
-    val state = (LocalActivity.current as InputActivity)
+    val screenState = (LocalActivity.current as InputActivity)
         .screenState.collectAsState().value
-    val question = state.questionSpec
+    val question = screenState.questionSpec
     Column {
         Text(
             question.labelText,
@@ -37,10 +36,10 @@ fun QuestionTextField(focusRequester: FocusRequester) {
         )
         Spacer(Modifier.height(10.dp))
     }
-    val indicateError = state.hasError
+    val indicateError = screenState.hasError
     val containerColor = Color(242, 242, 242)
     TextField(
-        state.textFieldState,
+        screenState.textFieldState,
         Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
@@ -50,7 +49,7 @@ fun QuestionTextField(focusRequester: FocusRequester) {
             focusedIndicatorColor =
                 if (indicateError) Color.Red else myBlue
         ),
-        labelPosition = TextFieldLabelPosition.Above(),
+//        labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
             keyboardType = question.keyboardType,
             imeAction = ImeAction.Default,
