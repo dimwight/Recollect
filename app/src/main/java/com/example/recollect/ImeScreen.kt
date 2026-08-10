@@ -190,17 +190,17 @@ fun ImeScreen(inputActivity: InputActivity) {
                         QuestionTextField(focusRequester)
                         if (!screenState.forWipe)
                             LaunchedEffect(screenState) {
-                                if (screenState.newWidget) {
-                                    inputActivity.clearNewWidget()
+                                if (screenState.newWidget_) {
+                                    inputActivity.clearNewWidget_()
                                 } else {
-                                    delay(200.milliseconds)
+//                                    delay(200.milliseconds)
                                     focusRequester.requestFocus()
                                 }
                             }
                         else
                             LaunchedEffect(screenState) {
                                 focusManager.clearFocus(true)
-                                delay(800.milliseconds)
+//                                delay(800.milliseconds)
                                 inputActivity.clearForWipe()
                             }
                     }
@@ -212,7 +212,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                if (!screenState.newWidget) {
+                if (true||!screenState.newWidget_) {
                     BackNextRow(inputActivity, screenState)
                 }
                 Spacer(Modifier.height(20.dp))

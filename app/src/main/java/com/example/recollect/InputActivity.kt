@@ -24,8 +24,13 @@ import org.javarosa.core.model.Constants
 import org.javarosa.core.model.data.StringData
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
+import org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM
 import org.javarosa.form.api.FormEntryController.EVENT_END_OF_FORM
+import org.javarosa.form.api.FormEntryController.EVENT_GROUP
+import org.javarosa.form.api.FormEntryController.EVENT_PROMPT_NEW_REPEAT
 import org.javarosa.form.api.FormEntryController.EVENT_QUESTION
+import org.javarosa.form.api.FormEntryController.EVENT_REPEAT
+import org.javarosa.form.api.FormEntryController.EVENT_REPEAT_JUNCTURE
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.form.api.FormEntryPrompt
 import org.javarosa.xform.util.XFormUtils
@@ -86,7 +91,7 @@ data class ScreenState(
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false,
-    val newWidget: Boolean = true,
+    val newWidget_: Boolean = true,
     val questionAt: Int = -1,
     val forWipe: Boolean = false
 ) {
@@ -123,17 +128,19 @@ class InputActivity : ComponentActivity() {
         val formDef by lazy {
             try {
                 val formId = resources.getIdentifier(
-                    "end", "raw", packageName
+                    "repeats", "raw", packageName
                 )
                 val inputStream: InputStream = resources.openRawResource(formId)
-                 return@lazy XFormUtils.getFormFromInputStream(inputStream)
+                return@lazy XFormUtils.getFormFromInputStream(inputStream)
             } catch (e: Exception) {
                 println("R1: = $e")
             }
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 2) nextQuestion()
+        while (questionAt < 0)
+            if (false) nextQuestion()
+            else nextEvent()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -170,7 +177,7 @@ class InputActivity : ComponentActivity() {
             val labelText = question.labelInnerText
             it.copy(
                 questionAt = questionAt,
-                newWidget = true,
+                newWidget_ =false, //true,
                 forWipe = true,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
@@ -180,7 +187,7 @@ class InputActivity : ComponentActivity() {
                 questionSpec = QuestionSpec(
                     captions = model.captionHierarchy,
                     labelText = labelText,
-                    helpText = question.helpText,
+                    helpText = question.helpText ?: "",
                     keyboardType = when (questionPrompt.dataType) {
                         Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
                         Constants.DATATYPE_TEXT -> KeyboardType.Text
@@ -193,10 +200,10 @@ class InputActivity : ComponentActivity() {
         traceEventAndQuestion(_screenState.value)
     }
 
-    fun clearNewWidget() {
+    fun clearNewWidget_() {
         _screenState.update {
             it.copy(
-                newWidget = false
+                newWidget_ = false
             )
         }
     }
@@ -205,8 +212,52 @@ class InputActivity : ComponentActivity() {
         _screenState.update {
             it.copy(
                 forWipe = false,
-                newWidget = false
+                newWidget_ = false
             )
+        }
+    }
+
+    private fun nextEvent(forward: Boolean = true) {
+        if(forward) {
+            event = controller.stepToNextEvent()
+            traceEventAndQuestion()
+           /* EVENT_BEGINNING_OF_FORM = 0;
+            EVENT_END_OF_FORM = 1;
+            EVENT_PROMPT_NEW_REPEAT = 2;
+            EVENT_QUESTION = 4;
+            EVENT_GROUP = 8;
+            EVENT_REPEAT = 16;
+            EVENT_REPEAT_JUNCTURE = 32;*/
+            when (event) {
+                EVENT_QUESTION -> {
+                    questionAt++
+                    updateScreenState()
+                }
+                EVENT_END_OF_FORM -> {
+                    updateScreenState(true)
+                }
+                EVENT_BEGINNING_OF_FORM,
+                EVENT_PROMPT_NEW_REPEAT,
+                EVENT_GROUP,
+                EVENT_REPEAT,
+                EVENT_REPEAT_JUNCTURE -> {
+                    nextEvent()
+                }
+            }
+        } else {
+            event = controller.stepToPreviousEvent()
+            traceEventAndQuestion()
+            when (event) {
+                EVENT_QUESTION -> {
+                    questionAt--
+                    updateScreenState()
+                }
+                EVENT_BEGINNING_OF_FORM,
+                EVENT_PROMPT_NEW_REPEAT,
+                EVENT_GROUP,
+                EVENT_REPEAT,
+                EVENT_REPEAT_JUNCTURE -> nextEvent(false)
+            }
         }
     }
 
@@ -214,17 +265,14 @@ class InputActivity : ComponentActivity() {
         do {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
-            if (atEndOfForm()) {
+            if (event == EVENT_END_OF_FORM) {
                 updateScreenState(true)
                 return
             }
         } while (event != EVENT_QUESTION)
         questionAt++
-        traceEventAndQuestion()
         updateScreenState()
     }
-
-    private fun atEndOfForm(): Boolean = event == EVENT_END_OF_FORM
 
     private fun previousQuestion() {
         do {
@@ -236,7 +284,7 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onNext() {
-        if (atEndOfForm()) return
+        if (event == EVENT_END_OF_FORM) return
         val answer = StringData(
             _screenState.value.textFieldState.text
                     as String
@@ -255,7 +303,7 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onBack() {
-        if (questionAt==0) return
+        if (questionAt == 0) return
         previousQuestion()
     }
 
