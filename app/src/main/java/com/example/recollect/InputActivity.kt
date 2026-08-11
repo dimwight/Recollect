@@ -93,7 +93,8 @@ data class ScreenState(
     val endOfForm: Boolean = false,
     val newWidget_: Boolean = true,
     val questionAt: Int = -1,
-    val forWipe: Boolean = false
+    val forWipe: Boolean = false,
+    val addRepeat: Boolean=false
 ) {
     override fun toString(): String {
         return "showBack = $showBack showNext = $showNext "
@@ -140,11 +141,117 @@ class InputActivity : ComponentActivity() {
         event = controller.model.event
         while (questionAt < 0)
             if (false) nextQuestion()
-            else nextEvent()
+            else if (true)handleEvent()
+            else nextEvent_()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
                 Screens(this)
+            }
+        }
+    }
+
+    fun clearAddRepeat() {
+        _screenState.update {
+            it.copy(
+                addRepeat = false
+            )
+        }
+    }
+
+    private fun handleEvent (forward: Boolean = true) {
+        if(forward) {
+            traceEventAndQuestion()
+            /* EVENT_BEGINNING_OF_FORM = 0;
+             EVENT_END_OF_FORM = 1;
+             EVENT_PROMPT_NEW_REPEAT = 2;
+             EVENT_QUESTION = 4;
+             EVENT_GROUP = 8;
+             EVENT_REPEAT = 16;
+             EVENT_REPEAT_JUNCTURE = 32;*/
+            when (event) {
+                EVENT_QUESTION -> {
+                    questionAt++
+                    updateScreenState()
+                }
+                EVENT_END_OF_FORM -> updateScreenState(true)
+                EVENT_PROMPT_NEW_REPEAT-> {
+                    _screenState.update {
+                        it.copy(
+                            addRepeat = true
+                        )
+                    }
+
+                }
+                EVENT_BEGINNING_OF_FORM,
+                EVENT_GROUP,
+                EVENT_REPEAT,
+                EVENT_REPEAT_JUNCTURE -> {
+                    nextEvent_()
+                }
+            }
+            event = controller.stepToNextEvent()
+        } else {
+            traceEventAndQuestion()
+            when (event) {
+                EVENT_QUESTION -> {
+                    questionAt--
+                    updateScreenState()
+                }
+                EVENT_BEGINNING_OF_FORM,
+                EVENT_PROMPT_NEW_REPEAT,
+                EVENT_GROUP,
+                EVENT_REPEAT,
+                EVENT_REPEAT_JUNCTURE -> nextEvent_(false)
+            }
+            event = controller.stepToPreviousEvent()
+        }
+    }
+    private fun nextEvent_(forward: Boolean = true) {
+        if(forward) {
+            event = controller.stepToNextEvent()
+            traceEventAndQuestion()
+            /* EVENT_BEGINNING_OF_FORM = 0;
+             EVENT_END_OF_FORM = 1;
+             EVENT_PROMPT_NEW_REPEAT = 2;
+             EVENT_QUESTION = 4;
+             EVENT_GROUP = 8;
+             EVENT_REPEAT = 16;
+             EVENT_REPEAT_JUNCTURE = 32;*/
+            when (event) {
+                EVENT_QUESTION -> {
+                    questionAt++
+                    updateScreenState()
+                }
+                EVENT_END_OF_FORM -> updateScreenState(true)
+                EVENT_PROMPT_NEW_REPEAT-> {
+                    _screenState.update {
+                        it.copy(
+                            addRepeat = true
+                        )
+                    }
+
+                }
+                EVENT_BEGINNING_OF_FORM,
+                EVENT_GROUP,
+                EVENT_REPEAT,
+                EVENT_REPEAT_JUNCTURE -> {
+                    nextEvent_()
+                }
+            }
+        } else {
+            event = controller.stepToPreviousEvent()
+            traceEventAndQuestion()
+            when (event) {
+                EVENT_QUESTION -> {
+                    questionAt--
+                    updateScreenState()
+                }
+                EVENT_BEGINNING_OF_FORM,
+                EVENT_PROMPT_NEW_REPEAT,
+                EVENT_GROUP,
+                EVENT_REPEAT,
+                EVENT_REPEAT_JUNCTURE -> nextEvent_(false)
             }
         }
     }
@@ -214,50 +321,6 @@ class InputActivity : ComponentActivity() {
                 forWipe = false,
                 newWidget_ = false
             )
-        }
-    }
-
-    private fun nextEvent(forward: Boolean = true) {
-        if(forward) {
-            event = controller.stepToNextEvent()
-            traceEventAndQuestion()
-           /* EVENT_BEGINNING_OF_FORM = 0;
-            EVENT_END_OF_FORM = 1;
-            EVENT_PROMPT_NEW_REPEAT = 2;
-            EVENT_QUESTION = 4;
-            EVENT_GROUP = 8;
-            EVENT_REPEAT = 16;
-            EVENT_REPEAT_JUNCTURE = 32;*/
-            when (event) {
-                EVENT_QUESTION -> {
-                    questionAt++
-                    updateScreenState()
-                }
-                EVENT_END_OF_FORM -> {
-                    updateScreenState(true)
-                }
-                EVENT_BEGINNING_OF_FORM,
-                EVENT_PROMPT_NEW_REPEAT,
-                EVENT_GROUP,
-                EVENT_REPEAT,
-                EVENT_REPEAT_JUNCTURE -> {
-                    nextEvent()
-                }
-            }
-        } else {
-            event = controller.stepToPreviousEvent()
-            traceEventAndQuestion()
-            when (event) {
-                EVENT_QUESTION -> {
-                    questionAt--
-                    updateScreenState()
-                }
-                EVENT_BEGINNING_OF_FORM,
-                EVENT_PROMPT_NEW_REPEAT,
-                EVENT_GROUP,
-                EVENT_REPEAT,
-                EVENT_REPEAT_JUNCTURE -> nextEvent(false)
-            }
         }
     }
 

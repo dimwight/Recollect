@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.recollect.bits.AddRepeatDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -157,7 +158,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 Box {
                     if (screenState.endOfForm) Column {
                         Text(
-                            text = "You are at the end of All question types.",
+                            text = "You are at the end of ${screenState.formTitle}.",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             lineHeight = 32.sp,
@@ -185,6 +186,10 @@ fun ImeScreen(inputActivity: InputActivity) {
                                     Text("$next >", style = mySmallStyle())
                             Spacer(Modifier.height(15.dp))
                         }
+                        if (false|| screenState.addRepeat)
+                            AddRepeatDialog(
+                                onDismissRequest = {inputActivity.clearAddRepeat()}
+                            ) { }
                         val focusRequester = remember { FocusRequester() }
                         val focusManager = LocalFocusManager.current
                         QuestionTextField(focusRequester)
