@@ -94,7 +94,7 @@ data class ScreenState(
     val newWidget_: Boolean = true,
     val questionAt: Int = -1,
     val forWipe: Boolean = false,
-    val addRepeat: Boolean=false
+    val addRepeat: Boolean = false
 ) {
     override fun toString(): String {
         return "showBack = $showBack showNext = $showNext "
@@ -139,16 +139,20 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 0)
-            if (false) nextQuestion()
-            else if (true)handleEvent()
-            else nextEvent_()
+        while (questionAt < 0) doNext()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
                 Screens(this)
             }
         }
+    }
+
+    private fun doNext(forward: Boolean = true) {
+        if (true) {
+            if (forward) nextQuestion()
+            else previousQuestion()
+        } else handleEvent(forward)
     }
 
     fun clearAddRepeat() {
@@ -159,8 +163,8 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    private fun handleEvent (forward: Boolean = true) {
-        if(forward) {
+    private fun handleEvent(forward: Boolean = true) {
+        if (forward) {
             traceEventAndQuestion()
             /* EVENT_BEGINNING_OF_FORM = 0;
              EVENT_END_OF_FORM = 1;
@@ -174,20 +178,20 @@ class InputActivity : ComponentActivity() {
                     questionAt++
                     updateScreenState()
                 }
-                EVENT_END_OF_FORM -> updateScreenState(true)
-                EVENT_PROMPT_NEW_REPEAT-> {
+                EVENT_END_OF_FORM -> updateScreenState(endOfForm = true)
+                EVENT_PROMPT_NEW_REPEAT -> {
                     _screenState.update {
                         it.copy(
                             addRepeat = true
                         )
                     }
-
                 }
                 EVENT_BEGINNING_OF_FORM,
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    nextEvent_()
+                    event = controller.stepToNextEvent()
+                    handleEvent()
                 }
             }
             event = controller.stepToNextEvent()
@@ -198,61 +202,17 @@ class InputActivity : ComponentActivity() {
                     questionAt--
                     updateScreenState()
                 }
+
                 EVENT_BEGINNING_OF_FORM,
                 EVENT_PROMPT_NEW_REPEAT,
-                EVENT_GROUP,
-                EVENT_REPEAT,
-                EVENT_REPEAT_JUNCTURE -> nextEvent_(false)
-            }
-            event = controller.stepToPreviousEvent()
-        }
-    }
-    private fun nextEvent_(forward: Boolean = true) {
-        if(forward) {
-            event = controller.stepToNextEvent()
-            traceEventAndQuestion()
-            /* EVENT_BEGINNING_OF_FORM = 0;
-             EVENT_END_OF_FORM = 1;
-             EVENT_PROMPT_NEW_REPEAT = 2;
-             EVENT_QUESTION = 4;
-             EVENT_GROUP = 8;
-             EVENT_REPEAT = 16;
-             EVENT_REPEAT_JUNCTURE = 32;*/
-            when (event) {
-                EVENT_QUESTION -> {
-                    questionAt++
-                    updateScreenState()
-                }
-                EVENT_END_OF_FORM -> updateScreenState(true)
-                EVENT_PROMPT_NEW_REPEAT-> {
-                    _screenState.update {
-                        it.copy(
-                            addRepeat = true
-                        )
-                    }
-
-                }
-                EVENT_BEGINNING_OF_FORM,
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    nextEvent_()
+                    event = controller.stepToPreviousEvent()
+                    handleEvent(forward = false)
                 }
             }
-        } else {
             event = controller.stepToPreviousEvent()
-            traceEventAndQuestion()
-            when (event) {
-                EVENT_QUESTION -> {
-                    questionAt--
-                    updateScreenState()
-                }
-                EVENT_BEGINNING_OF_FORM,
-                EVENT_PROMPT_NEW_REPEAT,
-                EVENT_GROUP,
-                EVENT_REPEAT,
-                EVENT_REPEAT_JUNCTURE -> nextEvent_(false)
-            }
         }
     }
 
@@ -284,7 +244,7 @@ class InputActivity : ComponentActivity() {
             val labelText = question.labelInnerText
             it.copy(
                 questionAt = questionAt,
-                newWidget_ =false, //true,
+                newWidget_ = false, //true,
                 forWipe = true,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
