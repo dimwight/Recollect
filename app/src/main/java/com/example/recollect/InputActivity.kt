@@ -35,9 +35,16 @@ import org.javarosa.form.api.FormEntryModel
 import org.javarosa.form.api.FormEntryPrompt
 import org.javarosa.xform.util.XFormUtils
 import java.io.InputStream
+import java.lang.System.currentTimeMillis
 import kotlin.time.TimeSource.Monotonic
 
 var time_: Monotonic.ValueTimeMark? = null
+
+var start=-1L
+fun time(msg : String="") {
+    if (start<0) start= currentTimeMillis()
+    println("R1: $msg=${(currentTimeMillis() - start) / 100}")
+}
 
 fun getNumbers1_(): Flow<Int> = flow {
     for (i in 1..3) {
@@ -139,7 +146,7 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 0) doNext()
+        while (questionAt < 2) doNext()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -155,17 +162,9 @@ class InputActivity : ComponentActivity() {
         } else handleEvent(forward)
     }
 
-    fun clearAddRepeat() {
-        _screenState.update {
-            it.copy(
-                addRepeat = false
-            )
-        }
-    }
-
     private fun handleEvent(forward: Boolean = true) {
+        traceEventAndQuestion()
         if (forward) {
-            traceEventAndQuestion()
             /* EVENT_BEGINNING_OF_FORM = 0;
              EVENT_END_OF_FORM = 1;
              EVENT_PROMPT_NEW_REPEAT = 2;
@@ -178,7 +177,8 @@ class InputActivity : ComponentActivity() {
                     questionAt++
                     updateScreenState()
                 }
-                EVENT_END_OF_FORM -> updateScreenState(endOfForm = true)
+                EVENT_END_OF_FORM ->
+                    updateScreenState(endOfForm = true)
                 EVENT_PROMPT_NEW_REPEAT -> {
                     _screenState.update {
                         it.copy(
@@ -202,7 +202,6 @@ class InputActivity : ComponentActivity() {
                     questionAt--
                     updateScreenState()
                 }
-
                 EVENT_BEGINNING_OF_FORM,
                 EVENT_PROMPT_NEW_REPEAT,
                 EVENT_GROUP,
@@ -242,6 +241,7 @@ class InputActivity : ComponentActivity() {
         val question = questionPrompt.question
         _screenState.update {
             val labelText = question.labelInnerText
+            time("update")
             it.copy(
                 questionAt = questionAt,
                 newWidget_ = false, //true,
@@ -280,6 +280,14 @@ class InputActivity : ComponentActivity() {
             it.copy(
                 forWipe = false,
                 newWidget_ = false
+            )
+        }
+    }
+
+    fun clearAddRepeat() {
+        _screenState.update {
+            it.copy(
+                addRepeat = false
             )
         }
     }

@@ -138,7 +138,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             horizontalAlignment = Alignment.Start
         ) {
             FormTitleRow(screenState)
-            val wipeMillis = 300
+            val wipeMillis = 1300
             AnimatedContent(
                 targetState = screenState.questionAt,
                 transitionSpec = {
