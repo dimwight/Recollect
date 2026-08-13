@@ -41,9 +41,14 @@ import kotlin.time.TimeSource.Monotonic
 var time_: Monotonic.ValueTimeMark? = null
 
 var start=-1L
-fun time(msg : String="") {
-    if (start<0) start= currentTimeMillis()
-    println("R1: $msg=${(currentTimeMillis() - start) / 100}")
+fun Times(msg : String="") {
+    val elapsed = currentTimeMillis() - start
+    if (start<0||elapsed>5000) {
+        start= currentTimeMillis()
+        println("R1: Times reset in $msg")
+    }
+    else
+    println("R1: $msg=${elapsed / 10}")
 }
 
 fun getNumbers1_(): Flow<Int> = flow {
@@ -124,9 +129,9 @@ class InputActivity : ComponentActivity() {
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
     private fun traceEventAndQuestion(state: ScreenState? = null) {
+        if (true) return
         println("R1: questionAt = $questionAt")
         println("R1: event = $event")
-        if (true) return
         if (state == null) return
         println("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
     }
@@ -241,7 +246,7 @@ class InputActivity : ComponentActivity() {
         val question = questionPrompt.question
         _screenState.update {
             val labelText = question.labelInnerText
-            time("update")
+            if (false) Times("update")
             it.copy(
                 questionAt = questionAt,
                 newWidget_ = false, //true,

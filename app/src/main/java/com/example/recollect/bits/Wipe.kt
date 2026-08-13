@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.recollect.Times
 import kotlin.random.Random
 
 @Composable
@@ -106,6 +107,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
+            Times("click")
             if (Random.nextFloat()<.5)
                 wipeState++
             else
@@ -138,7 +140,7 @@ fun SlidingWipeContainer(
             targetState = targetState,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
-                    200,
+                    1200,
                     easing = LinearEasing
                 )
                 val initial = initialState

@@ -35,16 +35,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.recollect.bits.WipeDemoScreen
 
 @Composable
 fun Screens(activity: InputActivity) {
     val forceEndOfForm = false
     val endOfForm = forceEndOfForm ||
             activity.screenState.collectAsState().value.endOfForm
-    if (false) {
+    if (true) {
         Box {
+            WipeDemoScreen()
         }
-    } else if (false&& endOfForm) {
+    } else if (false) {
         EndOfFormScreen_(activity)
     } else ImeScreen(activity)
 }
