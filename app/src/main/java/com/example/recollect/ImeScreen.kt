@@ -140,7 +140,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             horizontalAlignment = Alignment.Start
         ) {
             FormTitleRow(screenState)
-            val wipeMillis = 1300
+            val wipeMillis = 300
             AnimatedContent(
                 targetState = screenState.questionAt,
                 transitionSpec = {
@@ -158,25 +158,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 }
             ) { at ->
                 Box {
-                    if (screenState.endOfForm) Column {
-                        Text(
-                            text = "You are at the end of ${screenState.formTitle}.",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            lineHeight = 32.sp,
-                            color = Color.Black
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        NoticeCard()
-                        Spacer(modifier = Modifier.height(40.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            SaveDraftButton()
-                            FinalizeButton()
-                        }
-                    }
+                    if (screenState.endOfForm) FormEndBox(screenState)
                     else Column {
                         FlowRow(Modifier.padding(vertical = 0.dp)) {
                             val labels = screenState.questionSpec.captions
@@ -230,6 +212,31 @@ fun ImeScreen(inputActivity: InputActivity) {
                         .background(Color.White)
                 )
                 Spacer(Modifier.height(25.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun FormEndBox(screenState: ScreenState) {
+    Box {
+        Column {
+            Text(
+                text = "You are at the end of ${screenState.formTitle}.",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 32.sp,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            NoticeCard()
+            Spacer(modifier = Modifier.height(40.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                SaveDraftButton()
+                FinalizeButton()
             }
         }
     }
