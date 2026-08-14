@@ -103,7 +103,7 @@ data class ScreenState(
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false,
-    val newWidget: Boolean = true,
+    val newWidget_: Boolean = true,
     val questionAt: Int = -1,
     val thenState: ScreenState? = null,
     val forWipe: Boolean = false,
@@ -223,10 +223,13 @@ class InputActivity : ComponentActivity() {
     }
 
     private fun updateScreenState(endOfForm: Boolean = false) {
+        val thenState: ScreenState = screenState.value
         if (endOfForm) {
             _screenState.update {
                 it.copy(
+                    thenState = thenState,
                     endOfForm = true,
+                    forWipe = true,
                     showBack = true,
                     showNext = false,
                     formTitle = controller.model.formTitle,
@@ -236,7 +239,6 @@ class InputActivity : ComponentActivity() {
             traceEventAndQuestion(_screenState.value)
             return
         }
-        var thenState = screenState.value
         val model = controller.model
         val questionPrompt = model.questionPrompt
         val formElement = questionPrompt.formElement
@@ -253,8 +255,8 @@ class InputActivity : ComponentActivity() {
             it.copy(
                 thenState = thenState,
                 questionAt = questionAt,
-                newWidget = true,
-                forWipe = true,
+                newWidget_ = false,
+                forWipe = questionAt>0||thenState.questionAt==1,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
                 showBack = showBack,
@@ -279,10 +281,10 @@ class InputActivity : ComponentActivity() {
         traceEventAndQuestion(_screenState.value)
     }
 
-    fun clearNewWidget() {
+    fun clearNewWidget_() {
         _screenState.update {
             it.copy(
-                newWidget = false
+                newWidget_ = false
             )
         }
     }
@@ -291,7 +293,7 @@ class InputActivity : ComponentActivity() {
         _screenState.update {
             it.copy(
                 forWipe = false,
-                newWidget = false
+                newWidget_ = false
             )
         }
     }

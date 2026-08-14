@@ -140,68 +140,45 @@ fun ImeScreen(inputActivity: InputActivity) {
             horizontalAlignment = Alignment.Start
         ) {
             FormTitleRow(screenState)
-            val wipeMillis = 300
-            AnimatedContent(
-                targetState = screenState.questionAt,
-                transitionSpec = {
-                    val slideTween = tween<IntOffset>(
-                        durationMillis = wipeMillis,
-                        easing = LinearEasing
+            if (true && screenState.forWipe) {
+                val wipeMillis = 300
+                var wipeState by remember {
+                    mutableIntStateOf(
+                        screenState.thenState?.questionAt ?: -1
                     )
-                    if (targetState > initialState) {
-                        slideInHorizontally(slideTween) { it: Int -> it } togetherWith
-                                slideOutHorizontally(slideTween) { -it }
-                    } else {
-                        slideInHorizontally(slideTween) { -it } togetherWith
-                                slideOutHorizontally(slideTween) { it }
-                    }
                 }
-            ) { at ->
-                Box {
-                    if (screenState.endOfForm) FormEndBox(screenState)
-                    else Column {
-                        FlowRow(Modifier.padding(vertical = 0.dp)) {
-                            val labels = screenState.questionSpec.captions
-                                .mapTo(ArrayList()) {
-                                    it.formElement.labelInnerText
-                                }
-                            for ((at: Int, next) in labels.withIndex())
-                                if (at < labels.size - 1)
-                                    Text("$next >", style = mySmallStyle())
-                            Spacer(Modifier.height(15.dp))
+                AnimatedContent(
+                    targetState = wipeState,
+                    transitionSpec = {
+                        val slideTween = tween<IntOffset>(
+                            durationMillis = wipeMillis,
+                            easing = LinearEasing
+                        )
+                        if (targetState > initialState) {
+                            slideInHorizontally(slideTween) { it: Int -> it } togetherWith
+                                    slideOutHorizontally(slideTween) { -it }
+                        } else {
+                            slideInHorizontally(slideTween) { -it } togetherWith
+                                    slideOutHorizontally(slideTween) { it }
                         }
-                        if (false|| screenState.addRepeat)
-                            AddRepeatDialog(
-                                onDismissRequest = {inputActivity.clearAddRepeat()}
-                            ) { }
-                        val focusRequester = remember { FocusRequester() }
-                        val focusManager = LocalFocusManager.current
-                        QuestionTextField(focusRequester)
-                        if (!screenState.forWipe)
-                            LaunchedEffect(screenState) {
-                                if (screenState.newWidget) {
-                                    inputActivity.clearNewWidget()
-                                } else {
-//                                    delay(200.milliseconds)
-                                    focusRequester.requestFocus()
-                                }
-                            }
-                        else
-                            LaunchedEffect(screenState) {
-                                focusManager.clearFocus(true)
-//                                delay(800.milliseconds)
-                                inputActivity.clearForWipe()
-                            }
                     }
+                ) { at ->
+                    ChooseFormBox(screenState, inputActivity, at)
+                }
+                LaunchedEffect(wipeMillis) {
+                    wipeState=screenState.questionAt
+                    delay(wipeMillis.milliseconds)
+                    inputActivity.clearForWipe()
                 }
             }
+            else ChooseFormBox(screenState, inputActivity)
         }
         Box {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                if (true||!screenState.newWidget) {
+                if (true || !screenState.newWidget_) {
                     BackNextRow(inputActivity, screenState)
                 }
                 Spacer(Modifier.height(20.dp))
@@ -213,6 +190,65 @@ fun ImeScreen(inputActivity: InputActivity) {
                 )
                 Spacer(Modifier.height(25.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun ChooseFormBox(
+    screenState: ScreenState,
+    inputActivity: InputActivity,
+    at: Int = -1
+) {
+    val forWipe = at != -1
+    if (!forWipe){
+        if (screenState.endOfForm) FormEndBox(screenState)
+        else FormWidgetEditBox(screenState, inputActivity)
+        return
+    }
+    val wipeState = if (at == screenState.questionAt) screenState
+        else screenState.thenState!!
+    if (wipeState.endOfForm) FormEndBox(wipeState)
+    else FormWidgetWipeBox(wipeState)
+}
+
+@Composable
+private fun FormWidgetEditBox(
+    screenState: ScreenState,
+    inputActivity: InputActivity
+) {
+    Box {
+        Column {
+            FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = screenState.questionSpec.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex())
+                    if (at < labels.size - 1)
+                        Text("$next >", style = mySmallStyle())
+                Spacer(Modifier.height(15.dp))
+            }
+            if (false || screenState.addRepeat)
+                AddRepeatDialog(
+                    onDismissRequest = { inputActivity.clearAddRepeat() }
+                ) { }
+            val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
+            QuestionTextField(focusRequester)
+            if (!screenState.forWipe)
+                LaunchedEffect(screenState) {
+                    if (screenState.newWidget_) {
+                        inputActivity.clearNewWidget_()
+                    } else {
+                        delay(600.milliseconds)
+                        focusRequester.requestFocus()
+                    }
+                }
+            else
+                LaunchedEffect(screenState) {
+                    focusManager.clearFocus(true)
+                }
         }
     }
 }
@@ -244,9 +280,9 @@ private fun FormEndBox(screenState: ScreenState) {
 
 
 @Composable
-private fun ForWipe(screenState: ScreenState) {
+private fun FormWidgetWipeBox(screenState: ScreenState) {
     Box() {
-      Column {
+        Column {
             val question = screenState.questionSpec
             FlowRow(Modifier.padding(vertical = 0.dp)) {
                 val labels = question.captions

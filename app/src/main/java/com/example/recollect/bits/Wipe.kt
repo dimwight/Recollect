@@ -120,7 +120,7 @@ fun WipeDemoScreen() {
             targetState = wipeState,
             modifier = Modifier.fillMaxSize()
         ) { at ->
-            if (true) AtBox(at)
+            if (false) AtBox(at)
             else when (at) {
                 0 -> AtBox(at)
                 1 -> AtBox(at)
