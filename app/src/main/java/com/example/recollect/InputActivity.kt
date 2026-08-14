@@ -103,13 +103,15 @@ data class ScreenState(
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false,
-    val newWidget_: Boolean = true,
+    val newWidget: Boolean = true,
     val questionAt: Int = -1,
+    val thenState: ScreenState? = null,
     val forWipe: Boolean = false,
     val addRepeat: Boolean = false
 ) {
     override fun toString(): String {
-        return "showBack = $showBack showNext = $showNext "
+        return if (false) "showBack = $showBack showNext = $showNext "
+        else toString()
     }
 }
 
@@ -234,6 +236,7 @@ class InputActivity : ComponentActivity() {
             traceEventAndQuestion(_screenState.value)
             return
         }
+        var thenState = screenState.value
         val model = controller.model
         val questionPrompt = model.questionPrompt
         val formElement = questionPrompt.formElement
@@ -248,8 +251,9 @@ class InputActivity : ComponentActivity() {
             val labelText = question.labelInnerText
             if (false) Times("update")
             it.copy(
+                thenState = thenState,
                 questionAt = questionAt,
-                newWidget_ = false, //true,
+                newWidget = true,
                 forWipe = true,
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
@@ -269,13 +273,16 @@ class InputActivity : ComponentActivity() {
                 )
             )
         }
+        val nowAt = screenState.value.questionAt
+        val thenAt = screenState.value.thenState?.questionAt ?: -1
+        if (false) println("R1: nowAt = $nowAt, thenAt = $thenAt")
         traceEventAndQuestion(_screenState.value)
     }
 
-    fun clearNewWidget_() {
+    fun clearNewWidget() {
         _screenState.update {
             it.copy(
-                newWidget_ = false
+                newWidget = false
             )
         }
     }
@@ -284,7 +291,7 @@ class InputActivity : ComponentActivity() {
         _screenState.update {
             it.copy(
                 forWipe = false,
-                newWidget_ = false
+                newWidget = false
             )
         }
     }

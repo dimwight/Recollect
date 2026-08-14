@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.visible
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -195,8 +197,8 @@ fun ImeScreen(inputActivity: InputActivity) {
                         QuestionTextField(focusRequester)
                         if (!screenState.forWipe)
                             LaunchedEffect(screenState) {
-                                if (screenState.newWidget_) {
-                                    inputActivity.clearNewWidget_()
+                                if (screenState.newWidget) {
+                                    inputActivity.clearNewWidget()
                                 } else {
 //                                    delay(200.milliseconds)
                                     focusRequester.requestFocus()
@@ -217,7 +219,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                if (true||!screenState.newWidget_) {
+                if (true||!screenState.newWidget) {
                     BackNextRow(inputActivity, screenState)
                 }
                 Spacer(Modifier.height(20.dp))
@@ -229,6 +231,45 @@ fun ImeScreen(inputActivity: InputActivity) {
                 )
                 Spacer(Modifier.height(25.dp))
             }
+        }
+    }
+}
+
+
+@Composable
+private fun ForWipe(screenState: ScreenState) {
+    Box() {
+      Column {
+            val question = screenState.questionSpec
+            FlowRow(Modifier.padding(vertical = 0.dp)) {
+                val labels = question.captions
+                    .mapTo(ArrayList()) {
+                        it.formElement.labelInnerText
+                    }
+                for ((at: Int, next) in labels.withIndex())
+                    if (at < labels.size - 1)
+                        Text("$next >+", style = mySmallStyle())
+                Spacer(Modifier.height(15.dp))
+            }
+            Text(
+                question.labelText,
+                style = myMediumStyle(true),
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                question.helpText,
+                style = mySmallStyle()
+            )
+            Spacer(Modifier.height(10.dp))
+            val containerColor = Color(242, 242, 242)
+            TextField(
+                screenState.textFieldState,
+                Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors().copy(
+                    focusedContainerColor = containerColor,
+                    unfocusedContainerColor = containerColor
+                )
+            )
         }
     }
 }
