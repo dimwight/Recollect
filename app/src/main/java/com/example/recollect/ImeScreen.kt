@@ -140,7 +140,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             horizontalAlignment = Alignment.Start
         ) {
             FormTitleRow(screenState)
-            if (true && screenState.forWipe) {
+            if (inputActivity.doWipe && screenState.forWipe) {
                 val wipeMillis = 300
                 var wipeState by remember {
                     mutableIntStateOf(
@@ -181,14 +181,14 @@ fun ImeScreen(inputActivity: InputActivity) {
                 if (true || !screenState.newWidget_) {
                     BackNextRow(inputActivity, screenState)
                 }
-                Spacer(Modifier.height(20.dp))
+//                Spacer(Modifier.height(20.dp))
                 Box(
                     Modifier
-                        .height(getImeHeight().dp)
+                        .height((45+getImeHeight()).dp)
                         .fillMaxWidth()
                         .background(Color.White)
                 )
-                Spacer(Modifier.height(25.dp))
+//                Spacer(Modifier.height(25.dp))
             }
         }
     }
@@ -241,7 +241,7 @@ private fun FormWidgetEditBox(
                     if (screenState.newWidget_) {
                         inputActivity.clearNewWidget_()
                     } else {
-                        delay(600.milliseconds)
+                        if (inputActivity.doWipe) delay(600.milliseconds)
                         focusRequester.requestFocus()
                     }
                 }
@@ -257,16 +257,17 @@ private fun FormWidgetEditBox(
 private fun FormEndBox(screenState: ScreenState) {
     Box {
         Column {
+            Spacer(modifier = Modifier.height(140.dp))
             Text(
                 text = "You are at the end of ${screenState.formTitle}.",
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 32.sp,
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(24.dp))
             NoticeCard()
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(60.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)

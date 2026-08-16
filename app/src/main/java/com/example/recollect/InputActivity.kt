@@ -47,8 +47,7 @@ fun Times(msg : String="") {
         start= currentTimeMillis()
         println("R1: Times reset in $msg")
     }
-    else
-    println("R1: $msg=${elapsed / 10}")
+    else println("R1: $msg=${elapsed / 10}")
 }
 
 fun getNumbers1_(): Flow<Int> = flow {
@@ -163,7 +162,7 @@ class InputActivity : ComponentActivity() {
     }
 
     private fun doNext(forward: Boolean = true) {
-        if (true) {
+        if (false) {
             if (forward) nextQuestion()
             else previousQuestion()
         } else handleEvent(forward)
@@ -171,14 +170,14 @@ class InputActivity : ComponentActivity() {
 
     private fun handleEvent(forward: Boolean = true) {
         traceEventAndQuestion()
+        /* EVENT_BEGINNING_OF_FORM = 0;
+          EVENT_END_OF_FORM = 1;
+          EVENT_PROMPT_NEW_REPEAT = 2;
+          EVENT_QUESTION = 4;
+          EVENT_GROUP = 8;
+          EVENT_REPEAT = 16;
+          EVENT_REPEAT_JUNCTURE = 32;*/
         if (forward) {
-            /* EVENT_BEGINNING_OF_FORM = 0;
-             EVENT_END_OF_FORM = 1;
-             EVENT_PROMPT_NEW_REPEAT = 2;
-             EVENT_QUESTION = 4;
-             EVENT_GROUP = 8;
-             EVENT_REPEAT = 16;
-             EVENT_REPEAT_JUNCTURE = 32;*/
             when (event) {
                 EVENT_QUESTION -> {
                     questionAt++
@@ -189,7 +188,7 @@ class InputActivity : ComponentActivity() {
                 EVENT_PROMPT_NEW_REPEAT -> {
                     _screenState.update {
                         it.copy(
-                            addRepeat = true
+                            addRepeat = false
                         )
                     }
                 }
@@ -222,24 +221,26 @@ class InputActivity : ComponentActivity() {
         }
     }
 
+    val doWipe: Boolean = true
+
     private fun updateScreenState(endOfForm: Boolean = false) {
-        val thenState: ScreenState = screenState.value
+        val thenState: ScreenState = _screenState.value
+        val model = controller.model
         if (endOfForm) {
             _screenState.update {
                 it.copy(
                     thenState = thenState,
                     endOfForm = true,
-                    forWipe = true,
+                    forWipe = doWipe,
                     showBack = true,
                     showNext = false,
-                    formTitle = controller.model.formTitle,
+                    formTitle = model.formTitle,
                     questionAt = ++questionAt
                 )
             }
             traceEventAndQuestion(_screenState.value)
             return
         }
-        val model = controller.model
         val questionPrompt = model.questionPrompt
         val formElement = questionPrompt.formElement
         if (questionAt == 0 && firstQuestionPrompt == null) {
@@ -256,7 +257,8 @@ class InputActivity : ComponentActivity() {
                 thenState = thenState,
                 questionAt = questionAt,
                 newWidget_ = false,
-                forWipe = questionAt>0||thenState.questionAt==1,
+                forWipe = doWipe&&
+                        (questionAt>0||thenState.questionAt==1),
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
                 showBack = showBack,
