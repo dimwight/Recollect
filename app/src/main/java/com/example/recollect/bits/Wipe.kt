@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recollect.Times
+import com.example.recollect.times
 import kotlin.random.Random
 
 @Composable
@@ -107,7 +107,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
-            Times("click")
+            times("click")
             if (Random.nextFloat()<.5)
                 wipeState++
             else

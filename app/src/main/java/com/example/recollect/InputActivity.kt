@@ -36,23 +36,23 @@ import org.javarosa.form.api.FormEntryPrompt
 import org.javarosa.xform.util.XFormUtils
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource.Monotonic
 
 var time_: Monotonic.ValueTimeMark? = null
 
-var start=-1L
-fun Times(msg : String="") {
+var start = -1L
+fun times(msg: String = "") {
     val elapsed = currentTimeMillis() - start
-    if (start<0||elapsed>5000) {
-        start= currentTimeMillis()
+    if (start < 0 || elapsed > 5000) {
+        start = currentTimeMillis()
         println("R1: Times reset in $msg")
-    }
-    else println("R1: $msg=${elapsed / 10}")
+    } else println("R1: $msg=${elapsed / 10}")
 }
 
 fun getNumbers1_(): Flow<Int> = flow {
     for (i in 1..3) {
-        delay(1000)
+        delay(1000.milliseconds)
     }
 }
 
@@ -114,14 +114,21 @@ data class ScreenState(
     }
 }
 
+
 class InputActivity : ComponentActivity() {
+    companion object {
+        const val QuestionFrom = 2
+    }
+
     fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
-            delay(1000)
+            delay(1000.milliseconds)
             emit(i)
         }
     }
 
+    val applyQuestionFromBefore: Boolean
+        get() = false
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
     var event: Int = -1
@@ -130,11 +137,11 @@ class InputActivity : ComponentActivity() {
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
     private fun traceEventAndQuestion(state: ScreenState? = null) {
-        if (true) return
         println("R1: questionAt = $questionAt")
         println("R1: event = $event")
         if (state == null) return
-        println("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
+        if (true) return
+        ("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,7 +159,8 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
-        while (questionAt < 4) doNext()
+        if (false) event = controller.stepToNextEvent()
+        if (applyQuestionFromBefore) while (questionAt < QuestionFrom) doNext()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -183,8 +191,10 @@ class InputActivity : ComponentActivity() {
                     questionAt++
                     updateScreenState()
                 }
+
                 EVENT_END_OF_FORM ->
                     updateScreenState(endOfForm = true)
+
                 EVENT_PROMPT_NEW_REPEAT -> {
                     _screenState.update {
                         it.copy(
@@ -192,6 +202,7 @@ class InputActivity : ComponentActivity() {
                         )
                     }
                 }
+
                 EVENT_BEGINNING_OF_FORM,
                 EVENT_GROUP,
                 EVENT_REPEAT,
@@ -208,6 +219,7 @@ class InputActivity : ComponentActivity() {
                     questionAt--
                     updateScreenState()
                 }
+
                 EVENT_BEGINNING_OF_FORM,
                 EVENT_PROMPT_NEW_REPEAT,
                 EVENT_GROUP,
@@ -252,13 +264,13 @@ class InputActivity : ComponentActivity() {
         val question = questionPrompt.question
         _screenState.update {
             val labelText = question.labelInnerText
-            if (false) Times("update")
+            if (false) times("update")
             it.copy(
                 thenState = thenState,
                 questionAt = questionAt,
                 newWidget_ = false,
-                forWipe = doWipe&&
-                        (questionAt>0||thenState.questionAt==1),
+                forWipe = doWipe &&
+                        (questionAt > 0 || thenState.questionAt == 1),
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
                 showBack = showBack,

@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.recollect.InputActivity.Companion.QuestionFrom
 import com.example.recollect.bits.AddRepeatDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -173,23 +174,23 @@ fun ImeScreen(inputActivity: InputActivity) {
             }
             else ChooseFormBox(screenState, inputActivity)
         }
-        Box {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                if (true || !screenState.newWidget_) {
-                    BackNextRow(inputActivity, screenState)
-                }
-//                Spacer(Modifier.height(20.dp))
-                Box(
-                    Modifier
-                        .height((45+getImeHeight()).dp)
-                        .fillMaxWidth()
-                        .background(Color.White)
-                )
-//                Spacer(Modifier.height(25.dp))
-            }
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            BackNextRow(inputActivity, screenState)
+            Box(
+                Modifier
+                    .height((45+getImeHeight()).dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
+            )
+        }
+        if (!inputActivity.applyQuestionFromBefore&&
+            screenState.questionAt<QuestionFrom)
+            LaunchedEffect(Unit) {
+            delay(200.milliseconds)
+            inputActivity.onNext()
         }
     }
 }
@@ -241,7 +242,7 @@ private fun FormWidgetEditBox(
                     if (screenState.newWidget_) {
                         inputActivity.clearNewWidget_()
                     } else {
-                        if (inputActivity.doWipe) delay(600.milliseconds)
+                        if (inputActivity.doWipe) delay(200.milliseconds)
                         focusRequester.requestFocus()
                     }
                 }
