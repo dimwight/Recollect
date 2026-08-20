@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recollect.InputActivity.Companion.QuestionFrom
-import com.example.recollect.InputActivity.Companion.applyQuestionFromBefore
+import com.example.recollect.InputActivity.Companion.ApplyQuestionFromBefore
 import com.example.recollect.bits.AddRepeatDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -168,12 +168,11 @@ fun ImeScreen(inputActivity: InputActivity) {
                     ChooseFormBox(screenState, inputActivity, at)
                 }
                 LaunchedEffect(wipeMillis) {
-                    wipeState=screenState.questionAt
+                    wipeState = screenState.questionAt
                     delay(wipeMillis.milliseconds)
                     inputActivity.clearForWipe()
                 }
-            }
-            else ChooseFormBox(screenState, inputActivity)
+            } else ChooseFormBox(screenState, inputActivity)
         }
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -182,17 +181,18 @@ fun ImeScreen(inputActivity: InputActivity) {
             BackNextRow(inputActivity, screenState)
             Box(
                 Modifier
-                    .height((45+getImeHeight()).dp)
+                    .height((45 + getImeHeight()).dp)
                     .fillMaxWidth()
                     .background(Color.White)
             )
         }
-        if (!applyQuestionFromBefore &&
-            screenState.questionAt<QuestionFrom)
+        if (!ApplyQuestionFromBefore &&
+            screenState.questionAt < QuestionFrom
+        )
             LaunchedEffect(Unit) {
-            delay(200.milliseconds)
-            inputActivity.onNext()
-        }
+                delay(200.milliseconds)
+                inputActivity.onNext()
+            }
     }
 }
 
@@ -203,13 +203,13 @@ private fun ChooseFormBox(
     at: Int = -1
 ) {
     val forWipe = at != -1
-    if (!forWipe){
+    if (!forWipe) {
         if (screenState.endOfForm) FormEndBox(screenState)
         else FormWidgetEditBox(screenState, inputActivity)
         return
     }
     val wipeState = if (at == screenState.questionAt) screenState
-        else screenState.thenState!!
+    else screenState.thenState!!
     if (wipeState.endOfForm) FormEndBox(wipeState)
     else FormWidgetWipeBox(wipeState)
 }

@@ -109,8 +109,9 @@ data class ScreenState(
     val addRepeat: Boolean = false
 ) {
     override fun toString(): String {
-        return if (false) "showBack = $showBack showNext = $showNext "
-        else toString()
+        return if (true) "${questionSpec.labelText} $questionAt"
+//            "showBack = $showBack showNext = $showNext "
+        else ("${hashCode()}")
     }
 }
 
@@ -122,11 +123,6 @@ class InputActivity : ComponentActivity() {
             emit(i)
         }
     }
-    companion object {
-        const val QuestionFrom = 0
-        val applyQuestionFromBefore: Boolean
-            get() = true
-    }
 
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
@@ -135,10 +131,14 @@ class InputActivity : ComponentActivity() {
     private var hasError: Boolean = false
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
-    private fun traceEventAndQuestion(state: ScreenState? = null) {
-        println("R1: event = $event questionAt = $questionAt")
-        if (true|| state == null) return
-        ("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
+    private fun traceEventAndQuestion(msg: Any? = null) {
+        val top = if (msg != null && msg !is ScreenState) " msg = $msg" else ""
+        val tail = " event = $event questionAt = $questionAt"
+        println("R1:$top$tail")
+        val state: ScreenState? =
+            if (msg != null && msg is ScreenState) msg else null
+        if (state != null)
+            println("R1: state = $state ")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,7 +157,7 @@ class InputActivity : ComponentActivity() {
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
         event = controller.model.event
         if (false) event = controller.stepToNextEvent()
-        if (applyQuestionFromBefore) while (questionAt < QuestionFrom) doNext()
+        if (ApplyQuestionFromBefore) while (questionAt < QuestionFrom) doNext()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -171,6 +171,11 @@ class InputActivity : ComponentActivity() {
             if (forward) nextQuestion()
             else previousQuestion()
         } else handleEvent(forward)
+    }
+
+    companion object {
+        const val QuestionFrom = 0
+        const val ApplyQuestionFromBefore = true
     }
 
     private fun handleEvent(forward: Boolean = true) {
@@ -292,29 +297,28 @@ class InputActivity : ComponentActivity() {
         traceEventAndQuestion(_screenState.value)
     }
 
-    fun clearNewWidget_() {
+
+    fun onNext() {
+        traceEventAndQuestion("onNext")
+        if (true|| event != EVENT_QUESTION) {
+            doNext()
+            return
+        }
+        val answer = StringData(
+            _screenState.value.textFieldState.text as String
+        )
+        val result = controller.answerQuestion(answer, true)
+        if (false) hasError = !hasError
         _screenState.update {
             it.copy(
-                newWidget_ = false
+                hasError = hasError,
             )
         }
+        if (!hasError) doNext()
     }
 
-    fun clearForWipe() {
-        _screenState.update {
-            it.copy(
-                forWipe = false,
-                newWidget_ = false
-            )
-        }
-    }
-
-    fun clearAddRepeat() {
-        _screenState.update {
-            it.copy(
-                addRepeat = false
-            )
-        }
+    fun onBack() {
+        doNext(false)
     }
 
     private fun nextQuestion() {
@@ -339,30 +343,30 @@ class InputActivity : ComponentActivity() {
         updateScreenState()
     }
 
-    fun onNext() {
-        if (event == EVENT_END_OF_FORM) return
-        val answer = StringData(
-            _screenState.value.textFieldState.text
-                    as String
-        )
-        val result = controller.answerQuestion(answer, true)
-        if (false) hasError = !hasError
+    fun clearNewWidget_() {
         _screenState.update {
             it.copy(
-                hasError = hasError,
-                showBack = true
+                newWidget_ = false
             )
         }
-        if (!hasError) {
-            nextQuestion()
+    }
+
+    fun clearForWipe() {
+        _screenState.update {
+            it.copy(
+                forWipe = false,
+                newWidget_ = false
+            )
         }
     }
 
-    fun onBack() {
-        if (questionAt == 0) return
-        previousQuestion()
+    fun clearAddRepeat() {
+        _screenState.update {
+            it.copy(
+                addRepeat = false
+            )
+        }
     }
-
 }
 
 
