@@ -116,19 +116,18 @@ data class ScreenState(
 
 
 class InputActivity : ComponentActivity() {
-    companion object {
-        const val QuestionFrom = 2
-    }
-
     fun getNumbers4_(): Flow<Int> = flow {
         for (i in 4..6) {
             delay(1000.milliseconds)
             emit(i)
         }
     }
+    companion object {
+        const val QuestionFrom = 0
+        val applyQuestionFromBefore: Boolean
+            get() = true
+    }
 
-    val applyQuestionFromBefore: Boolean
-        get() = false
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
     var event: Int = -1
@@ -137,10 +136,8 @@ class InputActivity : ComponentActivity() {
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
     private fun traceEventAndQuestion(state: ScreenState? = null) {
-        println("R1: questionAt = $questionAt")
-        println("R1: event = $event")
-        if (state == null) return
-        if (true) return
+        println("R1: event = $event questionAt = $questionAt")
+        if (true|| state == null) return
         ("R1: state = $state firstQuestionPrompt = ${firstQuestionPrompt.hashCode()}} ")
     }
 
@@ -178,13 +175,6 @@ class InputActivity : ComponentActivity() {
 
     private fun handleEvent(forward: Boolean = true) {
         traceEventAndQuestion()
-        /* EVENT_BEGINNING_OF_FORM = 0;
-          EVENT_END_OF_FORM = 1;
-          EVENT_PROMPT_NEW_REPEAT = 2;
-          EVENT_QUESTION = 4;
-          EVENT_GROUP = 8;
-          EVENT_REPEAT = 16;
-          EVENT_REPEAT_JUNCTURE = 32;*/
         if (forward) {
             when (event) {
                 EVENT_QUESTION -> {
@@ -212,6 +202,13 @@ class InputActivity : ComponentActivity() {
                 }
             }
             event = controller.stepToNextEvent()
+            /* EVENT_BEGINNING_OF_FORM = 0;
+                  EVENT_END_OF_FORM = 1;
+                  EVENT_PROMPT_NEW_REPEAT = 2;
+                  EVENT_QUESTION = 4;
+                  EVENT_GROUP = 8;
+                  EVENT_REPEAT = 16;
+                  EVENT_REPEAT_JUNCTURE = 32;*/
         } else {
             traceEventAndQuestion()
             when (event) {

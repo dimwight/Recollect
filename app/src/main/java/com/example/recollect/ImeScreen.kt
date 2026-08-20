@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recollect.InputActivity.Companion.QuestionFrom
+import com.example.recollect.InputActivity.Companion.applyQuestionFromBefore
 import com.example.recollect.bits.AddRepeatDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -186,7 +187,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                     .background(Color.White)
             )
         }
-        if (!inputActivity.applyQuestionFromBefore&&
+        if (!applyQuestionFromBefore &&
             screenState.questionAt<QuestionFrom)
             LaunchedEffect(Unit) {
             delay(200.milliseconds)
