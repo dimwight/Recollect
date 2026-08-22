@@ -203,7 +203,6 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    event = controller.stepToNextEvent()
                     handleNextEvent()
                 }
             }
@@ -228,7 +227,6 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    event = controller.stepToPreviousEvent()
                     handleNextEvent(forward = false)
                 }
             }
@@ -308,7 +306,7 @@ class InputActivity : ComponentActivity() {
             _screenState.value.textFieldState.text as String
         )
         val result = controller.answerQuestion(answer, true)
-        if (false) hasError = !hasError
+        if (true) hasError = !hasError
         _screenState.update {
             it.copy(
                 hasError = hasError,
