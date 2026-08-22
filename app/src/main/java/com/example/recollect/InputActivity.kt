@@ -170,7 +170,7 @@ class InputActivity : ComponentActivity() {
         if (false) {
             if (forward) nextQuestion()
             else previousQuestion()
-        } else handleEvent(forward)
+        } else handleNextEvent(forward)
     }
 
     companion object {
@@ -178,9 +178,10 @@ class InputActivity : ComponentActivity() {
         const val ApplyQuestionFromBefore = true
     }
 
-    private fun handleEvent(forward: Boolean = true) {
-        traceEventAndQuestion()
+    private fun handleNextEvent(forward: Boolean = true) {
         if (forward) {
+            event = controller.stepToNextEvent()
+            traceEventAndQuestion()
             when (event) {
                 EVENT_QUESTION -> {
                     questionAt++
@@ -203,10 +204,9 @@ class InputActivity : ComponentActivity() {
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
                     event = controller.stepToNextEvent()
-                    handleEvent()
+                    handleNextEvent()
                 }
             }
-            event = controller.stepToNextEvent()
             /* EVENT_BEGINNING_OF_FORM = 0;
                   EVENT_END_OF_FORM = 1;
                   EVENT_PROMPT_NEW_REPEAT = 2;
@@ -215,6 +215,7 @@ class InputActivity : ComponentActivity() {
                   EVENT_REPEAT = 16;
                   EVENT_REPEAT_JUNCTURE = 32;*/
         } else {
+            event = controller.stepToPreviousEvent()
             traceEventAndQuestion()
             when (event) {
                 EVENT_QUESTION -> {
@@ -228,10 +229,9 @@ class InputActivity : ComponentActivity() {
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
                     event = controller.stepToPreviousEvent()
-                    handleEvent(forward = false)
+                    handleNextEvent(forward = false)
                 }
             }
-            event = controller.stepToPreviousEvent()
         }
     }
 
@@ -300,7 +300,7 @@ class InputActivity : ComponentActivity() {
 
     fun onNext() {
         traceEventAndQuestion("onNext")
-        if (true|| event != EVENT_QUESTION) {
+        if (false|| event != EVENT_QUESTION) {
             doNext()
             return
         }
@@ -318,6 +318,7 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onBack() {
+        if (true&& questionAt == 0) return
         doNext(false)
     }
 
