@@ -170,15 +170,15 @@ class InputActivity : ComponentActivity() {
         if (false) {
             if (forward) nextQuestion()
             else previousQuestion()
-        } else handleNextEvent(forward)
+        } else nextEvent(forward)
     }
 
     companion object {
-        const val QuestionFrom = 0
+        const val QuestionFrom = 2
         const val ApplyQuestionFromBefore = true
     }
 
-    private fun handleNextEvent(forward: Boolean = true) {
+    private fun nextEvent(forward: Boolean = true) {
         if (forward) {
             event = controller.stepToNextEvent()
             traceEventAndQuestion()
@@ -192,18 +192,19 @@ class InputActivity : ComponentActivity() {
                     updateScreenState(endOfForm = true)
 
                 EVENT_PROMPT_NEW_REPEAT -> {
-                    _screenState.update {
+                    if (false) _screenState.update {
                         it.copy(
                             addRepeat = false
                         )
                     }
+                    else nextEvent()
                 }
 
                 EVENT_BEGINNING_OF_FORM,
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    handleNextEvent()
+                    nextEvent()
                 }
             }
             /* EVENT_BEGINNING_OF_FORM = 0;
@@ -227,7 +228,7 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    handleNextEvent(forward = false)
+                    nextEvent(forward = false)
                 }
             }
         }
@@ -295,28 +296,25 @@ class InputActivity : ComponentActivity() {
         traceEventAndQuestion(_screenState.value)
     }
 
-
     fun onNext() {
         traceEventAndQuestion("onNext")
-        if (false|| event != EVENT_QUESTION) {
-            doNext()
-            return
-        }
-        val answer = StringData(
-            _screenState.value.textFieldState.text as String
-        )
-        val result = controller.answerQuestion(answer, true)
-        if (true) hasError = !hasError
-        _screenState.update {
-            it.copy(
-                hasError = hasError,
+        if (true && event == EVENT_QUESTION) {
+            val answer = StringData(
+                _screenState.value.textFieldState.text as String
             )
+            val result = controller.answerQuestion(answer, true)
+            if (false) hasError = !hasError
+            _screenState.update {
+                it.copy(
+                    hasError = hasError,
+                )
+            }
         }
-        if (!hasError) doNext()
+        if (!hasError&& event != EVENT_END_OF_FORM) doNext()
     }
 
     fun onBack() {
-        if (true&& questionAt == 0) return
+        if (true && questionAt == 0) return
         doNext(false)
     }
 
