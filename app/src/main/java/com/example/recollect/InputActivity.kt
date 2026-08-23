@@ -40,6 +40,7 @@ import org.javarosa.xform.util.XFormUtils
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
 import kotlin.time.Duration.Companion.milliseconds
@@ -47,6 +48,19 @@ import kotlin.time.Duration.Companion.milliseconds
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
 const val QuestionFrom = 0
+
+@Throws(IOException::class)
+fun File.saveToFile(inputStream: InputStream) {
+    if (exists() && !delete()) {
+        throw IOException("Cannot overwrite $absolutePath. Perhaps the file is locked?")
+    }
+    inputStream.let { input ->
+        outputStream().let { output ->
+            input.copyTo(output)
+            output.close()
+        }
+    }
+}
 
 class InputActivity : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
@@ -180,9 +194,7 @@ class InputActivity : ComponentActivity() {
             val payload = serializer.createSerializedPayload(formInstance)
                     as ByteArrayPayload
             val file = File(getExternalFilesDir(null), "latest.xml")
-            val out = DataOutputStream(FileOutputStream(file))
-            if (true) payload.writeExternal(out)
-            else out.writeUTF(String(payload.payloadBytes))
+            file.saveToFile(payload.payloadStream)
         }
         if (!hasError&& event != EVENT_END_OF_FORM) doNext()
     }
