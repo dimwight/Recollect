@@ -115,6 +115,9 @@ data class ScreenState(
     }
 }
 
+const val DoWipe = true
+const val ApplyQuestionFromBefore = true
+const val QuestionFrom = 2
 
 class InputActivity : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
@@ -173,11 +176,6 @@ class InputActivity : ComponentActivity() {
         } else nextEvent(forward)
     }
 
-    companion object {
-        const val QuestionFrom = 2
-        const val ApplyQuestionFromBefore = true
-    }
-
     private fun nextEvent(forward: Boolean = true) {
         if (forward) {
             event = controller.stepToNextEvent()
@@ -234,7 +232,27 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    val doWipe: Boolean = true
+    fun onNext() {
+        traceEventAndQuestion("onNext")
+        if (true && event == EVENT_QUESTION) {
+            val answer = StringData(
+                _screenState.value.textFieldState.text as String
+            )
+            val result = controller.answerQuestion(answer, true)
+            if (false) hasError = !hasError
+            _screenState.update {
+                it.copy(
+                    hasError = hasError,
+                )
+            }
+        }
+        if (!hasError&& event != EVENT_END_OF_FORM) doNext()
+    }
+
+    fun onBack() {
+        if (true && questionAt == 0) return
+        doNext(false)
+    }
 
     private fun updateScreenState(endOfForm: Boolean = false) {
         val thenState: ScreenState = _screenState.value
@@ -244,7 +262,7 @@ class InputActivity : ComponentActivity() {
                 it.copy(
                     thenState = thenState,
                     endOfForm = true,
-                    forWipe = doWipe,
+                    forWipe = DoWipe,
                     showBack = true,
                     showNext = false,
                     formTitle = model.formTitle,
@@ -270,7 +288,7 @@ class InputActivity : ComponentActivity() {
                 thenState = thenState,
                 questionAt = questionAt,
                 newWidget_ = false,
-                forWipe = doWipe &&
+                forWipe = DoWipe &&
                         (questionAt > 0 || thenState.questionAt == 1),
                 textFieldState = TextFieldState("[$labelText]"),
                 endOfForm = endOfForm,
@@ -294,28 +312,6 @@ class InputActivity : ComponentActivity() {
         val thenAt = screenState.value.thenState?.questionAt ?: -1
         if (false) println("R1: nowAt = $nowAt, thenAt = $thenAt")
         traceEventAndQuestion(_screenState.value)
-    }
-
-    fun onNext() {
-        traceEventAndQuestion("onNext")
-        if (true && event == EVENT_QUESTION) {
-            val answer = StringData(
-                _screenState.value.textFieldState.text as String
-            )
-            val result = controller.answerQuestion(answer, true)
-            if (false) hasError = !hasError
-            _screenState.update {
-                it.copy(
-                    hasError = hasError,
-                )
-            }
-        }
-        if (!hasError&& event != EVENT_END_OF_FORM) doNext()
-    }
-
-    fun onBack() {
-        if (true && questionAt == 0) return
-        doNext(false)
     }
 
     private fun nextQuestion() {
@@ -365,7 +361,6 @@ class InputActivity : ComponentActivity() {
         }
     }
 }
-
 
 
 

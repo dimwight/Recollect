@@ -53,8 +53,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recollect.InputActivity.Companion.QuestionFrom
-import com.example.recollect.InputActivity.Companion.ApplyQuestionFromBefore
 import com.example.recollect.bits.AddRepeatDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -142,7 +140,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             horizontalAlignment = Alignment.Start
         ) {
             FormTitleRow(screenState)
-            if (inputActivity.doWipe && screenState.forWipe) {
+            if (DoWipe && screenState.forWipe) {
                 val wipeMillis = 300
                 var wipeState by remember {
                     mutableIntStateOf(
@@ -243,7 +241,7 @@ private fun FormWidgetEditBox(
                     if (screenState.newWidget_) {
                         inputActivity.clearNewWidget_()
                     } else {
-                        if (inputActivity.doWipe) delay(200.milliseconds)
+                        if (DoWipe) delay(200.milliseconds)
                         focusRequester.requestFocus()
                     }
                 }
