@@ -39,6 +39,7 @@ import org.javarosa.model.xform.XFormSerializingVisitor
 import org.javarosa.xform.util.XFormUtils
 import java.io.DataOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -89,12 +90,29 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val at = 3
+        val formName = when(at){
+            0-> "simple"
+            1-> "groups"
+            2-> "repeats"
+            3-> "all"
+            4-> "end"
+            else -> "simple"
+        }
         val formDef by lazy {
             try {
+
                 val formId = resources.getIdentifier(
-                    "repeats", "raw", packageName
+                    formName, "raw", packageName
                 )
-                val inputStream: InputStream = resources.openRawResource(formId)
+                val inputStream: InputStream = if (false)
+                    resources.openRawResource(formId)
+                else {
+                    val file = File(getExternalFilesDir(null),
+                        "$formName.xml"
+                    )
+                    FileInputStream(file)
+                }
                 return@lazy XFormUtils.getFormFromInputStream(inputStream)
             } catch (e: Exception) {
                 println("R1: = $e")
