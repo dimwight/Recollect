@@ -19,9 +19,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
-import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.Constants
+import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.data.StringData
+import org.javarosa.core.model.instance.FormInstance
+import org.javarosa.core.services.transport.payload.ByteArrayPayload
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
 import org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM
@@ -33,11 +35,14 @@ import org.javarosa.form.api.FormEntryController.EVENT_REPEAT
 import org.javarosa.form.api.FormEntryController.EVENT_REPEAT_JUNCTURE
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.form.api.FormEntryPrompt
+import org.javarosa.model.xform.XFormSerializingVisitor
 import org.javarosa.xform.util.XFormUtils
+import java.io.DataOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.TimeSource.Monotonic
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
@@ -158,7 +163,7 @@ class InputActivity : ComponentActivity() {
 
     fun onNext() {
         traceEventAndQuestion("onNext")
-        if (true && event == EVENT_QUESTION) {
+        if (event == EVENT_QUESTION) {
             val answer = StringData(
                 _screenState.value.textFieldState.text as String
             )
@@ -170,6 +175,14 @@ class InputActivity : ComponentActivity() {
                     hasError = hasError,
                 )
             }
+            val formInstance: FormInstance? = controller.model.form.instance
+            val serializer = XFormSerializingVisitor()
+            val payload = serializer.createSerializedPayload(formInstance)
+                    as ByteArrayPayload
+            val file = File(getExternalFilesDir(null), "latest.xml")
+            val out = DataOutputStream(FileOutputStream(file))
+            if (true) payload.writeExternal(out)
+            else out.writeUTF(String(payload.payloadBytes))
         }
         if (!hasError&& event != EVENT_END_OF_FORM) doNext()
     }
