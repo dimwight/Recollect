@@ -39,85 +39,9 @@ import java.lang.System.currentTimeMillis
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource.Monotonic
 
-var time_: Monotonic.ValueTimeMark? = null
-
-var start = -1L
-fun times(msg: String = "") {
-    val elapsed = currentTimeMillis() - start
-    if (start < 0 || elapsed > 5000) {
-        start = currentTimeMillis()
-        println("R1: Times reset in $msg")
-    } else println("R1: $msg=${elapsed / 10}")
-}
-
-fun getNumbers1_(): Flow<Int> = flow {
-    for (i in 1..3) {
-        delay(1000.milliseconds)
-    }
-}
-
-@Composable
-fun TextStyle.scale(
-    by: Double,
-    bold: Boolean = false
-): TextStyle {
-    return if (bold)
-        copy(
-            fontSize = fontSize.times(by),
-            lineHeight = lineHeight.times(by),
-            fontWeight = FontWeight.Bold
-        ) else
-        copy(
-            fontSize = fontSize.times(by),
-            lineHeight = lineHeight.times(by),
-        )
-}
-
-@Composable
-fun mySmallStyle(): TextStyle =
-    typography.bodySmall.scale(1.3).copy(Color.Gray)
-
-@Composable
-fun myMediumStyle(bold: Boolean = false): TextStyle =
-    typography.bodyMedium.scale(1.45, bold)
-
-data class QuestionSpec(
-    val captions: Array<FormEntryCaption> = emptyArray(),
-    val labelText: String = "",
-    val helpText: String = "",
-    val keyboardType: KeyboardType = KeyboardType.Unspecified
-) {
-    override fun toString(): String {
-        return this.run {
-            "label: $labelText help: $helpText"
-        }
-    }
-}
-
-data class ScreenState(
-    val textFieldState: TextFieldState = TextFieldState("[A string]"),
-    val questionSpec: QuestionSpec = QuestionSpec(),
-    val formTitle: String = "",
-    val hasError: Boolean = false,
-    val showBack: Boolean = false,
-    val showNext: Boolean = false,
-    val endOfForm: Boolean = false,
-    val newWidget_: Boolean = true,
-    val questionAt: Int = -1,
-    val thenState: ScreenState? = null,
-    val forWipe: Boolean = false,
-    val addRepeat: Boolean = false
-) {
-    override fun toString(): String {
-        return if (true) "${questionSpec.labelText} $questionAt"
-//            "showBack = $showBack showNext = $showNext "
-        else ("${hashCode()}")
-    }
-}
-
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
-const val QuestionFrom = 2
+const val QuestionFrom = 0
 
 class InputActivity : ComponentActivity() {
     fun getNumbers4_(): Flow<Int> = flow {
@@ -239,7 +163,8 @@ class InputActivity : ComponentActivity() {
                 _screenState.value.textFieldState.text as String
             )
             val result = controller.answerQuestion(answer, true)
-            if (false) hasError = !hasError
+            hasError = if (false) !hasError
+            else result != FormEntryController.ANSWER_OK
             _screenState.update {
                 it.copy(
                     hasError = hasError,
@@ -250,7 +175,13 @@ class InputActivity : ComponentActivity() {
     }
 
     fun onBack() {
-        if (true && questionAt == 0) return
+        if (questionAt == 0) return
+        _screenState.update {
+            hasError=false
+            it.copy(
+                hasError = hasError,
+            )
+        }
         doNext(false)
     }
 
@@ -284,13 +215,14 @@ class InputActivity : ComponentActivity() {
         _screenState.update {
             val labelText = question.labelInnerText
             if (false) times("update")
+            val answerText = "[$labelText]"
             it.copy(
                 thenState = thenState,
                 questionAt = questionAt,
                 newWidget_ = false,
                 forWipe = DoWipe &&
                         (questionAt > 0 || thenState.questionAt == 1),
-                textFieldState = TextFieldState("[$labelText]"),
+                textFieldState = TextFieldState(answerText),
                 endOfForm = endOfForm,
                 showBack = showBack,
                 showNext = !endOfForm,
@@ -361,6 +293,90 @@ class InputActivity : ComponentActivity() {
         }
     }
 }
+
+data class ScreenState(
+    val textFieldState: TextFieldState = TextFieldState("[A string]"),
+    val questionSpec: QuestionSpec = QuestionSpec(),
+    val formTitle: String = "",
+    val hasError: Boolean = false,
+    val showBack: Boolean = false,
+    val showNext: Boolean = false,
+    val endOfForm: Boolean = false,
+    val newWidget_: Boolean = true,
+    val questionAt: Int = -1,
+    val thenState: ScreenState? = null,
+    val forWipe: Boolean = false,
+    val addRepeat: Boolean = false
+) {
+    override fun toString(): String {
+        return if (true) "${questionSpec.labelText} $questionAt"
+//            "showBack = $showBack showNext = $showNext "
+        else ("${hashCode()}")
+    }
+}
+
+data class QuestionSpec(
+    val captions: Array<FormEntryCaption> = emptyArray(),
+    val labelText: String = "",
+    val helpText: String = "",
+    val keyboardType: KeyboardType = KeyboardType.Unspecified
+) {
+    override fun toString(): String {
+        return this.run {
+            "label: $labelText help: $helpText"
+        }
+    }
+}
+var start = -1L
+fun times(msg: String = "") {
+    val elapsed = currentTimeMillis() - start
+    if (start < 0 || elapsed > 5000) {
+        start = currentTimeMillis()
+        println("R1: Times reset in $msg")
+    } else println("R1: $msg=${elapsed / 10}")
+}
+
+fun getNumbers1_(): Flow<Int> = flow {
+    for (i in 1..3) {
+        delay(1000.milliseconds)
+    }
+}
+
+@Composable
+fun TextStyle.scale(
+    by: Double,
+    bold: Boolean = false
+): TextStyle {
+    return if (bold)
+        copy(
+            fontSize = fontSize.times(by),
+            lineHeight = lineHeight.times(by),
+            fontWeight = FontWeight.Bold
+        ) else
+        copy(
+            fontSize = fontSize.times(by),
+            lineHeight = lineHeight.times(by),
+        )
+}
+
+@Composable
+fun mySmallStyle(): TextStyle =
+    typography.bodySmall.scale(1.3).copy(Color.Gray)
+
+@Composable
+fun myMediumStyle(bold: Boolean = false): TextStyle =
+    typography.bodyMedium.scale(1.45, bold)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
