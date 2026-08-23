@@ -204,6 +204,7 @@ class InputActivity : ComponentActivity() {
             return
         }
         val questionPrompt = model.questionPrompt
+        val answerText = questionPrompt.answerText?:"!"
         val formElement = questionPrompt.formElement
         if (questionAt == 0 && firstQuestionPrompt == null) {
             firstQuestionPrompt = questionPrompt
@@ -215,7 +216,6 @@ class InputActivity : ComponentActivity() {
         _screenState.update {
             val labelText = question.labelInnerText
             if (false) times("update")
-            val answerText = "[$labelText]"
             it.copy(
                 thenState = thenState,
                 questionAt = questionAt,
