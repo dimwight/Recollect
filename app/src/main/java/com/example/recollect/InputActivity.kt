@@ -37,13 +37,12 @@ import org.javarosa.form.api.FormEntryModel
 import org.javarosa.form.api.FormEntryPrompt
 import org.javarosa.model.xform.XFormSerializingVisitor
 import org.javarosa.xform.util.XFormUtils
-import java.io.DataOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
+import kotlin.arrayOf
 import kotlin.time.Duration.Companion.milliseconds
 
 const val DoWipe = true
@@ -90,8 +89,8 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val at = 3
-        val formName = when(at){
+        val formAt = 0
+        val formName = if (false) when(formAt){
             0-> "simple"
             1-> "groups"
             2-> "repeats"
@@ -99,9 +98,15 @@ class InputActivity : ComponentActivity() {
             4-> "end"
             else -> "simple"
         }
+        else arrayOf(
+            "simple",
+            "groups",
+            "repeats",
+            "all",
+            "end"
+        )[formAt]
         val formDef by lazy {
             try {
-
                 val formId = resources.getIdentifier(
                     formName, "raw", packageName
                 )
