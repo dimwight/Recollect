@@ -201,14 +201,16 @@ private fun ChooseFormBox(
     at: Int = -1
 ) {
     val forWipe = at != -1
+    val formTitle = screenState.formTitle
     if (!forWipe) {
-        if (screenState.endOfForm) FormEndBox(screenState)
-        else FormWidgetEditBox(screenState, inputActivity)
+        if (screenState.endOfForm) {
+            FormEndBox(inputActivity, formTitle)
+        } else FormWidgetEditBox(screenState, inputActivity)
         return
     }
     val wipeState = if (at == screenState.questionAt) screenState
     else screenState.thenState!!
-    if (wipeState.endOfForm) FormEndBox(wipeState)
+    if (wipeState.endOfForm) FormEndBox(inputActivity, formTitle)
     else FormWidgetWipeBox(wipeState)
 }
 
@@ -254,12 +256,12 @@ private fun FormWidgetEditBox(
 }
 
 @Composable
-private fun FormEndBox(screenState: ScreenState) {
+private fun FormEndBox(inputActivity: InputActivity, formTitle: String) {
     Box {
         Column {
             Spacer(modifier = Modifier.height(140.dp))
             Text(
-                text = "You are at the end of ${screenState.formTitle}.",
+                text = "You are at the end of $formTitle.",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 32.sp,
@@ -272,7 +274,7 @@ private fun FormEndBox(screenState: ScreenState) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                SaveDraftButton()
+                SaveDraftButton(inputActivity)
                 FinalizeButton()
             }
         }

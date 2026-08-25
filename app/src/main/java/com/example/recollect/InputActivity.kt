@@ -212,14 +212,17 @@ class InputActivity : ComponentActivity() {
                     hasError = hasError,
                 )
             }
-            val formInstance: FormInstance? = controller.model.form.instance
-            val serializer = XFormSerializingVisitor()
-            val payload = serializer.createSerializedPayload(formInstance)
-                    as ByteArrayPayload
-            val file = File(getExternalFilesDir(null), "latest.xml")
-            file.saveToFile(payload.payloadStream)
         }
         if (!hasError&& event != EVENT_END_OF_FORM) doNext()
+    }
+
+     fun saveAsDraft() {
+        val formInstance: FormInstance? = controller.model.form.instance
+        val serializer = XFormSerializingVisitor()
+        val payload = serializer.createSerializedPayload(formInstance)
+                as ByteArrayPayload
+        val file = File(getExternalFilesDir(null), "latest.xml")
+        file.saveToFile(payload.payloadStream)
     }
 
     fun onBack() {

@@ -74,7 +74,7 @@ private fun EndOfFormScreen_(inputActivity: InputActivity) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                SaveDraftButton()
+                SaveDraftButton(inputActivity)
                 FinalizeButton()
             }
         }
@@ -157,9 +157,9 @@ fun NoticeCard() {
 }
 
 @Composable
-fun RowScope.SaveDraftButton() {
+fun RowScope.SaveDraftButton(inputActivity: InputActivity) {
     OutlinedButton(
-        onClick = { /* Handle draft save */ },
+        onClick = { inputActivity.saveAsDraft() },
         shape = RoundedCornerShape(50),
         modifier = Modifier
             .weight(1f)
@@ -167,7 +167,7 @@ fun RowScope.SaveDraftButton() {
             .border(1.dp, Color.LightGray, RoundedCornerShape(50)),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = FormBlue)
     ) {
-//                    Icon(imageVector = Icons.Default.Save, contentDescription = null)
+//        Icon(imageVector = Icons.Default.Save, contentDescription = null)
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = "Save as draft", fontSize = 16.sp)
     }
