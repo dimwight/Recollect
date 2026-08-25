@@ -233,8 +233,11 @@ private fun FormWidgetEditBox(
             }
             if (false || screenState.addRepeat)
                 AddRepeatDialog(
-                    onDismissRequest = { inputActivity.clearAddRepeat() }
-                ) { }
+                    onDismissRequest = { inputActivity.clearAddRepeat() },
+                    onConfirm = {
+                        inputActivity.addRepeat()
+                    }
+                )
             val focusRequester = remember { FocusRequester() }
             val focusManager = LocalFocusManager.current
             QuestionTextField(focusRequester)
@@ -280,7 +283,6 @@ private fun FormEndBox(inputActivity: InputActivity, formTitle: String) {
         }
     }
 }
-
 
 @Composable
 private fun FormWidgetWipeBox(screenState: ScreenState) {

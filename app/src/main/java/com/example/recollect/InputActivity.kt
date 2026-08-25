@@ -225,6 +225,9 @@ class InputActivity : ComponentActivity() {
         file.saveToFile(payload.payloadStream)
     }
 
+    fun addRepeat() {
+        clearAddRepeat()
+    }
     fun onBack() {
         if (questionAt == 0) return
         _screenState.update {
@@ -343,6 +346,7 @@ class InputActivity : ComponentActivity() {
             )
         }
     }
+
 }
 
 data class ScreenState(
@@ -388,9 +392,7 @@ fun times(msg: String = "") {
 }
 
 fun getNumbers1_(): Flow<Int> = flow {
-    for (i in 1..3) {
-        delay(1000.milliseconds)
-    }
+    (1..3).forEach { delay(1000.milliseconds) }
 }
 
 @Composable
