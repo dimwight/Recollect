@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<h:html xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:odk="http://www.opendatakit.org/xforms"
+    xmlns:orx="http://openrosa.org/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2002/xforms">
+    <h:head>
+        <h:title>Repeats</h:title>
+        <model odk:xforms-version="1.0.0">
+            <instance>
+                <data
+                    id="repeats"
+                    version="I">
+                    <Q1 />
+                    <Outer>
+                        <Q2 />
+                        <Inner>
+                            <Q3 />
+                        </Inner>
+                    </Outer>
+                    <meta>
+                        <instanceID />
+                    </meta>
+                </data>
+            </instance>
+            <bind
+                nodeset="/data/Q1"
+                type="string" />
+            <bind
+                constraint=". &gt; 0 and . &lt;10"
+                nodeset="/data/Outer/Q2"
+                type="int" />
+            <bind
+                nodeset="/data/Outer/Inner/Q3"
+                type="string" />
+            <bind
+                nodeset="/data/meta/instanceID"
+                readonly="true()"
+                type="string"
+                jr:preload="uid" />
+        </model>
+    </h:head>
+    <h:body>
+        <input ref="/data/Q1">
+            <label>Q1</label>
+        </input>
+        <group ref="/data/Outer">
+            <label>Outer</label>
+            <input ref="/data/Outer/Q2">
+                <label>Q2</label>
+            </input>
+            <group ref="/data/Outer/Inner">
+                <label>Inner</label>
+                <input ref="/data/Outer/Inner/Q3">
+                    <label>Q3</label>
+                </input>
+            </group>
+        </group>
+    </h:body>
+</h:html>

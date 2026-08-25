@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<data xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="repeats"
+    version="K">
+    <Q1 />
+    <Outer>
+        <Inner>
+            <Q2 />
+            <Q3 />
+        </Inner>
+        <Inner>
+            <Q2 />
+            <Q3 />
+        </Inner>
+    </Outer>
+    <Outer>
+        <Inner>
+            <Q2 />
+            <Q3 />
+        </Inner>
+    </Outer>
+    <meta>
+        <instanceID>uuid:27dcb087-7e94-491d-b2d4-66464717a769</instanceID>
+    </meta>
+</data>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<h:html xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:odk="http://www.opendatakit.org/xforms"
+    xmlns:orx="http://openrosa.org/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2002/xforms">
+    <h:head>
+        <h:title>Repeats</h:title>
+        <model odk:xforms-version="1.0.0">
+            <instance>
+                <data
+                    id="repeats"
+                    version="H">
+                    <Q1 />
+                    <Q2 />
+                    <Q3 />
+                    <meta>
+                        <instanceID />
+                    </meta>
+                </data>
+            </instance>
+            <bind
+                nodeset="/data/Q1"
+                type="string" />
+            <bind
+                constraint=". &gt; 0 and . &lt;10"
+                nodeset="/data/Q2"
+                type="int" />
+            <bind
+                nodeset="/data/Q3"
+                type="string" />
+            <bind
+                nodeset="/data/meta/instanceID"
+                readonly="true()"
+                type="string"
+                jr:preload="uid" />
+        </model>
+    </h:head>
+    <h:body>
+        <input ref="/data/Q1">
+            <label>Q1</label>
+        </input>
+        <input ref="/data/Q2">
+            <label>Q2</label>
+        </input>
+        <input ref="/data/Q3">
+            <label>Q3</label>
+        </input>
+    </h:body>
+</h:html>

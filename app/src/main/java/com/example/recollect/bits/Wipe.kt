@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recollect.ForWipe
+import com.example.recollect.times
 import kotlin.random.Random
 
 @Composable
@@ -107,6 +107,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
+            times("click")
             if (Random.nextFloat()<.5)
                 wipeState++
             else
@@ -119,7 +120,7 @@ fun WipeDemoScreen() {
             targetState = wipeState,
             modifier = Modifier.fillMaxSize()
         ) { at ->
-            if (true) AtBox(at)
+            if (false) AtBox(at)
             else when (at) {
                 0 -> AtBox(at)
                 1 -> AtBox(at)
@@ -139,7 +140,7 @@ fun SlidingWipeContainer(
             targetState = targetState,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
-                    200,
+                    1200,
                     easing = LinearEasing
                 )
                 val initial = initialState
