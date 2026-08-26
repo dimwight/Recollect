@@ -19,10 +19,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
+import org.apache.commons.io.FileUtils
 import org.javarosa.core.model.Constants
 import org.javarosa.core.model.FormDef
 import org.javarosa.core.model.data.StringData
 import org.javarosa.core.model.instance.FormInstance
+import org.javarosa.core.model.instance.TreeReference
+import org.javarosa.core.model.instance.utils.DefaultAnswerResolver
 import org.javarosa.core.services.transport.payload.ByteArrayPayload
 import org.javarosa.form.api.FormEntryCaption
 import org.javarosa.form.api.FormEntryController
@@ -36,14 +39,47 @@ import org.javarosa.form.api.FormEntryController.EVENT_REPEAT_JUNCTURE
 import org.javarosa.form.api.FormEntryModel
 import org.javarosa.form.api.FormEntryPrompt
 import org.javarosa.model.xform.XFormSerializingVisitor
+import org.javarosa.xform.parse.XFormParser
 import org.javarosa.xform.util.XFormUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
-import kotlin.arrayOf
 import kotlin.time.Duration.Companion.milliseconds
+
+@Throws(IOException::class, RuntimeException::class)
+fun importInstance(instanceFile: File, fec: FormEntryController) {
+    val fileName = instanceFile.getName()
+    // convert files into a byte array
+    val fileBytes = FileUtils.readFileToByteArray(instanceFile)
+
+    // get the root of the saved and template instances
+    val savedRoot = XFormParser.restoreDataModel(fileBytes, null).getRoot()
+    val saved = savedRoot.treeString()
+    val templateRoot = fec.getModel().getForm().getInstance().getRoot().deepCopy(true)
+    val template = templateRoot.treeString()
+
+    // weak check for matching forms
+
+    // populate the data model
+    val tr = TreeReference.rootRef()
+    tr.add(templateRoot.getName(), TreeReference.INDEX_UNBOUND)
+
+    // Here we set the Collect's implementation of the IAnswerResolver.
+    // We set it back to the default after select choices have been populated.
+    val formDef = fec.getModel().getForm()
+    templateRoot.populate(savedRoot, formDef)
+    XFormParser.setAnswerResolver(DefaultAnswerResolver())
+
+    // FormInstanceParser.parseInstance is responsible for initial creation of instances. It explicitly sets the
+    // main instance name to null so we force this again on deserialization because some code paths rely on the main
+    // instance not having a name. Must be before the call on setRoot because setRoot also sets the root's name.
+    fec.getModel().getForm().getInstance().setName(null)
+
+    // populated model to current form
+    fec.getModel().getForm().getInstance().setRoot(templateRoot)
+}
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
@@ -70,6 +106,7 @@ class InputActivity : ComponentActivity() {
         }
     }
 
+    private lateinit var formName: String
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
     var event: Int = -1
@@ -90,7 +127,7 @@ class InputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val formAt = 0
-        val formName = if (false) when(formAt){
+        formName = if (false) when(formAt){
             0-> "simple"
             1-> "groups"
             2-> "repeats"
@@ -124,6 +161,11 @@ class InputActivity : ComponentActivity() {
             }
         }
         controller = FormEntryController(FormEntryModel(formDef as FormDef?))
+        val instanceFile = fetchInstanceFile(formName)
+        if (instanceFile.exists())importInstance(
+            instanceFile = instanceFile,
+            fec = controller
+        )
         event = controller.model.event
         if (false) event = controller.stepToNextEvent()
         if (ApplyQuestionFromBefore) while (questionAt < QuestionFrom) doNext()
@@ -221,8 +263,11 @@ class InputActivity : ComponentActivity() {
         val serializer = XFormSerializingVisitor()
         val payload = serializer.createSerializedPayload(formInstance)
                 as ByteArrayPayload
-        val file = File(getExternalFilesDir(null), "latest.xml")
-        file.saveToFile(payload.payloadStream)
+         fetchInstanceFile(formName).saveToFile(payload.payloadStream)
+    }
+
+    private fun fetchInstanceFile(formName: String): File {
+        return File(getExternalFilesDir(null), "${formName}Latest.xml")
     }
 
     fun addRepeat() {
