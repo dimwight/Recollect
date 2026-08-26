@@ -126,49 +126,33 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val formAt = 0
-        formName = if (false) when(formAt){
-            0-> "simple"
-            1-> "groups"
-            2-> "repeats"
-            3-> "all"
-            4-> "end"
-            else -> "simple"
-        }
-        else arrayOf(
+        formName = arrayOf(
             "simple",
             "groups",
             "repeats",
             "all",
             "end"
-        )[formAt]
-        val formDef by lazy {
-            try {
-                val formId = resources.getIdentifier(
-                    formName, "raw", packageName
-                )
-                val inputStream: InputStream = if (false)
-                    resources.openRawResource(formId)
-                else {
-                    val file = File(getExternalFilesDir(null),
-                        "$formName.xml"
-                    )
-                    FileInputStream(file)
-                }
-                return@lazy XFormUtils.getFormFromInputStream(inputStream)
-            } catch (e: Exception) {
-                println("R1: = $e")
-            }
+        )[0]
+        var formDef = FormDef()
+        try {
+            val file = File(getExternalFilesDir(null), "$formName.xml")
+            val inputStream = FileInputStream(file)
+            formDef = XFormUtils.getFormFromInputStream(inputStream)
+        } catch (e: Exception) {
+            println("R1: = $e")
         }
-        controller = FormEntryController(FormEntryModel(formDef as FormDef?))
-        val instanceFile = fetchInstanceFile(formName)
-        if (instanceFile.exists())importInstance(
+        controller = FormEntryController(FormEntryModel(formDef))
+        val instanceFile = fetchInstanceFile (formName)
+        if (false&& instanceFile.exists())
+            importInstance(
             instanceFile = instanceFile,
             fec = controller
         )
         event = controller.model.event
         if (false) event = controller.stepToNextEvent()
-        if (ApplyQuestionFromBefore) while (questionAt < QuestionFrom) doNext()
+        if (ApplyQuestionFromBefore)
+            while (questionAt < QuestionFrom)
+                doNext()
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -255,15 +239,15 @@ class InputActivity : ComponentActivity() {
                 )
             }
         }
-        if (!hasError&& event != EVENT_END_OF_FORM) doNext()
+        if (!hasError && event != EVENT_END_OF_FORM) doNext()
     }
 
-     fun saveAsDraft() {
+    fun saveAsDraft() {
         val formInstance: FormInstance? = controller.model.form.instance
         val serializer = XFormSerializingVisitor()
         val payload = serializer.createSerializedPayload(formInstance)
                 as ByteArrayPayload
-         fetchInstanceFile(formName).saveToFile(payload.payloadStream)
+        fetchInstanceFile(formName).saveToFile(payload.payloadStream)
     }
 
     private fun fetchInstanceFile(formName: String): File {
@@ -273,10 +257,11 @@ class InputActivity : ComponentActivity() {
     fun addRepeat() {
         clearAddRepeat()
     }
+
     fun onBack() {
         if (questionAt == 0) return
         _screenState.update {
-            hasError=false
+            hasError = false
             it.copy(
                 hasError = hasError,
             )
@@ -303,7 +288,7 @@ class InputActivity : ComponentActivity() {
             return
         }
         val questionPrompt = model.questionPrompt
-        val answerText = questionPrompt.answerText?:"!"
+        val answerText = questionPrompt.answerText ?: "!"
         val formElement = questionPrompt.formElement
         if (questionAt == 0 && firstQuestionPrompt == null) {
             firstQuestionPrompt = questionPrompt
@@ -427,6 +412,7 @@ data class QuestionSpec(
         }
     }
 }
+
 var start = -1L
 fun times(msg: String = "") {
     val elapsed = currentTimeMillis() - start
