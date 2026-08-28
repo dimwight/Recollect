@@ -132,7 +132,7 @@ class InputActivity : ComponentActivity() {
             "repeats",
             "all",
             "end"
-        )[0]
+        )[2]
         var formDef = FormDef()
         try {
             val file = File(getExternalFilesDir(null), "$formName.xml")
@@ -143,7 +143,7 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef))
         val instanceFile = fetchInstanceFile (formName)
-        if (false&& instanceFile.exists())
+        if (true&& instanceFile.exists())
             importInstance(
             instanceFile = instanceFile,
             fec = controller
