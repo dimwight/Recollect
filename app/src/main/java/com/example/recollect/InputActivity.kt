@@ -143,7 +143,7 @@ class InputActivity : ComponentActivity() {
         }
         controller = FormEntryController(FormEntryModel(formDef))
         val instanceFile = fetchInstanceFile (formName)
-        if (false&& instanceFile.exists())
+        if (true&& instanceFile.exists())
             importInstance(
             instanceFile = instanceFile,
             fec = controller
