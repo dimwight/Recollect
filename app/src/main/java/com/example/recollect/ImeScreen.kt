@@ -144,7 +144,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 val wipeMillis = 300
                 var wipeState by remember {
                     mutableIntStateOf(
-                        screenState.thenState?.questionAt ?: -1
+                        screenState.thenState?.wipeTo ?: -1
                     )
                 }
                 AnimatedContent(
@@ -166,7 +166,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                     ChooseFormBox(screenState, inputActivity, at)
                 }
                 LaunchedEffect(wipeMillis) {
-                    wipeState = screenState.questionAt
+                    wipeState = screenState.wipeTo
                     delay(wipeMillis.milliseconds)
                     inputActivity.clearForWipe()
                 }
@@ -185,7 +185,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             )
         }
         if (!ApplyQuestionFromBefore &&
-            screenState.questionAt < QuestionFrom
+            screenState.wipeTo < QuestionFrom
         )
             LaunchedEffect(Unit) {
                 delay(200.milliseconds)
@@ -208,7 +208,7 @@ private fun ChooseFormBox(
         } else FormWidgetEditBox(screenState, inputActivity)
         return
     }
-    val wipeState = if (at == screenState.questionAt) screenState
+    val wipeState = if (at == screenState.wipeTo) screenState
     else screenState.thenState!!
     if (wipeState.endOfForm) FormEndBox(inputActivity, formTitle)
     else FormWidgetWipeBox(wipeState)
@@ -243,12 +243,8 @@ private fun FormWidgetEditBox(
             QuestionTextField(focusRequester)
             if (!screenState.forWipe)
                 LaunchedEffect(screenState) {
-                    if (screenState.newWidget_) {
-                        inputActivity.clearNewWidget_()
-                    } else {
-                        if (DoWipe) delay(200.milliseconds)
-                        focusRequester.requestFocus()
-                    }
+                    if (DoWipe) delay(200.milliseconds)
+                    focusRequester.requestFocus()
                 }
             else
                 LaunchedEffect(screenState) {
