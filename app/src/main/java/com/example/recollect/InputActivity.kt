@@ -50,15 +50,12 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Throws(IOException::class, RuntimeException::class)
 fun importInstance(instanceFile: File, fec: FormEntryController) {
-    val fileName = instanceFile.getName()
     // convert files into a byte array
     val fileBytes = FileUtils.readFileToByteArray(instanceFile)
 
     // get the root of the saved and template instances
     val savedRoot = XFormParser.restoreDataModel(fileBytes, null).getRoot()
-    val saved = savedRoot.treeString()
     val templateRoot = fec.getModel().form.instance.getRoot().deepCopy(true)
-    val template = templateRoot.treeString()
 
     // weak check for matching forms
 
@@ -83,7 +80,7 @@ fun importInstance(instanceFile: File, fec: FormEntryController) {
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
-const val QuestionFrom = 1
+const val QuestionFrom = 0
 
 @Throws(IOException::class)
 fun File.saveToFile(inputStream: InputStream) {
@@ -106,7 +103,14 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    private lateinit var formName: String
+    private val formName = arrayOf(
+        "simple",
+        "groups",
+        "repeats",
+        "all",
+        "end"
+    )[2]
+
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
     var event: Int = -1
@@ -115,7 +119,7 @@ class InputActivity : ComponentActivity() {
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
     private fun traceEventAndQuestion(msg: Any? = null) {
-        if (false)return
+        if (false) return
         val top = if (msg != null && msg !is ScreenState) " msg = $msg" else ""
         val tail = " event = $event questionAt = $questionAt"
         println("R1:$top$tail")
@@ -127,13 +131,6 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        formName = arrayOf(
-            "simple",
-            "groups",
-            "repeats",
-            "all",
-            "end"
-        )[2]
         var formDef = FormDef()
         try {
             val file = File(getExternalFilesDir(null), "$formName.xml")
@@ -150,7 +147,6 @@ class InputActivity : ComponentActivity() {
                 fec = controller
             )
         event = controller.model.event
-        if (false) event = controller.stepToNextEvent()
         if (ApplyQuestionFromBefore)
             while (questionAt < QuestionFrom) {
                 nextEvent()
@@ -269,11 +265,9 @@ class InputActivity : ComponentActivity() {
     private fun updateScreenState(forward: Boolean = true, endOfForm: Boolean = false) {
         val thenTo = if (forward) 0 else 1
         val nowTo = if (forward) 1 else 0
-        val thenState = if (false) _screenState.value else {
-            _screenState.value.copy(
-                wipeTo = thenTo
-            )
-        }
+        val thenState = _screenState.value.copy(
+            wipeTo = thenTo
+        )
         val model = controller.model
         if (endOfForm) {
             _screenState.update {
@@ -295,9 +289,7 @@ class InputActivity : ComponentActivity() {
         if (questionAt == 0 && firstQuestionPrompt == null) {
             firstQuestionPrompt = questionPrompt
         }
-        val showBack = if (true)
-            formElement != firstQuestionPrompt?.formElement
-        else questionAt != 0
+        val showBack = formElement != firstQuestionPrompt?.formElement
         val question = questionPrompt.question
         _screenState.update {
             val labelText = question.labelInnerText
@@ -350,7 +342,7 @@ class InputActivity : ComponentActivity() {
 }
 
 data class ScreenState(
-    val textFieldState: TextFieldState = TextFieldState("[A string]"),
+    val textFieldState: TextFieldState = TextFieldState(""),
     val questionSpec: QuestionSpec = QuestionSpec(),
     val formTitle: String = "",
     val hasError: Boolean = false,
@@ -363,7 +355,7 @@ data class ScreenState(
     val addRepeat: Boolean = false
 ) {
     override fun toString(): String {
-        val thenTo= thenState?.wipeTo?:99
+        val thenTo = thenState?.wipeTo ?: 99
         return if (true) "${questionSpec.labelText} $wipeTo $thenTo"
 //            "showBack = $showBack showNext = $showNext "
         else ("${hashCode()}")
