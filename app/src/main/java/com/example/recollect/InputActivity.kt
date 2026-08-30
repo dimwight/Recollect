@@ -185,6 +185,7 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
+                    traceEventAndQuestion("skip")
                     nextEvent()
                 }
             }
@@ -209,6 +210,7 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
+                    traceEventAndQuestion("skip")
                     nextEvent(false)
                 }
             }
@@ -233,22 +235,6 @@ class InputActivity : ComponentActivity() {
         if (!hasError && event != EVENT_END_OF_FORM) {
             nextEvent()
         }
-    }
-
-    fun saveAsDraft() {
-        val formInstance: FormInstance? = controller.model.form.instance
-        val serializer = XFormSerializingVisitor()
-        val payload = serializer.createSerializedPayload(formInstance)
-                as ByteArrayPayload
-        fetchInstanceFile(formName).saveToFile(payload.payloadStream)
-    }
-
-    private fun fetchInstanceFile(formName: String): File {
-        return File(getExternalFilesDir(null), "${formName}Latest.xml")
-    }
-
-    fun addRepeat() {
-        clearAddRepeat()
     }
 
     fun onBack() {
@@ -321,6 +307,22 @@ class InputActivity : ComponentActivity() {
 //        val thenAt = screenState.value.thenState?.wipeTo ?: -1
 //        if (false) println("R1: nowAt = $nowAt, thenAt = $thenAt")
         traceEventAndQuestion(_screenState.value)
+    }
+
+    fun saveAsDraft() {
+        val formInstance: FormInstance? = controller.model.form.instance
+        val serializer = XFormSerializingVisitor()
+        val payload = serializer.createSerializedPayload(formInstance)
+                as ByteArrayPayload
+        fetchInstanceFile(formName).saveToFile(payload.payloadStream)
+    }
+
+    private fun fetchInstanceFile(formName: String): File {
+        return File(getExternalFilesDir(null), "${formName}Latest.xml")
+    }
+
+    fun addRepeat() {
+        clearAddRepeat()
     }
 
     fun clearForWipe() {
