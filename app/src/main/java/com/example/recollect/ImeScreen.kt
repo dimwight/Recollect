@@ -141,12 +141,13 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             FormTitleRow(screenState)
             if (DoWipe && screenState.forWipe) {
-                val wipeMillis = 300
+                val wipeMillis = 1300
                 var wipeState by remember {
                     mutableIntStateOf(
                         screenState.thenState?.wipeTo ?: -1
                     )
                 }
+                println("R1: wipeState = $wipeState")
                 AnimatedContent(
                     targetState = wipeState,
                     transitionSpec = {
@@ -154,6 +155,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                             durationMillis = wipeMillis,
                             easing = LinearEasing
                         )
+                        println("R1: ${initialState-targetState}")
                         if (targetState > initialState) {
                             slideInHorizontally(slideTween) { it: Int -> it } togetherWith
                                     slideOutHorizontally(slideTween) { -it }
@@ -167,6 +169,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 }
                 LaunchedEffect(wipeMillis) {
                     wipeState = screenState.wipeTo
+                    println("R1: wipeState = $wipeState")
                     delay(wipeMillis.milliseconds)
                     inputActivity.clearForWipe()
                 }
