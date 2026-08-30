@@ -83,7 +83,7 @@ fun importInstance(instanceFile: File, fec: FormEntryController) {
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
-const val QuestionFrom = 0
+const val QuestionFrom = 2
 
 @Throws(IOException::class)
 fun File.saveToFile(inputStream: InputStream) {
@@ -168,7 +168,7 @@ class InputActivity : ComponentActivity() {
             traceEventAndQuestion()
             when (event) {
                 EVENT_QUESTION -> {
-//                    questionAt++
+                    questionAt++
                     updateScreenState()
                 }
 
@@ -203,8 +203,8 @@ class InputActivity : ComponentActivity() {
             traceEventAndQuestion()
             when (event) {
                 EVENT_QUESTION -> {
-//                    questionAt--
-                    updateScreenState(false)
+                    questionAt--
+                    updateScreenState()
                 }
 
                 EVENT_BEGINNING_OF_FORM,
