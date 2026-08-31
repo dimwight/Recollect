@@ -61,6 +61,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
+private val wipeDuration = 300
+private val wipeWait = 200
+
 @Composable
 fun FormTitleRow(screenState: ScreenState) {
     Row(
@@ -141,9 +144,7 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             FormTitleRow(screenState)
             if (DoWipe && screenState.forWipe) {
-                val wipeDuration = 300
-                val wipeWait = 200
-                var wipeState by remember {
+                 var wipeState by remember {
                     mutableIntStateOf(
                         screenState.thenState?.questionAt ?: -1
                     )
@@ -168,10 +169,10 @@ fun ImeScreen(inputActivity: InputActivity) {
                 ) { at ->
                     ChooseFormBox(screenState, inputActivity, at)
                 }
-                LaunchedEffect(wipeWait) {
+                LaunchedEffect(screenState) {
                     wipeState = screenState.questionAt
                     println("R1: wipeState~ = $wipeState")
-                    delay(wipeDuration.milliseconds)
+                    delay(wipeWait.milliseconds)
                     inputActivity.clearForWipe()
                 }
             } else ChooseFormBox(screenState, inputActivity)
@@ -240,7 +241,7 @@ private fun FormWidgetEditBox(
                     if (screenState.newWidget_) {
                         inputActivity.clearNewWidget_()
                     } else {
-                        if (DoWipe) delay(200.milliseconds)
+                        if (DoWipe) delay(wipeWait.milliseconds)
                         focusRequester.requestFocus()
                     }
                 }
