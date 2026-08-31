@@ -50,6 +50,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 data class EasingOption(
     val name: String,
@@ -159,10 +162,22 @@ fun WipeDemoScreen() {
         var selectedEasing by remember {
             mutableStateOf(AllEasings.first())
         }
+        var wipeState by remember { mutableIntStateOf(0) }
+        val scope = rememberCoroutineScope()
 
         EasingPicker(
             selected = selectedEasing,
-            onSelected = { selectedEasing = it }
+            onSelected = {
+                selectedEasing = it
+                timeMillis("click")
+                scope.launch {
+                    delay(500.milliseconds)
+                    if (Random.nextFloat() < .5)
+                        wipeState++
+                    else
+                        wipeState--
+                }
+            }
         )
 
         val animationSpec = tween<Float>(
@@ -170,7 +185,6 @@ fun WipeDemoScreen() {
             easing = selectedEasing.easing
         )
 
-        var wipeState by remember { mutableIntStateOf(0) }
 
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
