@@ -44,59 +44,6 @@ import com.example.recollect.times
 import kotlin.random.Random
 
 @Composable
-fun CustomWipeContainer_(
-    targetState: Int,
-    modifier: Modifier = Modifier,
-    content: @Composable (Int) -> Unit
-) {
-
-    AnimatedContent(
-        targetState = targetState,
-        modifier = modifier,
-        transitionSpec = {
-            val slideTween = tween<IntOffset>(
-                600,
-                easing = if (false) FastOutSlowInEasing else LinearEasing
-            )
-            val fadeTween = tween<Float>(600)
-
-            if (targetState > initialState) {
-                // Moving forward: Slide right-to-left
-                val enterTransition = slideInHorizontally(
-                    slideTween
-                ) { width -> width } + fadeIn(
-                    fadeTween
-                )
-
-                val exitTransition = slideOutHorizontally(
-                    slideTween
-                ) { width -> -width } + fadeOut(
-                    fadeTween
-                )
-
-                enterTransition.togetherWith(exitTransition)
-            } else {
-                // Moving backward: Slide left-to-right
-                val enterTransition = slideInHorizontally(
-                    slideTween
-                ) { width -> -width } + fadeIn(
-                    fadeTween
-                )
-
-                val exitTransition = slideOutHorizontally(
-                    slideTween
-                ) { width -> width } + fadeOut(
-                    fadeTween
-                )
-
-                enterTransition.togetherWith(exitTransition)
-            }
-        }
-    ) { state ->
-        content(state)
-    }
-}
-@Composable
 fun WipeDemoScreen() {
     var wipeState by remember { mutableIntStateOf(0) }
 
