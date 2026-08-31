@@ -26,7 +26,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,9 +46,123 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recollect.timeMillis
 import kotlin.random.Random
+import androidx.compose.animation.core.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
+
+data class EasingOption(
+    val name: String,
+    val easing: Easing
+)
+
+val AllEasings = listOf(
+    EasingOption("LinearEasing", LinearEasing),
+    EasingOption("FastOutSlowInEasing", FastOutSlowInEasing),
+    EasingOption("LinearOutSlowInEasing", LinearOutSlowInEasing),
+    EasingOption("FastOutLinearInEasing", FastOutLinearInEasing),
+
+    EasingOption("Ease", Ease),
+    EasingOption("EaseIn", EaseIn),
+    EasingOption("EaseOut", EaseOut),
+    EasingOption("EaseInOut", EaseInOut),
+
+    EasingOption("EaseInSine", EaseInSine),
+    EasingOption("EaseOutSine", EaseOutSine),
+    EasingOption("EaseInOutSine", EaseInOutSine),
+
+    EasingOption("EaseInQuad", EaseInQuad),
+    EasingOption("EaseOutQuad", EaseOutQuad),
+    EasingOption("EaseInOutQuad", EaseInOutQuad),
+
+    EasingOption("EaseInCubic", EaseInCubic),
+    EasingOption("EaseOutCubic", EaseOutCubic),
+    EasingOption("EaseInOutCubic", EaseInOutCubic),
+
+    EasingOption("EaseInQuart", EaseInQuart),
+    EasingOption("EaseOutQuart", EaseOutQuart),
+    EasingOption("EaseInOutQuart", EaseInOutQuart),
+
+    EasingOption("EaseInQuint", EaseInQuint),
+    EasingOption("EaseOutQuint", EaseOutQuint),
+    EasingOption("EaseInOutQuint", EaseInOutQuint),
+
+    EasingOption("EaseInExpo", EaseInExpo),
+    EasingOption("EaseOutExpo", EaseOutExpo),
+    EasingOption("EaseInOutExpo", EaseInOutExpo),
+
+    EasingOption("EaseInCirc", EaseInCirc),
+    EasingOption("EaseOutCirc", EaseOutCirc),
+    EasingOption("EaseInOutCirc", EaseInOutCirc),
+
+    EasingOption("EaseInBack", EaseInBack),
+    EasingOption("EaseOutBack", EaseOutBack),
+    EasingOption("EaseInOutBack", EaseInOutBack),
+
+    EasingOption("EaseInElastic", EaseInElastic),
+    EasingOption("EaseOutElastic", EaseOutElastic),
+    EasingOption("EaseInOutElastic", EaseInOutElastic),
+
+    EasingOption("EaseInBounce", EaseInBounce),
+    EasingOption("EaseOutBounce", EaseOutBounce),
+    EasingOption("EaseInOutBounce", EaseInOutBounce),
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EasingPicker(
+    selected: EasingOption,
+    onSelected: (EasingOption) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selected.name,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Easing") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+            },
+            modifier = Modifier.menuAnchor()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            AllEasings.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option.name) },
+                    onClick = {
+                        onSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun WipeDemoScreen() {
+    var selectedEasing by remember {
+        mutableStateOf(AllEasings.first())
+    }
+
+    EasingPicker(
+        selected = selectedEasing,
+        onSelected = { selectedEasing = it }
+    )
+
+    val animationSpec = tween<Float>(
+        durationMillis = 1000,
+        easing = selectedEasing.easing
+    )
     var wipeState by remember { mutableIntStateOf(0) }
     Column(
         modifier = Modifier
