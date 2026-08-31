@@ -61,6 +61,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
+private val wipeDuration = 1300
+private val wipeWait = 400
+
 @Composable
 fun FormTitleRow(screenState: ScreenState) {
     Row(
@@ -141,10 +144,9 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             FormTitleRow(screenState)
             if (DoWipe && screenState.forWipe) {
-                val wipeMillis = 1300
                 var wipeState by remember {
                     mutableIntStateOf(
-                        screenState.thenState?.wipeRightState() ?:0
+                        screenState.thenState?.wipeInt() ?:0
                     )
                 }
 //                println("R1: wipeState = $wipeState")
@@ -152,7 +154,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                     targetState = wipeState,
                     transitionSpec = {
                         val slideTween = tween<IntOffset>(
-                            durationMillis = wipeMillis,
+                            durationMillis = wipeDuration,
                             easing = LinearEasing
                         )
 //                        println("R1: ${initialState-targetState}")
@@ -167,10 +169,10 @@ fun ImeScreen(inputActivity: InputActivity) {
                 ) { at ->
                     ChooseFormBox(screenState, inputActivity, at)
                 }
-                LaunchedEffect(wipeMillis) {
-                    wipeState = screenState.wipeRightState()
-//                    println("R1: wipeState = $wipeState")
-                    delay(wipeMillis.milliseconds)
+                LaunchedEffect(screenState) {
+                    wipeState = screenState.wipeInt()
+                    println("R1: wipeState~ = $wipeState")
+                    delay(wipeWait.milliseconds)
                     inputActivity.clearForWipe()
                 }
             } else ChooseFormBox(screenState, inputActivity)
@@ -187,13 +189,6 @@ fun ImeScreen(inputActivity: InputActivity) {
                     .background(Color.White)
             )
         }
-        if (!ApplyQuestionFromBefore &&
-            inputActivity.questionAt < QuestionFrom
-        )
-            LaunchedEffect(Unit) {
-                delay(200.milliseconds)
-                inputActivity.onNext()
-            }
     }
 }
 
@@ -211,7 +206,7 @@ private fun ChooseFormBox(
         } else FormWidgetEditBox(screenState, inputActivity)
         return
     }
-    val wipeState = if (at == screenState.wipeRightState()) screenState
+    val wipeState = if (at == screenState.wipeInt()) screenState
     else screenState.thenState!!
     if (wipeState.endOfForm) FormEndBox(inputActivity, formTitle)
     else FormWidgetWipeBox(wipeState)
@@ -246,7 +241,7 @@ private fun FormWidgetEditBox(
             QuestionTextField(focusRequester)
             if (!screenState.forWipe)
                 LaunchedEffect(screenState) {
-                    if (DoWipe) delay(200.milliseconds)
+                    if (DoWipe) delay(wipeWait.milliseconds)
                     focusRequester.requestFocus()
                 }
             else

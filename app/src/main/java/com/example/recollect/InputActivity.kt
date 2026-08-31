@@ -109,7 +109,7 @@ class InputActivity : ComponentActivity() {
         "repeats",
         "all",
         "end"
-    )[2]
+    )[1]
 
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
@@ -356,12 +356,12 @@ data class ScreenState(
     val forWipe: Boolean = false,
     val addRepeat: Boolean = false
 ) {
-    fun wipeRightState(): Int {
-        return if (wipeFromRight) 1 else 0
-    }
+    fun wipeInt(): Int = if (wipeFromRight) 1 else 0
     override fun toString(): String {
-        val thenFrom = thenState?.wipeFromRight
-        return if (true) "${questionSpec.labelText} $wipeFromRight $thenFrom"
+        val labelText = questionSpec.labelText
+        val nowInt = wipeInt()
+        val thenInt = thenState?.wipeInt()
+        return if (true) "$labelText $nowInt $thenInt"
 //            "showBack = $showBack showNext = $showNext "
         else ("${hashCode()}")
     }
