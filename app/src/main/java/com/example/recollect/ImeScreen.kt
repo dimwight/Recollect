@@ -159,15 +159,15 @@ fun ImeScreen(inputActivity: InputActivity) {
                         )
 //                        println("R1: ${initialState-targetState}")
                         if (targetState > initialState) {
-                            slideInHorizontally(slideTween) { it: Int -> it } togetherWith
+                            slideInHorizontally(slideTween) { it } togetherWith
                                     slideOutHorizontally(slideTween) { -it }
                         } else {
                             slideInHorizontally(slideTween) { -it } togetherWith
                                     slideOutHorizontally(slideTween) { it }
                         }
                     }
-                ) { at ->
-                    ChooseFormBox(screenState, inputActivity, at)
+                ) { state ->
+                    ChooseFormBox(screenState, inputActivity, state)
                 }
                 LaunchedEffect(screenState) {
                     wipeState = screenState.wipeInt()

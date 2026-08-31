@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recollect.times
+import com.example.recollect.timeMillis
 import kotlin.random.Random
 
 @Composable
@@ -53,7 +53,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
-            times("click")
+            timeMillis("click")
             if (Random.nextFloat()<.5)
                 wipeState++
             else
@@ -62,30 +62,22 @@ fun WipeDemoScreen() {
             Text("Wipe")
         }
 
-        Modifier.fillMaxSize()
         AnimatedContent(
             targetState = wipeState,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
-                    1200,
+                    durationMillis = 500,
                     easing = LinearEasing
                 )
-                val initial = initialState
-                if (wipeState > initial) {
-                    slideInHorizontally(slideTween) { it } /*+ fadeIn()*/ togetherWith
-                            slideOutHorizontally(slideTween) { -it }/* + fadeOut()*/
+                if (targetState > initialState) {
+                    slideInHorizontally(slideTween) { it } togetherWith
+                            slideOutHorizontally(slideTween) { -it }
                 } else {
-                    slideInHorizontally(slideTween) { -it }/* + fadeIn()*/ togetherWith
-                            slideOutHorizontally(slideTween) { it }/* + fadeOut()*/
+                    slideInHorizontally(slideTween) { -it } togetherWith
+                            slideOutHorizontally(slideTween) { it }
                 }
             }
-        ) { state ->
-            if (false) AtBox(state)
-            else when (state) {
-                0 -> AtBox(state)
-                1 -> AtBox(state)
-            }
-        }
+        ) { state -> AtBox(state) }
     }
 }
 
@@ -100,7 +92,7 @@ fun WipeDemoScreen_() {
     ) {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
-            times("click")
+            timeMillis("click")
             if (Random.nextFloat()<.5)
                 wipeState++
             else
