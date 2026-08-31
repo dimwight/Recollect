@@ -279,7 +279,7 @@ class InputActivity : ComponentActivity() {
         val question = questionPrompt.question
         _screenState.update {
             val labelText = question.labelInnerText
-            if (false) times("update")
+            if (false) timeMillis("update")
             it.copy(
                 thenState = thenState,
                 wipeFromRight = nowWipeToRight,
@@ -381,11 +381,11 @@ data class QuestionSpec(
 }
 
 private var timeThen = -1L
-fun times(msg: String = "") {
+fun timeMillis(msg: String = "") {
     val timeSince = currentTimeMillis() - timeThen
-    if (timeThen < 0 || timeSince > 5000) {
+    if (timeThen < 0 || timeSince > 15000) {
         timeThen = currentTimeMillis()
-        println("R1: Times reset in $msg")
+        println("R1: Time reset for $msg")
     } else println("R1: $msg=${timeSince / 10}")
 }
 

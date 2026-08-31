@@ -40,64 +40,49 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recollect.times
+import com.example.recollect.timeMillis
 import kotlin.random.Random
 
 @Composable
-fun CustomWipeContainer_(
-    targetState: Int,
-    modifier: Modifier = Modifier,
-    content: @Composable (Int) -> Unit
-) {
-
-    AnimatedContent(
-        targetState = targetState,
-        modifier = modifier,
-        transitionSpec = {
-            val slideTween = tween<IntOffset>(
-                600,
-                easing = if (false) FastOutSlowInEasing else LinearEasing
-            )
-            val fadeTween = tween<Float>(600)
-
-            if (targetState > initialState) {
-                // Moving forward: Slide right-to-left
-                val enterTransition = slideInHorizontally(
-                    slideTween
-                ) { width -> width } + fadeIn(
-                    fadeTween
-                )
-
-                val exitTransition = slideOutHorizontally(
-                    slideTween
-                ) { width -> -width } + fadeOut(
-                    fadeTween
-                )
-
-                enterTransition.togetherWith(exitTransition)
-            } else {
-                // Moving backward: Slide left-to-right
-                val enterTransition = slideInHorizontally(
-                    slideTween
-                ) { width -> -width } + fadeIn(
-                    fadeTween
-                )
-
-                val exitTransition = slideOutHorizontally(
-                    slideTween
-                ) { width -> width } + fadeOut(
-                    fadeTween
-                )
-
-                enterTransition.togetherWith(exitTransition)
-            }
+fun WipeDemoScreen() {
+    var wipeState by remember { mutableIntStateOf(0) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Spacer(Modifier.height(50.dp))
+        Button(onClick = {
+            timeMillis("click")
+            if (Random.nextFloat()<.5)
+                wipeState++
+            else
+                wipeState--
+        }) {
+            Text("Wipe")
         }
-    ) { state ->
-        content(state)
+
+        AnimatedContent(
+            targetState = wipeState,
+            transitionSpec = {
+                val slideTween = tween<IntOffset>(
+                    durationMillis = 500,
+                    easing = LinearEasing
+                )
+                if (targetState > initialState) {
+                    slideInHorizontally(slideTween) { it } togetherWith
+                            slideOutHorizontally(slideTween) { -it }
+                } else {
+                    slideInHorizontally(slideTween) { -it } togetherWith
+                            slideOutHorizontally(slideTween) { it }
+                }
+            }
+        ) { state -> AtBox(state) }
     }
 }
+
 @Composable
-fun WipeDemoScreen() {
+fun WipeDemoScreen_() {
     var wipeState by remember { mutableIntStateOf(0) }
 
     Column(
@@ -107,7 +92,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
-            times("click")
+            timeMillis("click")
             if (Random.nextFloat()<.5)
                 wipeState++
             else
