@@ -46,6 +46,52 @@ import kotlin.random.Random
 @Composable
 fun WipeDemoScreen() {
     var wipeState by remember { mutableIntStateOf(0) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Spacer(Modifier.height(50.dp))
+        Button(onClick = {
+            times("click")
+            if (Random.nextFloat()<.5)
+                wipeState++
+            else
+                wipeState--
+        }) {
+            Text("Wipe")
+        }
+
+        Modifier.fillMaxSize()
+        AnimatedContent(
+            targetState = wipeState,
+            transitionSpec = {
+                val slideTween = tween<IntOffset>(
+                    1200,
+                    easing = LinearEasing
+                )
+                val initial = initialState
+                if (wipeState > initial) {
+                    slideInHorizontally(slideTween) { it } /*+ fadeIn()*/ togetherWith
+                            slideOutHorizontally(slideTween) { -it }/* + fadeOut()*/
+                } else {
+                    slideInHorizontally(slideTween) { -it }/* + fadeIn()*/ togetherWith
+                            slideOutHorizontally(slideTween) { it }/* + fadeOut()*/
+                }
+            }
+        ) { state ->
+            if (false) AtBox(state)
+            else when (state) {
+                0 -> AtBox(state)
+                1 -> AtBox(state)
+            }
+        }
+    }
+}
+
+@Composable
+fun WipeDemoScreen_() {
+    var wipeState by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier
