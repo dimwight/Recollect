@@ -141,7 +141,8 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             FormTitleRow(screenState)
             if (DoWipe && screenState.forWipe) {
-                val wipeMillis = 1300
+                val wipeDuration = 300
+                val wipeWait = 200
                 var wipeState by remember {
                     mutableIntStateOf(
                         screenState.thenState?.questionAt ?: -1
@@ -152,7 +153,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                     targetState = wipeState,
                     transitionSpec = {
                         val slideTween = tween<IntOffset>(
-                            durationMillis = wipeMillis,
+                            durationMillis = wipeDuration,
                             easing = LinearEasing
                         )
                         println("R1: ${initialState-targetState}")
@@ -167,10 +168,10 @@ fun ImeScreen(inputActivity: InputActivity) {
                 ) { at ->
                     ChooseFormBox(screenState, inputActivity, at)
                 }
-                LaunchedEffect(wipeMillis) {
+                LaunchedEffect(wipeWait) {
                     wipeState = screenState.questionAt
                     println("R1: wipeState~ = $wipeState")
-                    delay(wipeMillis.milliseconds)
+                    delay(wipeDuration.milliseconds)
                     inputActivity.clearForWipe()
                 }
             } else ChooseFormBox(screenState, inputActivity)
