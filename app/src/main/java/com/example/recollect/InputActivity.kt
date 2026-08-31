@@ -134,7 +134,7 @@ class InputActivity : ComponentActivity() {
             "repeats",
             "all",
             "end"
-        )[0]
+        )[1]
         var formDef = FormDef()
         try {
             val file = File(getExternalFilesDir(null), "$formName.xml")
