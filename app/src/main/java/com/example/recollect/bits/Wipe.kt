@@ -150,29 +150,32 @@ fun EasingPicker(
 
 @Composable
 fun WipeDemoScreen() {
-    var selectedEasing by remember {
-        mutableStateOf(AllEasings.first())
-    }
-
-    EasingPicker(
-        selected = selectedEasing,
-        onSelected = { selectedEasing = it }
-    )
-
-    val animationSpec = tween<Float>(
-        durationMillis = 1000,
-        easing = selectedEasing.easing
-    )
-    var wipeState by remember { mutableIntStateOf(0) }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
         Spacer(Modifier.height(50.dp))
+        var selectedEasing by remember {
+            mutableStateOf(AllEasings.first())
+        }
+
+        EasingPicker(
+            selected = selectedEasing,
+            onSelected = { selectedEasing = it }
+        )
+
+        val animationSpec = tween<Float>(
+            durationMillis = 1000,
+            easing = selectedEasing.easing
+        )
+
+        var wipeState by remember { mutableIntStateOf(0) }
+
+        Spacer(Modifier.height(50.dp))
         Button(onClick = {
             timeMillis("click")
-            if (Random.nextFloat()<.5)
+            if (Random.nextFloat() < .5)
                 wipeState++
             else
                 wipeState--
@@ -184,8 +187,8 @@ fun WipeDemoScreen() {
             targetState = wipeState,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
-                    durationMillis = 500,
-                    easing = LinearEasing
+                    durationMillis = 1500,
+                    easing = selectedEasing.easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
@@ -211,7 +214,7 @@ fun WipeDemoScreen_() {
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
             timeMillis("click")
-            if (Random.nextFloat()<.5)
+            if (Random.nextFloat() < .5)
                 wipeState++
             else
                 wipeState--
@@ -232,6 +235,7 @@ fun WipeDemoScreen_() {
     }
 
 }
+
 @Composable
 fun SlidingWipeContainer(
     targetState: Int,
@@ -310,6 +314,7 @@ fun SlidingWipeContainer(
         content(state)
     }
 }
+
 @Composable
 fun CustomWipeContainer(
     targetState: Int,
