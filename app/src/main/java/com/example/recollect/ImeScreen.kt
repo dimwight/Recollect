@@ -61,8 +61,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
-private val wipeDuration = 300
-private val wipeWait = 200
+private val wipeDuration = 1300
+private val wipeWait = 400
 
 @Composable
 fun FormTitleRow(screenState: ScreenState) {
