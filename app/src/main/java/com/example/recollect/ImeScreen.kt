@@ -188,13 +188,6 @@ fun ImeScreen(inputActivity: InputActivity) {
                     .background(Color.White)
             )
         }
-        if (!ApplyQuestionFromBefore &&
-            screenState.questionAt < QuestionFrom
-        )
-            LaunchedEffect(Unit) {
-                delay(200.milliseconds)
-                inputActivity.onNext()
-            }
     }
 }
 
