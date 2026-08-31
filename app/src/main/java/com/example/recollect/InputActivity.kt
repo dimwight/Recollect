@@ -80,7 +80,7 @@ fun importInstance(instanceFile: File, fec: FormEntryController) {
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
-const val QuestionFrom = 0
+const val QuestionFrom = 2
 
 @Throws(IOException::class)
 fun File.saveToFile(inputStream: InputStream) {
@@ -249,10 +249,10 @@ class InputActivity : ComponentActivity() {
     }
 
     private fun updateScreenState(forward: Boolean = true, endOfForm: Boolean = false) {
-        val thenTo = if (forward) 0 else 1
-        val nowTo = if (forward) 1 else 0
+        val nowWipeToRight = forward
+        val thenWipeToRight = !forward
         val thenState = _screenState.value.copy(
-            wipeTo = thenTo
+            wipeFromRight = thenWipeToRight
         )
         val model = controller.model
         if (endOfForm) {
@@ -264,7 +264,7 @@ class InputActivity : ComponentActivity() {
                     showBack = true,
                     showNext = false,
                     formTitle = model.formTitle,
-                    wipeTo = ++questionAt
+                    wipeFromRight = true
                 )
             }
             traceEventAndQuestion(_screenState.value)
@@ -282,9 +282,9 @@ class InputActivity : ComponentActivity() {
             if (false) times("update")
             it.copy(
                 thenState = thenState,
-                wipeTo = nowTo,
+                wipeFromRight = nowWipeToRight,
                 forWipe = DoWipe &&
-                        (questionAt > 0 || thenState.wipeTo == 1),
+                        (questionAt > 0 || thenState.wipeFromRight),
                 textFieldState = TextFieldState(questionPrompt.answerText ?: ""),
                 endOfForm = endOfForm,
                 showBack = showBack,
@@ -351,14 +351,17 @@ data class ScreenState(
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false,
-    val wipeTo: Int = -1,
+    val wipeFromRight: Boolean = true,
     val thenState: ScreenState? = null,
     val forWipe: Boolean = false,
     val addRepeat: Boolean = false
 ) {
+    fun wipeRightState(): Int {
+        return if (wipeFromRight) 1 else 0
+    }
     override fun toString(): String {
-        val thenTo = thenState?.wipeTo ?: 99
-        return if (true) "${questionSpec.labelText} $wipeTo $thenTo"
+        val thenFrom = thenState?.wipeFromRight
+        return if (true) "${questionSpec.labelText} $wipeFromRight $thenFrom"
 //            "showBack = $showBack showNext = $showNext "
         else ("${hashCode()}")
     }

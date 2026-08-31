@@ -144,7 +144,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                 val wipeMillis = 1300
                 var wipeState by remember {
                     mutableIntStateOf(
-                        screenState.thenState?.wipeTo ?: -1
+                        screenState.thenState?.wipeRightState() ?:0
                     )
                 }
 //                println("R1: wipeState = $wipeState")
@@ -168,7 +168,7 @@ fun ImeScreen(inputActivity: InputActivity) {
                     ChooseFormBox(screenState, inputActivity, at)
                 }
                 LaunchedEffect(wipeMillis) {
-                    wipeState = screenState.wipeTo
+                    wipeState = screenState.wipeRightState()
 //                    println("R1: wipeState = $wipeState")
                     delay(wipeMillis.milliseconds)
                     inputActivity.clearForWipe()
@@ -188,7 +188,7 @@ fun ImeScreen(inputActivity: InputActivity) {
             )
         }
         if (!ApplyQuestionFromBefore &&
-            screenState.wipeTo < QuestionFrom
+            inputActivity.questionAt < QuestionFrom
         )
             LaunchedEffect(Unit) {
                 delay(200.milliseconds)
@@ -211,7 +211,7 @@ private fun ChooseFormBox(
         } else FormWidgetEditBox(screenState, inputActivity)
         return
     }
-    val wipeState = if (at == screenState.wipeTo) screenState
+    val wipeState = if (at == screenState.wipeRightState()) screenState
     else screenState.thenState!!
     if (wipeState.endOfForm) FormEndBox(inputActivity, formTitle)
     else FormWidgetWipeBox(wipeState)
@@ -285,7 +285,7 @@ private fun FormEndBox(inputActivity: InputActivity, formTitle: String) {
 
 @Composable
 private fun FormWidgetWipeBox(screenState: ScreenState) {
-    Box() {
+    Box {
         Column {
             val question = screenState.questionSpec
             FlowRow(Modifier.padding(vertical = 0.dp)) {
