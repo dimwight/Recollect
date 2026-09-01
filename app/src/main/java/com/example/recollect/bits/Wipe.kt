@@ -114,7 +114,7 @@ val AllEasings = listOf(
 @Composable
 fun EasingPicker(
     selected: EasingOption,
-    onSelected:(EasingOption) -> Unit
+    onSelected: (EasingOption) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -206,29 +206,34 @@ fun WipeDemoScreen() {
             }
         }
 
-        Button(
-            onClick = {
-                selectedIndex =
-                    if (selectedIndex == 0)
-                        AllEasings.lastIndex
-                    else
-                        selectedIndex - 1
-            }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text("Previous")
+            Button(
+                onClick = {
+                    selectedIndex =
+                        if (selectedIndex == 0)
+                            AllEasings.lastIndex
+                        else
+                            selectedIndex - 1
+                }
+            ) {
+                Text("Previous")
+            }
+
+            Button(
+                onClick = {
+                    selectedIndex =
+                        if (selectedIndex == AllEasings.lastIndex)
+                            0
+                        else
+                            selectedIndex + 1
+                }
+            ) {
+                Text("Next")
+            }
         }
 
-        Button(
-            onClick = {
-                selectedIndex =
-                    if (selectedIndex == AllEasings.lastIndex)
-                        0
-                    else
-                        selectedIndex + 1
-            }
-        ) {
-            Text("Next")
-        }
 
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
@@ -247,7 +252,7 @@ fun WipeDemoScreen() {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
                     easing =
-                        if (false)selectEasing.easing
+                        if (false) selectEasing.easing
                         else AllEasings[selectedIndex].easing
                 )
                 if (targetState > initialState) {
