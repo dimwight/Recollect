@@ -49,29 +49,17 @@ import kotlin.random.Random
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-data class EasingOption_(
+data class EasingOption(
     val name: String,
     val easing: Easing
 )
 
-data class EasingOption(
-    val easing: Easing,
-    val name: String=easing.toString()
-)
-
-val Easings = listOf(
-    EasingOption(FastOutSlowInEasing,"FastOutSlowInEasing"),
-    EasingOption(FastOutSlowInEasing),
-    EasingOption(LinearOutSlowInEasing),
-    EasingOption(FastOutLinearInEasing),
-)
-
-/*
-val AllEasings_ = listOf(
+val AllEasings = listOf(
     EasingOption("LinearEasing", LinearEasing),
     EasingOption("FastOutSlowInEasing", FastOutSlowInEasing),
     EasingOption("LinearOutSlowInEasing", LinearOutSlowInEasing),
@@ -122,13 +110,12 @@ val AllEasings_ = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
-*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EasingPicker(
     selected: EasingOption,
-    onSelected: (EasingOption) -> Unit
+    onSelected:(EasingOption) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -151,7 +138,7 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            Easings.forEach { option ->
+            AllEasings.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option.name) },
                     onClick = {
@@ -173,7 +160,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         var selectedEasing by remember {
-            mutableStateOf(Easings.first())
+            mutableStateOf(AllEasings.first())
         }
         var wipeState by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
