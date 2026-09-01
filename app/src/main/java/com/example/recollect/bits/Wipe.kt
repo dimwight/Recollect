@@ -53,25 +53,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-data class EasingOption_(
+data class EasingOption(
     val name: String,
     val easing: Easing
 )
 
-data class EasingOption(
-    val easing: Easing,
-    val name: String=easing.toString()
-)
-
-val Easings = listOf(
-    EasingOption(FastOutSlowInEasing,"FastOutSlowInEasing"),
-    EasingOption(FastOutSlowInEasing),
-    EasingOption(LinearOutSlowInEasing),
-    EasingOption(FastOutLinearInEasing),
-)
-
-/*
-val AllEasings_ = listOf(
+val AllEasings = listOf(
     EasingOption("LinearEasing", LinearEasing),
     EasingOption("FastOutSlowInEasing", FastOutSlowInEasing),
     EasingOption("LinearOutSlowInEasing", LinearOutSlowInEasing),
@@ -122,13 +109,12 @@ val AllEasings_ = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
-*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EasingPicker(
-    selected: EasingOption,
-    onSelected: (EasingOption) -> Unit
+    selectedAt: Int,
+    onSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -136,6 +122,7 @@ fun EasingPicker(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
+        val selected = AllEasings[selectedAt]
         OutlinedTextField(
             value = selected.name,
             onValueChange = {},
@@ -151,11 +138,11 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            Easings.forEach { option ->
+            AllEasings.forEachIndexed { at, option ->
                 DropdownMenuItem(
                     text = { Text(option.name) },
                     onClick = {
-                        onSelected(option)
+                        onSelected(at)
                         expanded = false
                     }
                 )
@@ -173,15 +160,18 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         var selectedEasing by remember {
-            mutableStateOf(Easings.first())
+            mutableStateOf(AllEasings.first())
         }
-        var wipeState by remember { mutableIntStateOf(0) }
+        var selectedAt by remember { mutableIntStateOf(0) }
+        val selectEasing = AllEasings[selectedAt]
+
         val scope = rememberCoroutineScope()
+        var wipeState by remember { mutableIntStateOf(0) }
 
         EasingPicker(
-            selected = selectedEasing,
+            selectedAt = selectedAt,
             onSelected = {
-                selectedEasing = it
+                selectedAt = it
                 timeMillis("click")
                 scope.launch {
                     delay(500.milliseconds)
@@ -193,10 +183,56 @@ fun WipeDemoScreen() {
             }
         )
 
-        val animationSpec = tween<Float>(
-            durationMillis = 1000,
-            easing = selectedEasing.easing
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                enabled = selectedAt > 0,
+                onClick = { selectedAt-- }
+            ) {
+                Text("Previous")
+            }
+
+            Text(
+                text = AllEasings[selectedAt].name,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
+            Button(
+                enabled = selectedAt < AllEasings.lastIndex,
+                onClick = { selectedAt++ }
+            ) {
+                Text("Next")
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = {
+                    selectedAt =
+                        if (selectedAt == 0)
+                            AllEasings.lastIndex
+                        else
+                            selectedAt - 1
+                }
+            ) {
+                Text("Previous")
+            }
+
+            Button(
+                onClick = {
+                    selectedAt =
+                        if (selectedAt == AllEasings.lastIndex)
+                            0
+                        else
+                            selectedAt + 1
+                }
+            ) {
+                Text("Next")
+            }
+        }
 
 
         Spacer(Modifier.height(50.dp))
@@ -215,7 +251,7 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = selectedEasing.easing
+                    easing = AllEasings[selectedAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
