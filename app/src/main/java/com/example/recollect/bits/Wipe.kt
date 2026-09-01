@@ -49,7 +49,6 @@ import kotlin.random.Random
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -180,11 +179,56 @@ fun WipeDemoScreen() {
             }
         )
 
-        val animationSpec = tween<Float>(
-            durationMillis = 1000,
-            easing = selectedEasing.easing
-        )
+        var selectedIndex by remember { mutableIntStateOf(0) }
 
+        val selectEasing = AllEasings[selectedIndex]
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                enabled = selectedIndex > 0,
+                onClick = { selectedIndex-- }
+            ) {
+                Text("Previous")
+            }
+
+            Text(
+                text = selectEasing.name,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
+            Button(
+                enabled = selectedIndex < AllEasings.lastIndex,
+                onClick = { selectedIndex++ }
+            ) {
+                Text("Next")
+            }
+        }
+
+        Button(
+            onClick = {
+                selectedIndex =
+                    if (selectedIndex == 0)
+                        AllEasings.lastIndex
+                    else
+                        selectedIndex - 1
+            }
+        ) {
+            Text("Previous")
+        }
+
+        Button(
+            onClick = {
+                selectedIndex =
+                    if (selectedIndex == AllEasings.lastIndex)
+                        0
+                    else
+                        selectedIndex + 1
+            }
+        ) {
+            Text("Next")
+        }
 
         Spacer(Modifier.height(50.dp))
         Button(onClick = {
@@ -202,7 +246,9 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = selectedEasing.easing
+                    easing =
+                        if (false)selectEasing.easing
+                        else AllEasings[selectedIndex].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
