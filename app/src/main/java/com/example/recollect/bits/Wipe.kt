@@ -49,17 +49,29 @@ import kotlin.random.Random
 import androidx.compose.animation.core.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.foundation.layout.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-data class EasingOption(
+data class EasingOption_(
     val name: String,
     val easing: Easing
 )
 
-val AllEasings = listOf(
+data class EasingOption(
+    val easing: Easing,
+    val name: String=easing.toString()
+)
+
+val Easings = listOf(
+    EasingOption(FastOutSlowInEasing,"FastOutSlowInEasing"),
+    EasingOption(FastOutSlowInEasing),
+    EasingOption(LinearOutSlowInEasing),
+    EasingOption(FastOutLinearInEasing),
+)
+
+/*
+val AllEasings_ = listOf(
     EasingOption("LinearEasing", LinearEasing),
     EasingOption("FastOutSlowInEasing", FastOutSlowInEasing),
     EasingOption("LinearOutSlowInEasing", LinearOutSlowInEasing),
@@ -110,6 +122,7 @@ val AllEasings = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
+*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,7 +151,7 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            AllEasings.forEach { option ->
+            Easings.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option.name) },
                     onClick = {
@@ -160,7 +173,7 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
         var selectedEasing by remember {
-            mutableStateOf(AllEasings.first())
+            mutableStateOf(Easings.first())
         }
         var wipeState by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
