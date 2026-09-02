@@ -159,12 +159,8 @@ fun WipeDemoScreen() {
             .background(Color.White)
     ) {
         Spacer(Modifier.height(50.dp))
-        var selectedEasing by remember {
-            mutableStateOf(AllEasings.first())
-        }
-        var selectedAt by remember { mutableIntStateOf(0) }
-        val selectEasing = AllEasings[selectedAt]
 
+        var selectedAt by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
         var wipeState by remember { mutableIntStateOf(0) }
 
@@ -183,28 +179,30 @@ fun WipeDemoScreen() {
             }
         )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                enabled = selectedAt > 0,
-                onClick = { selectedAt-- }
+        /*{
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Previous")
-            }
+                Button(
+                    enabled = selectedAt > 0,
+                    onClick = { selectedAt-- }
+                ) {
+                    Text("Previous")
+                }
 
-            Text(
-                text = AllEasings[selectedAt].name,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
+                Text(
+                    text = AllEasings[selectedAt].name,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
 
-            Button(
-                enabled = selectedAt < AllEasings.lastIndex,
-                onClick = { selectedAt++ }
-            ) {
-                Text("Next")
+                Button(
+                    enabled = selectedAt < AllEasings.lastIndex,
+                    onClick = { selectedAt++ }
+                ) {
+                    Text("Next")
+                }
             }
-        }
+        }*/
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
