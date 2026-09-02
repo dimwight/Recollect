@@ -161,8 +161,11 @@ fun WipeDemoScreen() {
         var selectedEasing by remember {
             mutableStateOf(AllEasings.first())
         }
-        var wipeState by remember { mutableIntStateOf(0) }
+        var selectedIndex by remember { mutableIntStateOf(0) }
+        val selectEasing = AllEasings[selectedIndex]
+
         val scope = rememberCoroutineScope()
+        var wipeState by remember { mutableIntStateOf(0) }
 
         EasingPicker(
             selected = selectedEasing,
@@ -178,10 +181,6 @@ fun WipeDemoScreen() {
                 }
             }
         )
-
-        var selectedIndex by remember { mutableIntStateOf(0) }
-
-        val selectEasing = AllEasings[selectedIndex]
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
