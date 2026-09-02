@@ -194,7 +194,7 @@ fun WipeDemoScreen() {
             }
 
             Text(
-                text = selectEasing.name,
+                text = AllEasings[selectedAt].name,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
 
