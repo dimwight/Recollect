@@ -47,6 +47,10 @@ import androidx.compose.ui.unit.sp
 import com.example.recollect.timeMillis
 import kotlin.random.Random
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
@@ -117,6 +121,12 @@ fun EasingPicker(
     onSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    LaunchedEffect(expanded) {
+        if (expanded) {
+            listState.scrollToItem(selectedAt)
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -138,14 +148,19 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            AllEasings.forEachIndexed { index, option ->
-                DropdownMenuItem(
-                    text = { Text(option.name) },
-                    onClick = {
-                        onSelected(index)
-                        expanded = false
-                    }
-                )
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.heightIn(max = 100.dp)
+            ) {
+                itemsIndexed(AllEasings) { at, option ->
+                    DropdownMenuItem(
+                        text = { Text(option.name) },
+                        onClick = {
+                            onSelected(at)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }
@@ -160,15 +175,15 @@ fun WipeDemoScreen() {
     ) {
         Spacer(Modifier.height(50.dp))
 
-        var selectedIndex by remember { mutableIntStateOf(0) }
+        var selectedAt by remember { mutableIntStateOf(0) }
         // These are used by animation later in composition
         var wipeState by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
 
         EasingPicker(
-            selectedAt = selectedIndex,
+            selectedAt = selectedAt,
             onSelected = {
-                selectedIndex = it
+                selectedAt = it
 //                timeMillis("click")
                 scope.launch {
                     delay(500.milliseconds)
@@ -185,11 +200,11 @@ fun WipeDemoScreen() {
         ) {
             Button(
                 onClick = {
-                    selectedIndex =
-                        if (selectedIndex == 0)
+                    selectedAt =
+                        if (selectedAt == 0)
                             AllEasings.lastIndex
                         else
-                            selectedIndex - 1
+                            selectedAt - 1
                 }
             ) {
                 Text("Previous")
@@ -197,11 +212,11 @@ fun WipeDemoScreen() {
 
             Button(
                 onClick = {
-                    selectedIndex =
-                        if (selectedIndex == AllEasings.lastIndex)
+                    selectedAt =
+                        if (selectedAt == AllEasings.lastIndex)
                             0
                         else
-                            selectedIndex + 1
+                            selectedAt + 1
                 }
             ) {
                 Text("Next")
@@ -226,7 +241,7 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = AllEasings[selectedIndex].easing
+                    easing = AllEasings[selectedAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
