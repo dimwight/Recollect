@@ -251,9 +251,7 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing =
-                        if (false) selectEasing.easing
-                        else AllEasings[selectedAt].easing
+                    easing = AllEasings[selectedAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
