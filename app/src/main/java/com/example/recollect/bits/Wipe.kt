@@ -138,11 +138,11 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            AllEasings.forEachIndexed { at, option ->
+            AllEasings.forEachIndexed { index, option ->
                 DropdownMenuItem(
                     text = { Text(option.name) },
                     onClick = {
-                        onSelected(at)
+                        onSelected(index)
                         expanded = false
                     }
                 )
@@ -153,6 +153,94 @@ fun EasingPicker(
 
 @Composable
 fun WipeDemoScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Spacer(Modifier.height(50.dp))
+
+        var selectedIndex by remember { mutableIntStateOf(0) }
+        // These are used by animation later in composition
+        var wipeState by remember { mutableIntStateOf(0) }
+        val scope = rememberCoroutineScope()
+
+        EasingPicker(
+            selectedAt = selectedIndex,
+            onSelected = {
+                selectedIndex = it
+//                timeMillis("click")
+                scope.launch {
+                    delay(500.milliseconds)
+                    if (Random.nextFloat() < .5)
+                        wipeState++
+                    else
+                        wipeState--
+                }
+            }
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = {
+                    selectedIndex =
+                        if (selectedIndex == 0)
+                            AllEasings.lastIndex
+                        else
+                            selectedIndex - 1
+                }
+            ) {
+                Text("Previous")
+            }
+
+            Button(
+                onClick = {
+                    selectedIndex =
+                        if (selectedIndex == AllEasings.lastIndex)
+                            0
+                        else
+                            selectedIndex + 1
+                }
+            ) {
+                Text("Next")
+            }
+        }
+
+// } Relevant portion of usage ends here
+
+        Spacer(Modifier.height(50.dp))
+        Button(onClick = {
+            timeMillis("click")
+            if (Random.nextFloat() < .5)
+                wipeState++
+            else
+                wipeState--
+        }) {
+            Text("Wipe")
+        }
+
+        AnimatedContent(
+            targetState = wipeState,
+            transitionSpec = {
+                val slideTween = tween<IntOffset>(
+                    durationMillis = 1500,
+                    easing = AllEasings[selectedIndex].easing
+                )
+                if (targetState > initialState) {
+                    slideInHorizontally(slideTween) { it } togetherWith
+                            slideOutHorizontally(slideTween) { -it }
+                } else {
+                    slideInHorizontally(slideTween) { -it } togetherWith
+                            slideOutHorizontally(slideTween) { it }
+                }
+            }
+        ) { state -> AtBox(state) }
+    }
+}
+@Composable
+fun WipeDemoScreen__() {
     Column(
         modifier = Modifier
             .fillMaxSize()
