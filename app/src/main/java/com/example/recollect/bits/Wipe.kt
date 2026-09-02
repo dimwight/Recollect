@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.example.recollect.timeMillis
 import kotlin.random.Random
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -56,6 +57,14 @@ import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.PaddingValues.Absolute
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.LaunchedEffect
 
 data class EasingOption(
     val name: String,
@@ -121,10 +130,12 @@ fun EasingPicker(
     onSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val listState = rememberLazyListState()
-    LaunchedEffect(expanded) {
+    val scrollState = rememberScrollState()
+
+    // Scroll selected item into view when menu opens
+    LaunchedEffect(expanded, selectedAt) {
         if (expanded) {
-            listState.scrollToItem(selectedAt)
+            scrollState.scrollTo(selectedAt * 48)
         }
     }
 
@@ -133,6 +144,7 @@ fun EasingPicker(
         onExpandedChange = { expanded = !expanded }
     ) {
         val selected = AllEasings[selectedAt]
+
         OutlinedTextField(
             value = selected.name,
             onValueChange = {},
@@ -148,17 +160,22 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.heightIn(max = 100.dp)
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 300.dp)
+                    .verticalScroll(scrollState)
             ) {
-                itemsIndexed(AllEasings) { at, option ->
-                    DropdownMenuItem(
-                        text = { Text(option.name) },
-                        onClick = {
-                            onSelected(at)
-                            expanded = false
-                        }
+                AllEasings.forEachIndexed { index, option ->
+                    Text(
+                        text = option.name,
+//                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onSelected(index)
+                                expanded = false
+                            }
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
                     )
                 }
             }
@@ -179,21 +196,6 @@ fun WipeDemoScreen() {
         // These are used by animation later in composition
         var wipeState by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
-
-        EasingPicker(
-            selectedAt = selectedAt,
-            onSelected = {
-                selectedAt = it
-//                timeMillis("click")
-                scope.launch {
-                    delay(500.milliseconds)
-                    if (Random.nextFloat() < .5)
-                        wipeState++
-                    else
-                        wipeState--
-                }
-            }
-        )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -223,6 +225,20 @@ fun WipeDemoScreen() {
             }
         }
 
+        EasingPicker(
+            selectedAt = selectedAt,
+            onSelected = {
+                selectedAt = it
+//                timeMillis("click")
+                scope.launch {
+                    delay(500.milliseconds)
+                    if (Random.nextFloat() < .5)
+                        wipeState++
+                    else
+                        wipeState--
+                }
+            }
+        )
 // } Relevant portion of usage ends here
 
         Spacer(Modifier.height(50.dp))
