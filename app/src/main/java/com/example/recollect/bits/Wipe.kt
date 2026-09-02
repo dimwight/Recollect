@@ -113,8 +113,8 @@ val AllEasings = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EasingPicker(
-    selected: EasingOption,
-    onSelected: (EasingOption) -> Unit
+    selectedAt: Int,
+    onSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -122,6 +122,7 @@ fun EasingPicker(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
+        val selected = AllEasings[selectedAt]
         OutlinedTextField(
             value = selected.name,
             onValueChange = {},
@@ -137,11 +138,11 @@ fun EasingPicker(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            AllEasings.forEach { option ->
+            AllEasings.forEachIndexed { at, option ->
                 DropdownMenuItem(
                     text = { Text(option.name) },
                     onClick = {
-                        onSelected(option)
+                        onSelected(at)
                         expanded = false
                     }
                 )
@@ -161,16 +162,16 @@ fun WipeDemoScreen() {
         var selectedEasing by remember {
             mutableStateOf(AllEasings.first())
         }
-        var selectedIndex by remember { mutableIntStateOf(0) }
-        val selectEasing = AllEasings[selectedIndex]
+        var selectedAt by remember { mutableIntStateOf(0) }
+        val selectEasing = AllEasings[selectedAt]
 
         val scope = rememberCoroutineScope()
         var wipeState by remember { mutableIntStateOf(0) }
 
         EasingPicker(
-            selected = selectedEasing,
+            selectedAt = selectedAt,
             onSelected = {
-                selectedEasing = it
+                selectedAt = it
                 timeMillis("click")
                 scope.launch {
                     delay(500.milliseconds)
@@ -186,8 +187,8 @@ fun WipeDemoScreen() {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                enabled = selectedIndex > 0,
-                onClick = { selectedIndex-- }
+                enabled = selectedAt > 0,
+                onClick = { selectedAt-- }
             ) {
                 Text("Previous")
             }
@@ -198,8 +199,8 @@ fun WipeDemoScreen() {
             )
 
             Button(
-                enabled = selectedIndex < AllEasings.lastIndex,
-                onClick = { selectedIndex++ }
+                enabled = selectedAt < AllEasings.lastIndex,
+                onClick = { selectedAt++ }
             ) {
                 Text("Next")
             }
@@ -210,11 +211,11 @@ fun WipeDemoScreen() {
         ) {
             Button(
                 onClick = {
-                    selectedIndex =
-                        if (selectedIndex == 0)
+                    selectedAt =
+                        if (selectedAt == 0)
                             AllEasings.lastIndex
                         else
-                            selectedIndex - 1
+                            selectedAt - 1
                 }
             ) {
                 Text("Previous")
@@ -222,11 +223,11 @@ fun WipeDemoScreen() {
 
             Button(
                 onClick = {
-                    selectedIndex =
-                        if (selectedIndex == AllEasings.lastIndex)
+                    selectedAt =
+                        if (selectedAt == AllEasings.lastIndex)
                             0
                         else
-                            selectedIndex + 1
+                            selectedAt + 1
                 }
             ) {
                 Text("Next")
@@ -252,7 +253,7 @@ fun WipeDemoScreen() {
                     durationMillis = 1500,
                     easing =
                         if (false) selectEasing.easing
-                        else AllEasings[selectedIndex].easing
+                        else AllEasings[selectedAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
