@@ -56,6 +56,9 @@ import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.LaunchedEffect
 
 data class EasingOption(
@@ -131,17 +134,17 @@ fun EasingPicker(
         }
     }
 
-    Column(
+    LazyColumn (
         modifier = Modifier
             .heightIn(max = 300.dp)
             .verticalScroll(scrollState)
     ) {
-        AllEasings.forEachIndexed { index, option ->
+        itemsIndexed(AllEasings) {index,it->
             Text(
-                text = option.name,
+                text = it.name,
                 modifier = Modifier
                     .background(
-                        if (option==AllEasings[selectedAt])
+                        if (it==AllEasings[selectedAt])
                             Color.Gray else Color.White
                     )
                     .fillMaxWidth()
@@ -151,6 +154,7 @@ fun EasingPicker(
                     }
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             )
+
         }
     }
 }
