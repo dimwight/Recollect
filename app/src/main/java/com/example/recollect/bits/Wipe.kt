@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
@@ -49,9 +48,6 @@ import kotlin.random.Random
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
@@ -59,11 +55,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.PaddingValues.Absolute
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.LaunchedEffect
 
 data class EasingOption(
@@ -139,46 +131,26 @@ fun EasingPicker(
         }
     }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+    Column(
+        modifier = Modifier
+            .heightIn(max = 300.dp)
+            .verticalScroll(scrollState)
     ) {
-        val selected = AllEasings[selectedAt]
-
-        OutlinedTextField(
-            value = selected.name,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Easing") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-            },
-            modifier = Modifier.menuAnchor()
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            Column(
+        AllEasings.forEachIndexed { index, option ->
+            Text(
+                text = option.name,
                 modifier = Modifier
-                    .heightIn(max = 300.dp)
-                    .verticalScroll(scrollState)
-            ) {
-                AllEasings.forEachIndexed { index, option ->
-                    Text(
-                        text = option.name,
-//                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onSelected(index)
-                                expanded = false
-                            }
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .background(
+                        if (option==AllEasings[selectedAt])
+                            Color.Gray else Color.White
                     )
-                }
-            }
+                    .fillMaxWidth()
+                    .clickable {
+                        onSelected(index)
+                        expanded = false
+                    }
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            )
         }
     }
 }
@@ -212,6 +184,11 @@ fun WipeDemoScreen() {
                 Text("Previous")
             }
 
+            Text(
+                text = AllEasings[selectedAt].name,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
             Button(
                 onClick = {
                     selectedAt =
@@ -229,7 +206,7 @@ fun WipeDemoScreen() {
             selectedAt = selectedAt,
             onSelected = {
                 selectedAt = it
-//                timeMillis("click")
+    //                timeMillis("click")
                 scope.launch {
                     delay(500.milliseconds)
                     if (Random.nextFloat() < .5)
@@ -298,7 +275,6 @@ fun WipeDemoScreen__() {
             }
         )
 
-        /*{
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -321,7 +297,6 @@ fun WipeDemoScreen__() {
                     Text("Next")
                 }
             }
-        }*/
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
