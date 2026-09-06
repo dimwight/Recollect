@@ -26,10 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,17 +54,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.layout.onSizeChanged
+import kotlin.math.min
 
 data class EasingOption(
     val name: String,
     val easing: Easing
 )
 
-val AllEasings = listOf(
-    EasingOption("LinearEasing", LinearEasing),
-    EasingOption("FastOutSlowInEasing", FastOutSlowInEasing),
-    EasingOption("LinearOutSlowInEasing", LinearOutSlowInEasing),
-    EasingOption("FastOutLinearInEasing", FastOutLinearInEasing),
+val Easings = listOf(
+    EasingOption("Linear....", LinearEasing),
+    EasingOption("FastOutSlowIn....", FastOutSlowInEasing),
+    EasingOption("LinearOutSlowIn....", LinearOutSlowInEasing),
+    EasingOption("FastOutLinearIn....", FastOutLinearInEasing),
 
     EasingOption("Ease", Ease),
     EasingOption("EaseIn", EaseIn),
@@ -82,37 +81,37 @@ val AllEasings = listOf(
     EasingOption("EaseOutQuad", EaseOutQuad),
     EasingOption("EaseInOutQuad", EaseInOutQuad),
 
-    EasingOption("EaseInCubic", EaseInCubic),
-    EasingOption("EaseOutCubic", EaseOutCubic),
-    EasingOption("EaseInOutCubic", EaseInOutCubic),
+    /*    EasingOption("EaseInCubic", EaseInCubic),
+        EasingOption("EaseOutCubic", EaseOutCubic),
+        EasingOption("EaseInOutCubic", EaseInOutCubic),
 
-    EasingOption("EaseInQuart", EaseInQuart),
-    EasingOption("EaseOutQuart", EaseOutQuart),
-    EasingOption("EaseInOutQuart", EaseInOutQuart),
+        EasingOption("EaseInQuart", EaseInQuart),
+        EasingOption("EaseOutQuart", EaseOutQuart),
+        EasingOption("EaseInOutQuart", EaseInOutQuart),
 
-    EasingOption("EaseInQuint", EaseInQuint),
-    EasingOption("EaseOutQuint", EaseOutQuint),
-    EasingOption("EaseInOutQuint", EaseInOutQuint),
+        EasingOption("EaseInQuint", EaseInQuint),
+        EasingOption("EaseOutQuint", EaseOutQuint),
+        EasingOption("EaseInOutQuint", EaseInOutQuint),
 
-    EasingOption("EaseInExpo", EaseInExpo),
-    EasingOption("EaseOutExpo", EaseOutExpo),
-    EasingOption("EaseInOutExpo", EaseInOutExpo),
+        EasingOption("EaseInExpo", EaseInExpo),
+        EasingOption("EaseOutExpo", EaseOutExpo),
+        EasingOption("EaseInOutExpo", EaseInOutExpo),
 
-    EasingOption("EaseInCirc", EaseInCirc),
-    EasingOption("EaseOutCirc", EaseOutCirc),
-    EasingOption("EaseInOutCirc", EaseInOutCirc),
+        EasingOption("EaseInCirc", EaseInCirc),
+        EasingOption("EaseOutCirc", EaseOutCirc),
+        EasingOption("EaseInOutCirc", EaseInOutCirc),
 
-    EasingOption("EaseInBack", EaseInBack),
-    EasingOption("EaseOutBack", EaseOutBack),
-    EasingOption("EaseInOutBack", EaseInOutBack),
+        EasingOption("EaseInBack", EaseInBack),
+        EasingOption("EaseOutBack", EaseOutBack),
+        EasingOption("EaseInOutBack", EaseInOutBack),
 
-    EasingOption("EaseInElastic", EaseInElastic),
-    EasingOption("EaseOutElastic", EaseOutElastic),
-    EasingOption("EaseInOutElastic", EaseInOutElastic),
+        EasingOption("EaseInElastic", EaseInElastic),
+        EasingOption("EaseOutElastic", EaseOutElastic),
+        EasingOption("EaseInOutElastic", EaseInOutElastic),
 
-    EasingOption("EaseInBounce", EaseInBounce),
-    EasingOption("EaseOutBounce", EaseOutBounce),
-    EasingOption("EaseInOutBounce", EaseInOutBounce),
+        EasingOption("EaseInBounce", EaseInBounce),
+        EasingOption("EaseOutBounce", EaseOutBounce),
+        EasingOption("EaseInOutBounce", EaseInOutBounce),*/
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -121,14 +120,12 @@ fun EasingPicker(
     selectedAt: Int,
     onSelected: (Int) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    var itemHeightPx by remember { mutableIntStateOf(0) }
 
-    // Scroll selected item into view when menu opens
-    LaunchedEffect(expanded, selectedAt) {
-        if (expanded) {
-            scrollState.scrollTo(selectedAt * 48)
-        }
+    LaunchedEffect(selectedAt) {
+        scrollState.scrollTo(selectedAt * itemHeightPx)
+        println("R1: value = ${scrollState.value}")
     }
 
     Column(
@@ -136,18 +133,26 @@ fun EasingPicker(
             .heightIn(max = 300.dp)
             .verticalScroll(scrollState)
     ) {
-        AllEasings.forEachIndexed { index, option ->
+        Easings.forEachIndexed { at, easing ->
             Text(
-                text = option.name,
+                text = "$at ${easing.name}",
                 modifier = Modifier
+                    .then(
+                        if (at == 0)
+                            Modifier.onSizeChanged {
+                                itemHeightPx = it.height
+                                println("R1: itemH = $itemHeightPx")
+                            }
+                        else
+                            Modifier
+                    )
                     .background(
-                        if (option==AllEasings[selectedAt])
+                        if (easing == Easings[selectedAt])
                             Color.Gray else Color.White
                     )
                     .fillMaxWidth()
                     .clickable {
-                        onSelected(index)
-                        expanded = false
+                        onSelected(at)
                     }
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             )
@@ -165,6 +170,7 @@ fun WipeDemoScreen() {
         Spacer(Modifier.height(50.dp))
 
         var selectedAt by remember { mutableIntStateOf(0) }
+        var scrollAt by remember { mutableIntStateOf(0) }
         // These are used by animation later in composition
         var wipeState by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
@@ -173,40 +179,37 @@ fun WipeDemoScreen() {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
+                enabled = selectedAt > 0,
                 onClick = {
-                    selectedAt =
-                        if (selectedAt == 0)
-                            AllEasings.lastIndex
-                        else
-                            selectedAt - 1
+                    selectedAt--
                 }
-            ) {
-                Text("Previous")
-            }
-
-            Text(
-                text = AllEasings[selectedAt].name,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
+            ) { Text("Back") }
 
             Button(
+                enabled = selectedAt < Easings.lastIndex,
                 onClick = {
-                    selectedAt =
-                        if (selectedAt == AllEasings.lastIndex)
-                            0
-                        else
-                            selectedAt + 1
+                    selectedAt++
                 }
-            ) {
-                Text("Next")
-            }
+            ) { Text("Next") }
+            Button(
+                enabled = selectedAt > 0,
+                onClick = {
+                    scrollAt -= min(5, selectedAt)
+                }
+            ) { Text("Up") }
+
+            Button(
+                enabled = selectedAt < Easings.lastIndex,
+                onClick = {
+                    scrollAt += min(5, Easings.lastIndex - selectedAt)
+                }
+            ) { Text("Down") }
         }
 
         EasingPicker(
             selectedAt = selectedAt,
             onSelected = {
                 selectedAt = it
-    //                timeMillis("click")
                 scope.launch {
                     delay(500.milliseconds)
                     if (Random.nextFloat() < .5)
@@ -218,7 +221,6 @@ fun WipeDemoScreen() {
         )
 // } Relevant portion of usage ends here
 
-        Spacer(Modifier.height(50.dp))
         Button(onClick = {
             timeMillis("click")
             if (Random.nextFloat() < .5)
@@ -234,7 +236,7 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = AllEasings[selectedAt].easing
+                    easing = Easings[selectedAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
@@ -247,6 +249,7 @@ fun WipeDemoScreen() {
         ) { state -> AtBox(state) }
     }
 }
+
 @Composable
 fun WipeDemoScreen__() {
     Column(
@@ -275,28 +278,28 @@ fun WipeDemoScreen__() {
             }
         )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                enabled = selectedAt > 0,
+                onClick = { selectedAt-- }
             ) {
-                Button(
-                    enabled = selectedAt > 0,
-                    onClick = { selectedAt-- }
-                ) {
-                    Text("Previous")
-                }
-
-                Text(
-                    text = AllEasings[selectedAt].name,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-
-                Button(
-                    enabled = selectedAt < AllEasings.lastIndex,
-                    onClick = { selectedAt++ }
-                ) {
-                    Text("Next")
-                }
+                Text("Previous")
             }
+
+            Text(
+                text = Easings[selectedAt].name,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+
+            Button(
+                enabled = selectedAt < Easings.lastIndex,
+                onClick = { selectedAt++ }
+            ) {
+                Text("Next")
+            }
+        }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -305,7 +308,7 @@ fun WipeDemoScreen__() {
                 onClick = {
                     selectedAt =
                         if (selectedAt == 0)
-                            AllEasings.lastIndex
+                            Easings.lastIndex
                         else
                             selectedAt - 1
                 }
@@ -316,7 +319,7 @@ fun WipeDemoScreen__() {
             Button(
                 onClick = {
                     selectedAt =
-                        if (selectedAt == AllEasings.lastIndex)
+                        if (selectedAt == Easings.lastIndex)
                             0
                         else
                             selectedAt + 1
@@ -343,7 +346,7 @@ fun WipeDemoScreen__() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = AllEasings[selectedAt].easing
+                    easing = Easings[selectedAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
