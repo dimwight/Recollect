@@ -117,15 +117,18 @@ val Easings = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EasingPicker(
+    scrollAt: Int,
     selectedAt: Int,
-    onSelected: (Int) -> Unit
+    onSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     var itemHeightPx by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(selectedAt) {
-        scrollState.scrollTo(selectedAt * itemHeightPx)
+    LaunchedEffect(scrollAt) {
         println("R1: value = ${scrollState.value}")
+        println("R1: scrollAt = ${scrollAt}")
+        scrollState.scrollTo(scrollAt * itemHeightPx)
+        println("R1: value~ = ${scrollState.value}")
     }
 
     Column(
@@ -192,21 +195,22 @@ fun WipeDemoScreen() {
                 }
             ) { Text("Next") }
             Button(
-                enabled = selectedAt > 0,
+                enabled = scrollAt > 0,
                 onClick = {
-                    scrollAt -= min(5, selectedAt)
+                    scrollAt -= min(5, scrollAt)
                 }
             ) { Text("Up") }
 
             Button(
-                enabled = selectedAt < Easings.lastIndex,
+                enabled = scrollAt < Easings.lastIndex,
                 onClick = {
-                    scrollAt += min(5, Easings.lastIndex - selectedAt)
+                    scrollAt += min(5, Easings.lastIndex - scrollAt)
                 }
             ) { Text("Down") }
         }
 
         EasingPicker(
+            scrollAt=scrollAt,
             selectedAt = selectedAt,
             onSelected = {
                 selectedAt = it
@@ -264,6 +268,7 @@ fun WipeDemoScreen__() {
         var wipeState by remember { mutableIntStateOf(0) }
 
         EasingPicker(
+            scrollAt =0,
             selectedAt = selectedAt,
             onSelected = {
                 selectedAt = it
@@ -275,7 +280,7 @@ fun WipeDemoScreen__() {
                     else
                         wipeState--
                 }
-            }
+            },
         )
 
         Row(

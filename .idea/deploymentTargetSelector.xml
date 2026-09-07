@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="main">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2026-08-31T12:12:18.179533100Z">
+        <DropdownSelection timestamp="2026-09-07T15:41:17.457442Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\dimwi\.android\avd\Pixel_7_2.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RZCW102401B" />
             </handle>
           </Target>
         </DropdownSelection>
