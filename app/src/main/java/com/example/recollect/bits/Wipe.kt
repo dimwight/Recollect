@@ -113,8 +113,12 @@ val Easings = listOf(
         EasingOption("EaseOutBounce", EaseOutBounce),
         EasingOption("EaseInOutBounce", EaseInOutBounce),*/
 )
-
-@OptIn(ExperimentalMaterial3Api::class)
+var itemHeightPx_ = -1
+var pickerHeightPx_ = -1
+fun getPickerRows(): Int {
+    return pickerHeightPx_ / itemHeightPx_
+}
+//@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EasingPicker(
     scrollAt: Int,
@@ -133,6 +137,11 @@ fun EasingPicker(
 
     Column(
         modifier = Modifier
+            .then(
+                Modifier.onSizeChanged {
+                    pickerHeightPx_ = it.height
+                }
+            )
             .heightIn(max = 300.dp)
             .verticalScroll(scrollState)
     ) {
@@ -143,8 +152,7 @@ fun EasingPicker(
                     .then(
                         if (at == 0)
                             Modifier.onSizeChanged {
-                                itemHeightPx = it.height
-                                println("R1: itemH = $itemHeightPx")
+                                itemHeightPx_ = it.height
                             }
                         else
                             Modifier
@@ -170,13 +178,35 @@ fun WipeDemoScreen() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Spacer(Modifier.height(50.dp))
-
         var selectedAt by remember { mutableIntStateOf(0) }
         var scrollAt by remember { mutableIntStateOf(0) }
         // These are used by animation later in composition
         var wipeState by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
+        var gettingValues by remember { mutableStateOf(true) }
+
+        Spacer(Modifier.height(50.dp))
+        EasingPicker(
+            scrollAt = scrollAt,
+            selectedAt = selectedAt,
+            onSelected = {
+                selectedAt = it
+                scope.launch {
+                    delay(500.milliseconds)
+                    if (Random.nextFloat() < .5)
+                        wipeState++
+                    else
+                        wipeState--
+                }
+            }
+        )
+        if (gettingValues) {
+            LaunchedEffect(gettingValues){
+                delay(100.milliseconds)
+                gettingValues=false
+            }
+            return
+        }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -201,28 +231,14 @@ fun WipeDemoScreen() {
                 }
             ) { Text("Up") }
 
+            val downEnabled = scrollAt+5 < getPickerRows()
             Button(
-                enabled = scrollAt < Easings.lastIndex,
+                enabled = downEnabled,
                 onClick = {
                     scrollAt += min(5, Easings.lastIndex - scrollAt)
                 }
             ) { Text("Down") }
         }
-
-        EasingPicker(
-            scrollAt=scrollAt,
-            selectedAt = selectedAt,
-            onSelected = {
-                selectedAt = it
-                scope.launch {
-                    delay(500.milliseconds)
-                    if (Random.nextFloat() < .5)
-                        wipeState++
-                    else
-                        wipeState--
-                }
-            }
-        )
 // } Relevant portion of usage ends here
 
         Button(onClick = {
@@ -268,7 +284,7 @@ fun WipeDemoScreen__() {
         var wipeState by remember { mutableIntStateOf(0) }
 
         EasingPicker(
-            scrollAt =0,
+            scrollAt = 0,
             selectedAt = selectedAt,
             onSelected = {
                 selectedAt = it
