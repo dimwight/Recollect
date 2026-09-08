@@ -3,7 +3,24 @@ package com.example.recollect.bits
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.Ease
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.animation.core.EaseInOutQuad
+import androidx.compose.animation.core.EaseInOutQuart
+import androidx.compose.animation.core.EaseInOutSine
+import androidx.compose.animation.core.EaseInQuad
+import androidx.compose.animation.core.EaseInQuart
+import androidx.compose.animation.core.EaseInSine
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.EaseOutQuad
+import androidx.compose.animation.core.EaseOutQuart
+import androidx.compose.animation.core.EaseOutSine
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
@@ -16,46 +33,44 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recollect.timeMillis
-import kotlin.random.Random
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.layout.onSizeChanged
 import kotlin.math.min
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 data class EasingOption(
     val name: String,
@@ -81,66 +96,70 @@ val Easings = listOf(
     EasingOption("EaseOutQuad", EaseOutQuad),
     EasingOption("EaseInOutQuad", EaseInOutQuad),
 
-    /*    EasingOption("EaseInCubic", EaseInCubic),
-        EasingOption("EaseOutCubic", EaseOutCubic),
-        EasingOption("EaseInOutCubic", EaseInOutCubic),
+    EasingOption("EaseInCubic", EaseInCubic),
+    EasingOption("EaseOutCubic", EaseOutCubic),
+    EasingOption("EaseInOutCubic", EaseInOutCubic),
 
-        EasingOption("EaseInQuart", EaseInQuart),
-        EasingOption("EaseOutQuart", EaseOutQuart),
-        EasingOption("EaseInOutQuart", EaseInOutQuart),
+    EasingOption("EaseInQuart", EaseInQuart),
+    EasingOption("EaseOutQuart", EaseOutQuart),
+    EasingOption("EaseInOutQuart", EaseInOutQuart),
 
-        EasingOption("EaseInQuint", EaseInQuint),
-        EasingOption("EaseOutQuint", EaseOutQuint),
-        EasingOption("EaseInOutQuint", EaseInOutQuint),
+    /*     EasingOption("EaseInQuint", EaseInQuint),
+         EasingOption("EaseOutQuint", EaseOutQuint),
+         EasingOption("EaseInOutQuint", EaseInOutQuint),
 
-        EasingOption("EaseInExpo", EaseInExpo),
-        EasingOption("EaseOutExpo", EaseOutExpo),
-        EasingOption("EaseInOutExpo", EaseInOutExpo),
+         EasingOption("EaseInExpo", EaseInExpo),
+         EasingOption("EaseOutExpo", EaseOutExpo),
+         EasingOption("EaseInOutExpo", EaseInOutExpo),
 
-        EasingOption("EaseInCirc", EaseInCirc),
-        EasingOption("EaseOutCirc", EaseOutCirc),
-        EasingOption("EaseInOutCirc", EaseInOutCirc),
+         EasingOption("EaseInCirc", EaseInCirc),
+         EasingOption("EaseOutCirc", EaseOutCirc),
+         EasingOption("EaseInOutCirc", EaseInOutCirc),
 
-        EasingOption("EaseInBack", EaseInBack),
-        EasingOption("EaseOutBack", EaseOutBack),
-        EasingOption("EaseInOutBack", EaseInOutBack),
+         EasingOption("EaseInBack", EaseInBack),
+         EasingOption("EaseOutBack", EaseOutBack),
+         EasingOption("EaseInOutBack", EaseInOutBack),
 
-        EasingOption("EaseInElastic", EaseInElastic),
-        EasingOption("EaseOutElastic", EaseOutElastic),
-        EasingOption("EaseInOutElastic", EaseInOutElastic),
+         EasingOption("EaseInElastic", EaseInElastic),
+         EasingOption("EaseOutElastic", EaseOutElastic),
+         EasingOption("EaseInOutElastic", EaseInOutElastic),
 
-        EasingOption("EaseInBounce", EaseInBounce),
-        EasingOption("EaseOutBounce", EaseOutBounce),
-        EasingOption("EaseInOutBounce", EaseInOutBounce),*/
+         EasingOption("EaseInBounce", EaseInBounce),
+         EasingOption("EaseOutBounce", EaseOutBounce),
+         EasingOption("EaseInOutBounce", EaseInOutBounce),*/
 )
-var itemHeightPx_ = -1
-var pickerHeightPx_ = -1
+var itemHeightPx_ = 0
+var pickerHeightPx_ = 0
 fun getPickerRows(): Int {
-    return pickerHeightPx_ / itemHeightPx_
+    val rows = pickerHeightPx_ / itemHeightPx_
+    return rows
 }
-//@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun EasingPicker(
+    gettingValues: Boolean = false,
     scrollAt: Int,
     selectedAt: Int,
     onSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
-    var itemHeightPx by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(scrollAt) {
-        println("R1: value = ${scrollState.value}")
-        println("R1: scrollAt = ${scrollAt}")
-        scrollState.scrollTo(scrollAt * itemHeightPx)
-        println("R1: value~ = ${scrollState.value}")
+    if (!gettingValues) {
+        LaunchedEffect(scrollAt) {
+            println("R1: value = ${scrollState.value}")
+            println("R1: scrollAt = $scrollAt")
+            scrollState.scrollTo(scrollAt * itemHeightPx_)
+            println("R1: value~ = ${scrollState.value}")
+        }
     }
 
     Column(
         modifier = Modifier
             .then(
-                Modifier.onSizeChanged {
-                    pickerHeightPx_ = it.height
-                }
+                if (gettingValues)
+                    Modifier.onSizeChanged {
+                        pickerHeightPx_ = it.height
+                    } else Modifier
             )
             .heightIn(max = 300.dp)
             .verticalScroll(scrollState)
@@ -150,7 +169,7 @@ fun EasingPicker(
                 text = "$at ${easing.name}",
                 modifier = Modifier
                     .then(
-                        if (at == 0)
+                        if (gettingValues&& at == 0)
                             Modifier.onSizeChanged {
                                 itemHeightPx_ = it.height
                             }
@@ -171,6 +190,8 @@ fun EasingPicker(
     }
 }
 
+private const val scrollJump = 5
+
 @Composable
 fun WipeDemoScreen() {
     Column(
@@ -187,6 +208,7 @@ fun WipeDemoScreen() {
 
         Spacer(Modifier.height(50.dp))
         EasingPicker(
+            gettingValues = gettingValues,
             scrollAt = scrollAt,
             selectedAt = selectedAt,
             onSelected = {
@@ -201,9 +223,8 @@ fun WipeDemoScreen() {
             }
         )
         if (gettingValues) {
-            LaunchedEffect(gettingValues){
-                delay(100.milliseconds)
-                gettingValues=false
+            LaunchedEffect(gettingValues) {
+                gettingValues = false
             }
             return
         }
@@ -215,6 +236,8 @@ fun WipeDemoScreen() {
                 enabled = selectedAt > 0,
                 onClick = {
                     selectedAt--
+                    if (selectedAt < scrollAt)
+                        scrollAt--
                 }
             ) { Text("Back") }
 
@@ -222,20 +245,23 @@ fun WipeDemoScreen() {
                 enabled = selectedAt < Easings.lastIndex,
                 onClick = {
                     selectedAt++
+                    if (selectedAt - getPickerRows() >= scrollAt)
+                        scrollAt++
                 }
             ) { Text("Next") }
             Button(
                 enabled = scrollAt > 0,
                 onClick = {
-                    scrollAt -= min(5, scrollAt)
+                    scrollAt -= min(scrollJump, scrollAt)
                 }
             ) { Text("Up") }
 
-            val downEnabled = scrollAt+5 < getPickerRows()
             Button(
-                enabled = downEnabled,
+                enabled = scrollAt + getPickerRows() <= Easings.lastIndex
+//                        && scrollAt + scrollJump <= Easings.lastIndex
+                ,
                 onClick = {
-                    scrollAt += min(5, Easings.lastIndex - scrollAt)
+                    scrollAt += min(scrollJump, Easings.lastIndex - scrollAt)
                 }
             ) { Text("Down") }
         }
@@ -286,18 +312,17 @@ fun WipeDemoScreen__() {
         EasingPicker(
             scrollAt = 0,
             selectedAt = selectedAt,
-            onSelected = {
-                selectedAt = it
-                timeMillis("click")
-                scope.launch {
-                    delay(500.milliseconds)
-                    if (Random.nextFloat() < .5)
-                        wipeState++
-                    else
-                        wipeState--
-                }
-            },
-        )
+        ) {
+            selectedAt = it
+            timeMillis("click")
+            scope.launch {
+                delay(500.milliseconds)
+                if (Random.nextFloat() < .5)
+                    wipeState++
+                else
+                    wipeState--
+            }
+        }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
