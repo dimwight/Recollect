@@ -61,6 +61,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
+private val wipeDuration = 1300
+private val wipeWait = 400
+
 @Composable
 fun FormTitleRow(screenState: ScreenState) {
     Row(
@@ -141,33 +144,35 @@ fun ImeScreen(inputActivity: InputActivity) {
         ) {
             FormTitleRow(screenState)
             if (DoWipe && screenState.forWipe) {
-                val wipeMillis = 300
                 var wipeState by remember {
                     mutableIntStateOf(
-                        screenState.thenState?.questionAt ?: -1
+                        screenState.thenState?.wipeInt() ?:0
                     )
                 }
+//                println("R1: wipeState = $wipeState")
                 AnimatedContent(
                     targetState = wipeState,
                     transitionSpec = {
                         val slideTween = tween<IntOffset>(
-                            durationMillis = wipeMillis,
+                            durationMillis = wipeDuration,
                             easing = LinearEasing
                         )
+//                        println("R1: ${initialState-targetState}")
                         if (targetState > initialState) {
-                            slideInHorizontally(slideTween) { it: Int -> it } togetherWith
+                            slideInHorizontally(slideTween) { it } togetherWith
                                     slideOutHorizontally(slideTween) { -it }
                         } else {
                             slideInHorizontally(slideTween) { -it } togetherWith
                                     slideOutHorizontally(slideTween) { it }
                         }
                     }
-                ) { at ->
-                    ChooseFormBox(screenState, inputActivity, at)
+                ) { state ->
+                    ChooseFormBox(screenState, inputActivity, state)
                 }
-                LaunchedEffect(wipeMillis) {
-                    wipeState = screenState.questionAt
-                    delay(wipeMillis.milliseconds)
+                LaunchedEffect(screenState) {
+                    wipeState = screenState.wipeInt()
+                    println("R1: wipeState~ = $wipeState")
+                    delay(wipeWait.milliseconds)
                     inputActivity.clearForWipe()
                 }
             } else ChooseFormBox(screenState, inputActivity)
@@ -184,13 +189,6 @@ fun ImeScreen(inputActivity: InputActivity) {
                     .background(Color.White)
             )
         }
-        if (!ApplyQuestionFromBefore &&
-            screenState.questionAt < QuestionFrom
-        )
-            LaunchedEffect(Unit) {
-                delay(200.milliseconds)
-                inputActivity.onNext()
-            }
     }
 }
 
@@ -208,7 +206,7 @@ private fun ChooseFormBox(
         } else FormWidgetEditBox(screenState, inputActivity)
         return
     }
-    val wipeState = if (at == screenState.questionAt) screenState
+    val wipeState = if (at == screenState.wipeInt()) screenState
     else screenState.thenState!!
     if (wipeState.endOfForm) FormEndBox(inputActivity, formTitle)
     else FormWidgetWipeBox(wipeState)
@@ -243,12 +241,8 @@ private fun FormWidgetEditBox(
             QuestionTextField(focusRequester)
             if (!screenState.forWipe)
                 LaunchedEffect(screenState) {
-                    if (screenState.newWidget_) {
-                        inputActivity.clearNewWidget_()
-                    } else {
-                        if (DoWipe) delay(200.milliseconds)
-                        focusRequester.requestFocus()
-                    }
+                    if (DoWipe) delay(wipeWait.milliseconds)
+                    focusRequester.requestFocus()
                 }
             else
                 LaunchedEffect(screenState) {
@@ -286,7 +280,7 @@ private fun FormEndBox(inputActivity: InputActivity, formTitle: String) {
 
 @Composable
 private fun FormWidgetWipeBox(screenState: ScreenState) {
-    Box() {
+    Box {
         Column {
             val question = screenState.questionSpec
             FlowRow(Modifier.padding(vertical = 0.dp)) {

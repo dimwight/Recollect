@@ -39,15 +39,10 @@ import com.example.recollect.bits.WipeDemoScreen
 
 @Composable
 fun Screens(activity: InputActivity) {
-    val forceEndOfForm = false
-    val endOfForm = forceEndOfForm ||
-            activity.screenState.collectAsState().value.endOfForm
-    if (false) {
+    if (true) {
         Box {
             WipeDemoScreen()
         }
-    } else if (false) {
-        EndOfFormScreen_(activity)
     } else ImeScreen(activity)
 }
 
