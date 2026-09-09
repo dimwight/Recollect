@@ -1,27 +1,7 @@
 package com.example.recollect.bits
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.Ease
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseInCubic
-import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.animation.core.EaseInOutQuad
-import androidx.compose.animation.core.EaseInOutQuart
-import androidx.compose.animation.core.EaseInOutSine
-import androidx.compose.animation.core.EaseInQuad
-import androidx.compose.animation.core.EaseInQuart
-import androidx.compose.animation.core.EaseInSine
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.EaseOutQuad
-import androidx.compose.animation.core.EaseOutQuart
-import androidx.compose.animation.core.EaseOutSine
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -33,7 +13,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,11 +21,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -61,134 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.recollect.timeMillis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
-
-data class EasingOption(
-    val name: String,
-    val easing: Easing
-)
-
-val Easings = listOf(
-    EasingOption("Linear....", LinearEasing),
-    EasingOption("FastOutSlowIn....", FastOutSlowInEasing),
-    EasingOption("LinearOutSlowIn....", LinearOutSlowInEasing),
-    EasingOption("FastOutLinearIn....", FastOutLinearInEasing),
-
-    EasingOption("Ease", Ease),
-    EasingOption("EaseIn", EaseIn),
-    EasingOption("EaseOut", EaseOut),
-    EasingOption("EaseInOut", EaseInOut),
-
-    EasingOption("EaseInSine", EaseInSine),
-    EasingOption("EaseOutSine", EaseOutSine),
-    EasingOption("EaseInOutSine", EaseInOutSine),
-
-    EasingOption("EaseInQuad", EaseInQuad),
-    EasingOption("EaseOutQuad", EaseOutQuad),
-    EasingOption("EaseInOutQuad", EaseInOutQuad),
-
-    EasingOption("EaseInCubic", EaseInCubic),
-    EasingOption("EaseOutCubic", EaseOutCubic),
-    EasingOption("EaseInOutCubic", EaseInOutCubic),
-
-    EasingOption("EaseInQuart", EaseInQuart),
-    EasingOption("EaseOutQuart", EaseOutQuart),
-    EasingOption("EaseInOutQuart", EaseInOutQuart),
-
-    /*     EasingOption("EaseInQuint", EaseInQuint),
-         EasingOption("EaseOutQuint", EaseOutQuint),
-         EasingOption("EaseInOutQuint", EaseInOutQuint),
-
-         EasingOption("EaseInExpo", EaseInExpo),
-         EasingOption("EaseOutExpo", EaseOutExpo),
-         EasingOption("EaseInOutExpo", EaseInOutExpo),
-
-         EasingOption("EaseInCirc", EaseInCirc),
-         EasingOption("EaseOutCirc", EaseOutCirc),
-         EasingOption("EaseInOutCirc", EaseInOutCirc),
-
-         EasingOption("EaseInBack", EaseInBack),
-         EasingOption("EaseOutBack", EaseOutBack),
-         EasingOption("EaseInOutBack", EaseInOutBack),
-
-         EasingOption("EaseInElastic", EaseInElastic),
-         EasingOption("EaseOutElastic", EaseOutElastic),
-         EasingOption("EaseInOutElastic", EaseInOutElastic),
-
-         EasingOption("EaseInBounce", EaseInBounce),
-         EasingOption("EaseOutBounce", EaseOutBounce),
-         EasingOption("EaseInOutBounce", EaseInOutBounce),*/
-)
-var itemHeightPx_ = 0
-var pickerHeightPx_ = 0
-fun getPickerRows(): Int {
-    val rows = pickerHeightPx_ / itemHeightPx_
-    return rows
-}
-
-@Composable
-fun EasingPicker(
-    gettingValues: Boolean = false,
-    scrollAt: Int,
-    selectedAt: Int,
-    onSelected: (Int) -> Unit,
-) {
-    val scrollState = rememberScrollState()
-
-    if (!gettingValues) {
-        LaunchedEffect(scrollAt) {
-            println("R1: value = ${scrollState.value}")
-            println("R1: scrollAt = $scrollAt")
-            scrollState.scrollTo(scrollAt * itemHeightPx_)
-            println("R1: value~ = ${scrollState.value}")
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .then(
-                if (gettingValues)
-                    Modifier.onSizeChanged {
-                        pickerHeightPx_ = it.height
-                    } else Modifier
-            )
-            .heightIn(max = 300.dp)
-            .verticalScroll(scrollState)
-    ) {
-        Easings.forEachIndexed { at, easing ->
-            Text(
-                text = "$at ${easing.name}",
-                modifier = Modifier
-                    .then(
-                        if (gettingValues&& at == 0)
-                            Modifier.onSizeChanged {
-                                itemHeightPx_ = it.height
-                            }
-                        else
-                            Modifier
-                    )
-                    .background(
-                        if (easing == Easings[selectedAt])
-                            Color.Gray else Color.White
-                    )
-                    .fillMaxWidth()
-                    .clickable {
-                        onSelected(at)
-                    }
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
-            )
-        }
-    }
-}
 
 private const val scrollJump = 5
 
@@ -199,7 +53,7 @@ fun WipeDemoScreen() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var selectedAt by remember { mutableIntStateOf(0) }
+        var easingAt by remember { mutableIntStateOf(0) }
         var scrollAt by remember { mutableIntStateOf(0) }
         // These are used by animation later in composition
         var wipeState by remember { mutableIntStateOf(0) }
@@ -207,45 +61,77 @@ fun WipeDemoScreen() {
         var gettingValues by remember { mutableStateOf(true) }
 
         Spacer(Modifier.height(50.dp))
-        EasingPicker(
-            gettingValues = gettingValues,
-            scrollAt = scrollAt,
-            selectedAt = selectedAt,
-            onSelected = {
-                selectedAt = it
-                scope.launch {
-                    delay(500.milliseconds)
-                    if (Random.nextFloat() < .5)
-                        wipeState++
-                    else
-                        wipeState--
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            EasingPicker(
+                list = Easings,
+                gettingValues = gettingValues,
+                scrollAt = scrollAt,
+                easingAt = easingAt,
+                onSelected = { at: Int ->
+                    easingAt = at
+                    val selected = Easings[easingAt]
+                    var now = picks
+                    if (now.contains(selected))
+                        now.remove(selected)
+                    now.add(0, selected)
+                    scope.launch {
+                        delay(500.milliseconds)
+                        if (Random.nextFloat() < .5)
+                            wipeState++
+                        else
+                            wipeState--
+                    }
                 }
+            )
+            if (gettingValues) {
+                LaunchedEffect(gettingValues) {
+                    gettingValues = false
+                    if (false){
+                        scrollAt=Easings.lastIndex-getPickerRows()
+                        easingAt= Easings.lastIndex-1
+                     }
+                    else if (true) easingAt=3
+                }
+                return
             }
-        )
-        if (gettingValues) {
-            LaunchedEffect(gettingValues) {
-                gettingValues = false
-            }
-            return
+            if (picks.isEmpty()) picks.add(Easings[0])
+            EasingPicker(
+                list = picks,
+                easingAt=easingAt,
+                onSelected = { pickAt: Int ->
+                    easingAt=Easings.indexOf(picks[pickAt])
+                    if (true) scope.launch {
+                        delay(500.milliseconds)
+                        if (Random.nextFloat() < .5)
+                            wipeState++
+                        else
+                            wipeState--
+                    }
+                }
+            )
         }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val lastIndex = Easings.lastIndex
             Button(
-                enabled = selectedAt > 0,
+                enabled = easingAt > 0,
                 onClick = {
-                    selectedAt--
-                    if (selectedAt < scrollAt)
+                    easingAt--
+                    if (easingAt < scrollAt)
                         scrollAt--
                 }
             ) { Text("Back") }
 
             Button(
-                enabled = selectedAt < Easings.lastIndex,
+                enabled = easingAt < lastIndex,
                 onClick = {
-                    selectedAt++
-                    if (selectedAt - getPickerRows() >= scrollAt)
+                    easingAt++
+                    if (easingAt - getPickerRows() >= scrollAt)
                         scrollAt++
                 }
             ) { Text("Next") }
@@ -257,11 +143,9 @@ fun WipeDemoScreen() {
             ) { Text("Up") }
 
             Button(
-                enabled = scrollAt + getPickerRows() <= Easings.lastIndex
-//                        && scrollAt + scrollJump <= Easings.lastIndex
-                ,
+                enabled = scrollAt + getPickerRows() <= lastIndex,
                 onClick = {
-                    scrollAt += min(scrollJump, Easings.lastIndex - scrollAt)
+                    scrollAt += min(scrollJump, lastIndex - scrollAt)
                 }
             ) { Text("Down") }
         }
@@ -282,7 +166,7 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = Easings[selectedAt].easing
+                    easing = Easings[easingAt].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
@@ -311,18 +195,19 @@ fun WipeDemoScreen__() {
 
         EasingPicker(
             scrollAt = 0,
-            selectedAt = selectedAt,
-        ) {
-            selectedAt = it
-            timeMillis("click")
-            scope.launch {
-                delay(500.milliseconds)
-                if (Random.nextFloat() < .5)
-                    wipeState++
-                else
-                    wipeState--
+            easingAt = selectedAt,
+            onSelected = {
+                selectedAt = it
+                timeMillis("click")
+                scope.launch {
+                    delay(500.milliseconds)
+                    if (Random.nextFloat() < .5)
+                        wipeState++
+                    else
+                        wipeState--
+                }
             }
-        }
+        )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -519,128 +404,6 @@ fun SlidingWipeContainer(
     }
 }
 
-@Composable
-fun CustomWipeContainer(
-    targetState: Int,
-    modifier: Modifier = Modifier,
-    content: @Composable (Int) -> Unit
-) {
-    // Define shared animation specs for perfect synchronization
-    val duration = 600 // Time in milliseconds
-    val curve = FastOutSlowInEasing // Natural deceleration curve
-
-    AnimatedContent(
-        targetState = targetState,
-        modifier = modifier,
-        transitionSpec = {
-            if (targetState > initialState) {
-                // Moving forward: Slide right-to-left
-                val enterTransition = slideInHorizontally(
-                    animationSpec = tween(durationMillis = duration, easing = curve)
-                ) { width -> width } + fadeIn(
-                    animationSpec = tween(durationMillis = duration)
-                )
-
-                val exitTransition = slideOutHorizontally(
-                    animationSpec = tween(durationMillis = duration, easing = curve)
-                ) { width -> -width } + fadeOut(
-                    animationSpec = tween(durationMillis = duration)
-                )
-
-                enterTransition.togetherWith(exitTransition)
-            } else {
-                // Moving backward: Slide left-to-right
-                val enterTransition = slideInHorizontally(
-                    animationSpec = tween(durationMillis = duration, easing = curve)
-                ) { width -> -width } + fadeIn(
-                    animationSpec = tween(durationMillis = duration)
-                )
-
-                val exitTransition = slideOutHorizontally(
-                    animationSpec = tween(durationMillis = duration, easing = curve)
-                ) { width -> width } + fadeOut(
-                    animationSpec = tween(durationMillis = duration)
-                )
-
-                enterTransition.togetherWith(exitTransition)
-            }
-        }
-    ) { state ->
-        content(state)
-    }
-}
-
-@Composable
-fun AnimateIncrementDecrement(
-    count: Int,
-    content: @Composable (Int) -> Unit
-) {
-    AnimatedContent(
-        targetState = count,
-        transitionSpec = {
-            if (targetState > initialState) {
-                slideInHorizontally { it } + fadeIn() togetherWith
-                        slideOutHorizontally { -it } + fadeOut()
-            } else {
-                slideInHorizontally { -it } + fadeIn() togetherWith
-                        slideOutHorizontally { it } + fadeOut()
-            }.using(SizeTransform(clip = false))
-        },
-    ) { state ->
-        content(state)
-    }
-}
-
-@Composable
-fun AnimateIncrementDecrementSample() {
-    Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        var count by remember { mutableIntStateOf(0) }
-        // The `AnimatedContent` below uses an integer count as its target state. So when the
-        // count changes, it will animate out the content associated with the previous count, and
-        // animate in the content associated with the target state.
-        AnimatedContent(
-            targetState = count,
-            transitionSpec = {
-                // We can define how the new target content comes in and how initial content
-                // leaves in the ContentTransform. Here we want to create the impression that the
-                // different numbers have a spatial relationship - larger numbers are
-                // positioned (Horizontally) below smaller numbers.
-                if (targetState > initialState) {
-                    // If the incoming number is larger, new number slides up and fades in while
-                    // the previous (smaller) number slides up to make room and fades out.
-                    slideInHorizontally { it } + fadeIn() togetherWith
-                            slideOutHorizontally { -it } + fadeOut()
-                } else {
-                    // If the incoming number is smaller, new number slides down and fades in
-                    // while
-                    // the previous number slides down and fades out.
-                    slideInHorizontally { -it } + fadeIn() togetherWith
-                            slideOutHorizontally { it } + fadeOut()
-                    // Disable clipping since the faded slide-out is desired out of bounds, but
-                    // the size transform is still needed from number getting longer
-                }
-                    .using(SizeTransform(clip = false)) // Using default spring for the size change.
-            },
-        ) { targetCount ->
-            // This establishes a mapping between the target state and the content in the form of a
-            // Composable function. IMPORTANT: The parameter of this content lambda should
-            // *always* be used. During the content transform, the old content will be looked up
-            // using this lambda with the old state, until it's fully animated out.
-
-            // Since AnimatedContent differentiates the contents using their target states as the
-            // key, the same composable function returned by the content lambda like below will be
-            // invoked under different keys and therefore treated as different entities.
-            Text("$targetCount", fontSize = 20.sp)
-        }
-        Spacer(Modifier.size(20.dp))
-        Row(horizontalArrangement = Arrangement.SpaceAround) {
-            Button(onClick = { count-- }) { Text("Minus") }
-            Spacer(Modifier.size(60.dp))
-            Button(onClick = { count++ }) { Text("Plus ") }
-        }
-    }
-}
-
 
 @Composable
 fun AtBox(at: Int) {
@@ -652,26 +415,6 @@ fun AtBox(at: Int) {
         Text(
             "$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
         )
-    }
-}
-
-@Composable
-fun FadeInExample() {
-    var isVisible by remember { mutableStateOf(false) }
-
-    Column {
-        Button(onClick = { isVisible = !isVisible }) {
-            Text("Toggle Fade")
-        }
-
-        // AnimatedVisibility manages the appearance and disappearance
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 1000)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 1000))
-        ) {
-            Text(text = "Hello, I faded in!")
-        }
     }
 }
 
