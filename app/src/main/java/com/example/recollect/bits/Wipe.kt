@@ -1,5 +1,6 @@
 package com.example.recollect.bits
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -46,8 +47,16 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private const val scrollJump = 5
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun WipeDemoScreen() {
+    fun adjustPicks(selected: EasingOption) {
+        var now = picks
+        if (now.contains(selected))
+            now.remove(selected)
+        now.add(0, selected)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,13 +79,10 @@ fun WipeDemoScreen() {
                 gettingValues = gettingValues,
                 scrollAt = scrollAt,
                 easingAt = easingAt,
-                onSelected = { at: Int ->
-                    easingAt = at
+                onSelected = { listAt: Int ->
+                    easingAt = listAt
                     val selected = Easings[easingAt]
-                    var now = picks
-                    if (now.contains(selected))
-                        now.remove(selected)
-                    now.add(0, selected)
+                    adjustPicks(selected)
                     scope.launch {
                         delay(500.milliseconds)
                         if (Random.nextFloat() < .5)
@@ -97,13 +103,22 @@ fun WipeDemoScreen() {
                 }
                 return
             }
-            if (picks.isEmpty()) picks.add(Easings[0])
+            if (picks.isEmpty()) picks.add(Easings[easingAt])
             EasingPicker(
                 list = picks,
                 easingAt=easingAt,
-                onSelected = { pickAt: Int ->
-                    easingAt=Easings.indexOf(picks[pickAt])
-                    if (true) scope.launch {
+                onSelected = { listAt: Int ->
+                    easingAt=Easings.indexOf(picks[listAt])
+                    val selected = Easings.get(easingAt)
+                    adjustPicks(selected)
+                    if(easingAt < scrollAt)
+                        scrollAt=easingAt
+                    else {
+                        val fromScroll = easingAt - getPickerRows()
+                        if (fromScroll > scrollAt)
+                            scrollAt+=fromScroll
+                    }
+                    scope.launch {
                         delay(500.milliseconds)
                         if (Random.nextFloat() < .5)
                             wipeState++
