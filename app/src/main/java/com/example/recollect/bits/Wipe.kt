@@ -1,6 +1,5 @@
 package com.example.recollect.bits
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.recollect.timeMillis
@@ -47,33 +48,34 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private const val scrollJump = 5
 
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun WipeDemoScreen() {
-    fun adjustPicks(selected: EasingOption) {
-        var now = picks
-        if (now.contains(selected))
-            now.remove(selected)
-        now.add(0, selected)
-    }
+private fun adjustPicks(selected: EasingOption) {
+    var now = picks
+    if (now.contains(selected))
+        now.remove(selected)
+    now.add(0, selected)
+}
 
+var wipeState = 0
+
+@Preview
+@Composable
+fun EasingsViewer() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var easingAt by remember { mutableIntStateOf(0) }
+        var easingAt by remember { mutableIntStateOf(-1) }
         var scrollAt by remember { mutableIntStateOf(0) }
         // These are used by animation later in composition
-        var wipeState by remember { mutableIntStateOf(0) }
-        val scope = rememberCoroutineScope()
         var gettingValues by remember { mutableStateOf(true) }
-
         Spacer(Modifier.height(50.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Spacer(Modifier.width(10.dp))
+            val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
                 gettingValues = gettingValues,
@@ -85,50 +87,65 @@ fun WipeDemoScreen() {
                     adjustPicks(selected)
                     scope.launch {
                         delay(500.milliseconds)
-                        if (Random.nextFloat() < .5)
-                            wipeState++
-                        else
-                            wipeState--
+                        wipeEasing()
                     }
                 }
             )
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
-                    if (false){
-                        scrollAt=Easings.lastIndex-getPickerRows()
-                        easingAt= Easings.lastIndex-1
-                     }
-                    else if (true) easingAt=3
+                    if (false) {
+                        scrollAt = Easings.lastIndex - getPickerRows()
+                        easingAt = Easings.lastIndex - 1
+                    } else if (false) easingAt = 3
                 }
                 return
             }
-            if (picks.isEmpty()) picks.add(Easings[easingAt])
-            EasingPicker(
-                list = picks,
-                easingAt=easingAt,
-                onSelected = { listAt: Int ->
-                    easingAt=Easings.indexOf(picks[listAt])
-                    val selected = Easings.get(easingAt)
-                    adjustPicks(selected)
-                    if(easingAt < scrollAt)
-                        scrollAt=easingAt
-                    else {
-                        val fromScroll = easingAt - getPickerRows()
-                        if (fromScroll > scrollAt)
-                            scrollAt+=fromScroll
+            Spacer(Modifier.width(10.dp))
+            Column {
+                val scope = rememberCoroutineScope()
+                EasingPicker(
+                    list = picks,
+                    easingAt = easingAt,
+                    onSelected = { listAt: Int ->
+                        easingAt = Easings.indexOf(picks[listAt])
+                        val selected = Easings.get(easingAt)
+                        adjustPicks(selected)
+                        if (easingAt < scrollAt)
+                            scrollAt = easingAt
+                        else {
+                            val fromScroll = easingAt - getPickerRows()
+                            if (fromScroll > scrollAt)
+                                scrollAt += fromScroll
+                        }
+                        scope.launch {
+                            delay(500.milliseconds)
+                            wipeEasing()
+                        }
                     }
-                    scope.launch {
-                        delay(500.milliseconds)
-                        if (Random.nextFloat() < .5)
-                            wipeState++
-                        else
-                            wipeState--
-                    }
-                }
-            )
-        }
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val lastIndex = Easings.lastIndex
+                    Button(
+                        enabled = picks.isNotEmpty(),
+                        onClick = {
+                            picks.clear()
+                            easingAt = -1
+                        }
+                    ) { Text("Clear") }
 
+                    Button(
+                        enabled = picks.size > 5,
+                        onClick = {
+                        }
+                    ) { Text("Save") }
+                }
+            }
+            Spacer(Modifier.width(10.dp))
+        }
+        Spacer(Modifier.height(20.dp))
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -168,10 +185,7 @@ fun WipeDemoScreen() {
 
         Button(onClick = {
             timeMillis("click")
-            if (Random.nextFloat() < .5)
-                wipeState++
-            else
-                wipeState--
+            wipeEasing()
         }) {
             Text("Wipe")
         }
@@ -181,7 +195,9 @@ fun WipeDemoScreen() {
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
-                    easing = Easings[easingAt].easing
+                    easing = Easings[
+                        if (easingAt < 0) 0 else easingAt
+                    ].easing
                 )
                 if (targetState > initialState) {
                     slideInHorizontally(slideTween) { it } togetherWith
@@ -193,6 +209,17 @@ fun WipeDemoScreen() {
             }
         ) { state -> AtBox(state) }
     }
+}
+
+private fun wipeEasing() {
+    wipeState = if (wipeState == 1) 0 else 1
+}
+
+private fun wipeEasing_() {
+    if (Random.nextFloat() < .5)
+        wipeState++
+    else
+        wipeState--
 }
 
 @Composable
@@ -209,6 +236,7 @@ fun WipeDemoScreen__() {
         var wipeState by remember { mutableIntStateOf(0) }
 
         EasingPicker(
+            list = Easings,
             scrollAt = 0,
             easingAt = selectedAt,
             onSelected = {
@@ -221,7 +249,7 @@ fun WipeDemoScreen__() {
                     else
                         wipeState--
                 }
-            }
+            },
         )
 
         Row(

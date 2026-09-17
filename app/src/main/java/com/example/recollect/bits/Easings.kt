@@ -22,13 +22,16 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class EasingOption(
@@ -105,10 +109,10 @@ fun getPickerRows(): Int {
 
 @Composable
 fun EasingPicker(
-    list: List<EasingOption> = Easings,
+    list: List<EasingOption>,
     gettingValues: Boolean = false,
-    scrollAt: Int=-1,
-    easingAt: Int=-1,
+    scrollAt: Int = 0,
+    easingAt: Int,
     onSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -131,7 +135,11 @@ fun EasingPicker(
                     } else Modifier.Companion
             )
             .width(175.dp)
-            .heightIn(max = 300.dp)
+            .border(
+                width = Dp.Hairline,
+                color = Color.Gray,
+            )
+            .requiredHeight(if (list == Easings) 300.dp else 150.dp)
             .verticalScroll(scrollState)
     ) {
         list.forEachIndexed { at, easing ->
@@ -147,7 +155,7 @@ fun EasingPicker(
                             Modifier.Companion
                     )
                     .background(
-                        if (list == Easings &&
+                        if (list == Easings && easingAt >= 0 &&
                             easing == list[easingAt]
                         )
                             Color.Gray else Color.White
