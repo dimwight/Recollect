@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.recollect.timeMillis
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
@@ -41,17 +42,31 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private const val scrollJump = 5
 
-private fun adjustPicks(selected: EasingOption) {
+private fun adjustPicksWithWipe(
+    selected: EasingOption,
+    scope: CoroutineScope
+) {
     if (picks.contains(selected))
         picks.remove(selected)
     picks.add(0, selected)
+    scope.launch {
+        delay(100.milliseconds)
+        wipeEasing()
+    }
 }
 
 private fun wipeEasing() {
-    wipeState = if (wipeState == 1) 0 else 1
+    wipeState.intValue = if (wipeState.intValue == 1) 0 else 1
 }
 
-private var wipeState = 0
+private fun wipeEasing_() {
+    if (Random.nextFloat() < .5)
+        wipeState.intValue++
+    else
+        wipeState.intValue--
+}
+
+private val wipeState = mutableIntStateOf(0)
 
 @Preview
 @Composable
@@ -77,14 +92,9 @@ fun EasingsViewer() {
                 gettingValues = gettingValues,
                 scrollAt = scrollAt,
                 easingAt = easingAt
-            ){ listAt: Int ->
+            ) { listAt ->
                 easingAt = listAt
-                val selected = Easings[easingAt]
-                adjustPicks(selected)
-                scope.launch {
-                    delay(500.milliseconds)
-                    wipeEasing()
-                }
+                adjustPicksWithWipe(Easings[easingAt], scope)
             }
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
@@ -105,8 +115,6 @@ fun EasingsViewer() {
                 }
             ) { listAt ->
                 easingAt = Easings.indexOf(picks[listAt])
-                val selected = Easings[easingAt]
-                adjustPicks(selected)
                 if (easingAt < scrollAt)
                     scrollAt = easingAt
                 else {
@@ -114,10 +122,7 @@ fun EasingsViewer() {
                     if (fromScroll > scrollAt)
                         scrollAt += fromScroll
                 }
-                scope.launch {
-                    delay(500.milliseconds)
-                    wipeEasing()
-                }
+                adjustPicksWithWipe(Easings[easingAt], scope)
             }
             Spacer(Modifier.width(10.dp))
         }
@@ -125,6 +130,7 @@ fun EasingsViewer() {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val scope = rememberCoroutineScope()
             val lastIndex = Easings.lastIndex
             Button(
                 enabled = easingAt > 0,
@@ -132,6 +138,7 @@ fun EasingsViewer() {
                     easingAt--
                     if (easingAt < scrollAt)
                         scrollAt--
+                    adjustPicksWithWipe(Easings[easingAt], scope)
                 }
             ) { Text("Back") }
 
@@ -141,6 +148,7 @@ fun EasingsViewer() {
                     easingAt++
                     if (easingAt - getPickerRows() >= scrollAt)
                         scrollAt++
+                    adjustPicksWithWipe(Easings[easingAt], scope)
                 }
             ) { Text("Next") }
             Button(
@@ -157,17 +165,15 @@ fun EasingsViewer() {
                 }
             ) { Text("Down") }
         }
-// } Relevant portion of usage ends here
 
         Button(onClick = {
-            timeMillis("click")
             wipeEasing()
         }) {
             Text("Wipe")
         }
 
         AnimatedContent(
-            targetState = wipeState,
+            targetState = wipeState.intValue,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
@@ -191,7 +197,7 @@ fun EasingsViewer() {
 private fun PicksCol(
     easingAt: Int,
     clearOnClick: () -> Unit,
-    saveOnClick: () -> Unit={},
+    saveOnClick: () -> Unit = {},
     onSelected: (Int) -> Unit
 ) {
     Column {
@@ -227,13 +233,6 @@ fun AtBox(at: Int) {
             "$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
         )
     }
-}
-
-private fun wipeEasing_() {
-    if (Random.nextFloat() < .5)
-        wipeState++
-    else
-        wipeState--
 }
 
 @Composable
