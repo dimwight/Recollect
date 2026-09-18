@@ -14,11 +14,11 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="main">
-        <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2026-08-31T12:12:18.179533100Z">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2026-09-18T16:46:39.971317100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\dimwi\.android\avd\Pixel_7_2.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RZCW102401B" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -26,7 +26,7 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\dimwi\.android\avd\Pixel_7_2.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\dimwi\.android\avd\Pixel_7.avd" />
               </handle>
             </Target>
           </targets>
