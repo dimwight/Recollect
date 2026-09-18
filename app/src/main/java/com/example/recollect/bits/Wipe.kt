@@ -1,14 +1,7 @@
 package com.example.recollect.bits
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -49,13 +42,16 @@ import kotlin.time.Duration.Companion.milliseconds
 private const val scrollJump = 5
 
 private fun adjustPicks(selected: EasingOption) {
-    var now = picks
-    if (now.contains(selected))
-        now.remove(selected)
-    now.add(0, selected)
+    if (picks.contains(selected))
+        picks.remove(selected)
+    picks.add(0, selected)
 }
 
-var wipeState = 0
+private fun wipeEasing() {
+    wipeState = if (wipeState == 1) 0 else 1
+}
+
+private var wipeState = 0
 
 @Preview
 @Composable
@@ -80,17 +76,16 @@ fun EasingsViewer() {
                 list = Easings,
                 gettingValues = gettingValues,
                 scrollAt = scrollAt,
-                easingAt = easingAt,
-                onSelected = { listAt: Int ->
-                    easingAt = listAt
-                    val selected = Easings[easingAt]
-                    adjustPicks(selected)
-                    scope.launch {
-                        delay(500.milliseconds)
-                        wipeEasing()
-                    }
+                easingAt = easingAt
+            ){ listAt: Int ->
+                easingAt = listAt
+                val selected = Easings[easingAt]
+                adjustPicks(selected)
+                scope.launch {
+                    delay(500.milliseconds)
+                    wipeEasing()
                 }
-            )
+            }
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
@@ -102,45 +97,26 @@ fun EasingsViewer() {
                 return
             }
             Spacer(Modifier.width(10.dp))
-            Column {
-                val scope = rememberCoroutineScope()
-                EasingPicker(
-                    list = picks,
-                    easingAt = easingAt,
-                    onSelected = { listAt: Int ->
-                        easingAt = Easings.indexOf(picks[listAt])
-                        val selected = Easings.get(easingAt)
-                        adjustPicks(selected)
-                        if (easingAt < scrollAt)
-                            scrollAt = easingAt
-                        else {
-                            val fromScroll = easingAt - getPickerRows()
-                            if (fromScroll > scrollAt)
-                                scrollAt += fromScroll
-                        }
-                        scope.launch {
-                            delay(500.milliseconds)
-                            wipeEasing()
-                        }
-                    }
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val lastIndex = Easings.lastIndex
-                    Button(
-                        enabled = picks.isNotEmpty(),
-                        onClick = {
-                            picks.clear()
-                            easingAt = -1
-                        }
-                    ) { Text("Clear") }
-
-                    Button(
-                        enabled = picks.size > 5,
-                        onClick = {
-                        }
-                    ) { Text("Save") }
+            PicksCol(
+                easingAt = easingAt,
+                clearOnClick = {
+                    picks.clear()
+                    easingAt = -1
+                }
+            ) { listAt ->
+                easingAt = Easings.indexOf(picks[listAt])
+                val selected = Easings[easingAt]
+                adjustPicks(selected)
+                if (easingAt < scrollAt)
+                    scrollAt = easingAt
+                else {
+                    val fromScroll = easingAt - getPickerRows()
+                    if (fromScroll > scrollAt)
+                        scrollAt += fromScroll
+                }
+                scope.launch {
+                    delay(500.milliseconds)
+                    wipeEasing()
                 }
             }
             Spacer(Modifier.width(10.dp))
@@ -207,12 +183,50 @@ fun EasingsViewer() {
                             slideOutHorizontally(slideTween) { it }
                 }
             }
-        ) { state -> AtBox(state) }
+        ) { at -> AtBox(at) }
     }
 }
 
-private fun wipeEasing() {
-    wipeState = if (wipeState == 1) 0 else 1
+@Composable
+private fun PicksCol(
+    easingAt: Int,
+    clearOnClick: () -> Unit,
+    saveOnClick: () -> Unit={},
+    onSelected: (Int) -> Unit
+) {
+    Column {
+        EasingPicker(
+            list = picks,
+            easingAt = easingAt,
+            onSelected = onSelected
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                enabled = picks.isNotEmpty(),
+                onClick = clearOnClick
+            ) { Text("Clear") }
+
+            if (false) Button(
+                enabled = picks.size > 5,
+                onClick = saveOnClick
+            ) { Text("Save") }
+        }
+    }
+}
+
+@Composable
+fun AtBox(at: Int) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.White), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            "$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
+        )
+    }
 }
 
 private fun wipeEasing_() {
@@ -233,7 +247,7 @@ fun WipeDemoScreen__() {
 
         var selectedAt by remember { mutableIntStateOf(0) }
         val scope = rememberCoroutineScope()
-        var wipeState by remember { mutableIntStateOf(0) }
+        var wipeAt by remember { mutableIntStateOf(0) }
 
         EasingPicker(
             list = Easings,
@@ -245,9 +259,9 @@ fun WipeDemoScreen__() {
                 scope.launch {
                     delay(500.milliseconds)
                     if (Random.nextFloat() < .5)
-                        wipeState++
+                        wipeAt++
                     else
-                        wipeState--
+                        wipeAt--
                 }
             },
         )
@@ -308,15 +322,15 @@ fun WipeDemoScreen__() {
         Button(onClick = {
             timeMillis("click")
             if (Random.nextFloat() < .5)
-                wipeState++
+                wipeAt++
             else
-                wipeState--
+                wipeAt--
         }) {
             Text("Wipe")
         }
 
         AnimatedContent(
-            targetState = wipeState,
+            targetState = wipeAt,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
                     durationMillis = 1500,
@@ -330,134 +344,7 @@ fun WipeDemoScreen__() {
                             slideOutHorizontally(slideTween) { it }
                 }
             }
-        ) { state -> AtBox(state) }
-    }
-}
-
-@Composable
-fun WipeDemoScreen_() {
-    var wipeState by remember { mutableIntStateOf(0) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Spacer(Modifier.height(50.dp))
-        Button(onClick = {
-            timeMillis("click")
-            if (Random.nextFloat() < .5)
-                wipeState++
-            else
-                wipeState--
-        }) {
-            Text("Wipe")
-        }
-
-        SlidingWipeContainer(
-            targetState = wipeState,
-            modifier = Modifier.fillMaxSize()
-        ) { at ->
-            if (false) AtBox(at)
-            else when (at) {
-                0 -> AtBox(at)
-                1 -> AtBox(at)
-            }
-        }
-    }
-
-}
-
-@Composable
-fun SlidingWipeContainer(
-    targetState: Int,
-    modifier: Modifier,
-    content: @Composable (Int) -> Unit,
-) {
-    if (true) {
-        AnimatedContent(
-            targetState = targetState,
-            transitionSpec = {
-                val slideTween = tween<IntOffset>(
-                    1200,
-                    easing = LinearEasing
-                )
-                val initial = initialState
-                if (targetState > initial) {
-                    slideInHorizontally(slideTween) { it } /*+ fadeIn()*/ togetherWith
-                            slideOutHorizontally(slideTween) { -it }/* + fadeOut()*/
-                } else {
-                    slideInHorizontally(slideTween) { -it }/* + fadeIn()*/ togetherWith
-                            slideOutHorizontally(slideTween) { it }/* + fadeOut()*/
-                }
-            }
-        ) { state ->
-            content(state)
-        }
-    } else if (false) AnimatedContent(
-        targetState = targetState,
-        modifier = modifier,
-        transitionSpec = {
-            // Adjust duration (e.g., 400ms) and add a smooth cubic easing curve
-            val slideSpec: FiniteAnimationSpec<IntOffset> =
-                tween(durationMillis = 400, easing = EaseInOutCubic)
-            val fadeSpec: TweenSpec<Float> =
-                tween(durationMillis = 400, easing = EaseInOutCubic)
-
-            if (targetState > initialState) {
-                // Wipe Right to Left: New content slides in from the right boundary
-                slideInHorizontally(slideSpec) { width -> width } +
-                        fadeIn(fadeSpec) togetherWith
-                        slideOutHorizontally(slideSpec) { width -> -width } +
-                        fadeOut(fadeSpec)
-            } else {
-                // Wipe Left to Right: New content slides in from the left boundary
-                slideInHorizontally(slideSpec) { width -> -width } +
-                        fadeIn(fadeSpec) togetherWith
-                        slideOutHorizontally(slideSpec) { width -> width } +
-                        fadeOut(fadeSpec)
-            }
-        },
-        label = "DirectionalWipe"
-    ) { state ->
-        content(state)
-    }
-    else AnimatedContent(
-        targetState = targetState,
-        modifier = modifier,
-        transitionSpec = {
-            val fadeSpec = if (false)
-                tween(durationMillis = 10000)
-            else tween<Float>(easing = LinearOutSlowInEasing)
-            // right to left?
-            if (targetState > initialState) {
-                (slideInHorizontally { width -> width }
-                        + fadeIn(fadeSpec)) togetherWith
-                        (slideOutHorizontally { width -> -width }
-                                + fadeOut(fadeSpec))
-            } else {
-                (slideInHorizontally { width -> -width }
-                        + fadeIn(fadeSpec)) togetherWith
-                        (slideOutHorizontally { width -> width }
-                                + fadeOut(fadeSpec))
-            }
-        }
-    ) { state ->
-        content(state)
-    }
-}
-
-
-@Composable
-fun AtBox(at: Int) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(Color.White), contentAlignment = Alignment.Center
-    ) {
-        Text(
-            "$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
-        )
+        ) { at -> AtBox(at) }
     }
 }
 
