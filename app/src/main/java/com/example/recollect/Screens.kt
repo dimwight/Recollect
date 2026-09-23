@@ -35,13 +35,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recollect.bits.WipeDemoScreen
+import com.example.recollect.bits.EasingsViewer
 
 @Composable
 fun Screens(activity: InputActivity) {
     if (true) {
         Box {
-            WipeDemoScreen()
+            EasingsViewer()
         }
     } else ImeScreen(activity)
 }
