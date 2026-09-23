@@ -117,7 +117,7 @@ class InputActivity : ComponentActivity() {
     var questionAt = -1
     private var hasError: Boolean = false
     private val _screenState = MutableStateFlow(ScreenState())
-    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
+    val screenState = _screenState.asStateFlow()
     private fun traceEventAndQuestion(msg: Any? = null) {
         if (false) return
         val top = if (msg != null && msg !is ScreenState) " msg = $msg" else ""

@@ -44,6 +44,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
@@ -136,14 +137,14 @@ fun EasingPicker(
 
     if (list == Easings && !gettingValues) {
         LaunchedEffect(scrollAt) {
-            println("R1: value = ${scrollState.value}")
-            println("R1: scrollAt = $scrollAt")
+//            println("R1: value = ${scrollState.value}")
+//            println("R1: scrollAt = $scrollAt")
             scrollState.scrollTo(scrollAt * itemHeightDp)
-            println("R1: value~ = ${scrollState.value}")
+//            println("R1: value~ = ${scrollState.value}")
         }
     }
-    val pxToDp = with(LocalDensity.current) { 1.0 / (1.dp.toPx()) }
 
+    val pxToDp = with(LocalDensity.current) { 1.0 / (1.dp.toPx()) }
     Column(
         modifier = Modifier
             .then(
@@ -157,6 +158,7 @@ fun EasingPicker(
                 width = 2.dp,
                 color = Color.LightGray,
             )
+//            .heightIn(max = pickerHeightDp.dp/(if (list == Easings) 1 else 3))
             .requiredHeight(pickerHeightDp.dp/if (list == Easings) 1 else 3)
             .verticalScroll(scrollState)
     ) {

@@ -76,11 +76,11 @@ fun EasingsViewer() {
             .fillMaxSize()
             .background(Color.White)
     ) {
+        var gettingValues by remember { mutableStateOf(true) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var scrollAt by remember { mutableIntStateOf(0) }
-        // These are used by animation later in composition
-        var gettingValues by remember { mutableStateOf(true) }
         Spacer(Modifier.height(50.dp))
+        val easingSet = easingAt >= 0
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -99,84 +99,50 @@ fun EasingsViewer() {
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
-                    if (false) {
-                        scrollAt = Easings.lastIndex - getPickerRows()
-                        easingAt = Easings.lastIndex - 1
-                    } else if (false) easingAt = 3
                 }
                 return
             }
+
             Spacer(Modifier.width(10.dp))
+            val lastEasing = Easings.lastIndex
             PicksCol(
                 easingAt = easingAt,
-                clearOnClick = {
-                    picks.clear()
-                    easingAt = -1
-                }
-            ) { listAt ->
-                easingAt = Easings.indexOf(picks[listAt])
-                if (easingAt < scrollAt)
-                    scrollAt = easingAt
-                else {
-                    val fromScroll = easingAt - getPickerRows()
-                    if (fromScroll > scrollAt)
-                        scrollAt += fromScroll
-                }
-                adjustPicksWithWipe(Easings[easingAt], scope)
-            }
-            Spacer(Modifier.width(10.dp))
-        }
-        Spacer(Modifier.height(20.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val scope = rememberCoroutineScope()
-            val lastIndex = Easings.lastIndex
-            val easingSet = easingAt > 0
-            Button(
-                enabled = easingSet,
-                onClick = {
+                scrollAt = scrollAt,
+                onUpClick = {
+                    scrollAt -= min(scrollJump, scrollAt)
+                },
+                onDownClick = {
+                    scrollAt += min(scrollJump, lastEasing - scrollAt)
+                },
+                onBackClick = {
                     easingAt--
                     if (easingAt < scrollAt)
                         scrollAt--
                     adjustPicksWithWipe(Easings[easingAt], scope)
-                }
-            ) { Text("Back") }
-
-            Button(
-                enabled = easingSet && easingAt < lastIndex,
-                onClick = {
+                },
+                onNextClick = {
                     easingAt++
                     if (easingAt - getPickerRows() >= scrollAt)
                         scrollAt++
                     adjustPicksWithWipe(Easings[easingAt], scope)
-                }
-            ) { Text("Next") }
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val scope = rememberCoroutineScope()
-            val lastIndex = Easings.lastIndex
-            Button(
-                enabled = scrollAt > 0,
-                onClick = {
-                    scrollAt -= min(scrollJump, scrollAt)
-                }
-            ) { Text("Up") }
-
-            Button(
-                enabled = scrollAt + getPickerRows() <= lastIndex,
-                onClick = {
-                    scrollAt += min(scrollJump, lastIndex - scrollAt)
-                }
-            ) { Text("Down") }
-        }
-
-        Button(
-            enabled = easingAt>=0,
-            onClick = { wipeEasing() }) {
-            Text("Wipe")
+                },
+                onClearClick = {
+                    picks.clear()
+                    easingAt = -1
+                },
+                onSelected = { listAt ->
+                    easingAt = Easings.indexOf(picks[listAt])
+                    if (easingAt < scrollAt)
+                        scrollAt = easingAt
+                    else {
+                        val fromScroll = easingAt - getPickerRows()
+                        if (fromScroll > scrollAt)
+                            scrollAt += fromScroll
+                    }
+                    adjustPicksWithWipe(Easings[easingAt], scope)
+                },
+            )
+            Spacer(Modifier.width(10.dp))
         }
 
         AnimatedContent(
@@ -203,9 +169,14 @@ fun EasingsViewer() {
 @Composable
 private fun PicksCol(
     easingAt: Int,
-    clearOnClick: () -> Unit,
+    scrollAt: Int,
+    onUpClick: () -> Unit,
+    onDownClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onNextClick: () -> Unit,
+    onClearClick: () -> Unit,
     saveOnClick: () -> Unit = {},
-    onSelected: (Int) -> Unit
+    onSelected: (Int) -> Unit,
 ) {
     Column {
         EasingPicker(
@@ -218,13 +189,49 @@ private fun PicksCol(
         ) {
             Button(
                 enabled = picks.isNotEmpty(),
-                onClick = clearOnClick
+                onClick = onClearClick
             ) { Text("Clear") }
 
             if (false) Button(
                 enabled = picks.size > 5,
                 onClick = saveOnClick
             ) { Text("Save") }
+        }
+        Spacer(Modifier.height(20.dp))
+        val lastEasing = Easings.lastIndex
+        val easingSet = easingAt>=0
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                enabled = scrollAt > 0,
+                onClick = onUpClick
+            ) { Text("Up") }
+            Button(
+                enabled = scrollAt + getPickerRows() <= lastEasing,
+                onClick = onDownClick
+            ) { Text("Down") }
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                enabled = easingSet,
+                onClick = onBackClick
+            ) { Text("Back") }
+            Button(
+                enabled = easingSet && easingAt < lastEasing,
+                onClick = onNextClick
+            ) { Text("Next") }
+        }
+        Spacer(Modifier.height(20.dp))
+        Row {
+            Button(
+                enabled = easingSet,
+                onClick = { wipeEasing() }
+            ) {
+                Text("Wipe")
+            }
         }
     }
 }
