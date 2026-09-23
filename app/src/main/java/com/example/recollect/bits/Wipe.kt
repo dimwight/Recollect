@@ -132,8 +132,9 @@ fun EasingsViewer() {
         ) {
             val scope = rememberCoroutineScope()
             val lastIndex = Easings.lastIndex
+            val easingSet = easingAt > 0
             Button(
-                enabled = easingAt > 0,
+                enabled = easingSet,
                 onClick = {
                     easingAt--
                     if (easingAt < scrollAt)
@@ -143,7 +144,7 @@ fun EasingsViewer() {
             ) { Text("Back") }
 
             Button(
-                enabled = easingAt < lastIndex,
+                enabled = easingSet && easingAt < lastIndex,
                 onClick = {
                     easingAt++
                     if (easingAt - getPickerRows() >= scrollAt)
@@ -151,6 +152,12 @@ fun EasingsViewer() {
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 }
             ) { Text("Next") }
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val scope = rememberCoroutineScope()
+            val lastIndex = Easings.lastIndex
             Button(
                 enabled = scrollAt > 0,
                 onClick = {
@@ -166,9 +173,9 @@ fun EasingsViewer() {
             ) { Text("Down") }
         }
 
-        Button(onClick = {
-            wipeEasing()
-        }) {
+        Button(
+            enabled = easingAt>=0,
+            onClick = { wipeEasing() }) {
             Text("Wipe")
         }
 

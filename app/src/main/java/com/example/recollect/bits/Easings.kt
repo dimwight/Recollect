@@ -55,6 +55,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 data class EasingOption(
@@ -116,10 +117,10 @@ val Easings: List<EasingOption>
     )
 val picks: MutableList<EasingOption> = mutableListOf()
 
-var itemHeightPx_ = 38
-var pickerHeight_ = 600
+var itemHeightDp = 38
+var pickerHeightDp = 450
 fun getPickerRows(): Int {
-    val rows = pickerHeight_ / itemHeightPx_
+    val rows = pickerHeightDp / itemHeightDp
     return rows
 }
 
@@ -137,17 +138,18 @@ fun EasingPicker(
         LaunchedEffect(scrollAt) {
             println("R1: value = ${scrollState.value}")
             println("R1: scrollAt = $scrollAt")
-            scrollState.scrollTo(scrollAt * itemHeightPx_)
+            scrollState.scrollTo(scrollAt * itemHeightDp)
             println("R1: value~ = ${scrollState.value}")
         }
     }
+    val pxToDp = with(LocalDensity.current) { 1.0 / (1.dp.toPx()) }
 
     Column(
         modifier = Modifier
             .then(
                 if (gettingValues)
                     Modifier.onSizeChanged {
-                        pickerHeight_ = it.height
+                        pickerHeightDp = (it.height*pxToDp).toInt()
                     } else Modifier.Companion
             )
             .width(175.dp)
@@ -155,7 +157,7 @@ fun EasingPicker(
                 width = 2.dp,
                 color = Color.LightGray,
             )
-            .requiredHeight(if (list == Easings) pickerHeight_.dp else (pickerHeight_/2).dp)
+            .requiredHeight(pickerHeightDp.dp/if (list == Easings) 1 else 3)
             .verticalScroll(scrollState)
     ) {
         list.forEachIndexed { at, easing ->
@@ -165,7 +167,7 @@ fun EasingPicker(
                     .then(
                         if (gettingValues && at == 0)
                             Modifier.onSizeChanged {
-                                itemHeightPx_ = it.height
+                                itemHeightDp = (it.height*pxToDp).toInt()
                             }
                         else
                             Modifier.Companion
