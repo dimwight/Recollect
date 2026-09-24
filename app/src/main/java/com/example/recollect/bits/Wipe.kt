@@ -108,25 +108,25 @@ fun EasingsViewer() {
             PicksCol(
                 easingAt = easingAt,
                 scrollAt = scrollAt,
-                onUpClick = {
+                onUp = {
                     scrollAt -= min(scrollJump, scrollAt)
                 },
-                onDownClick = {
+                onDown = {
                     scrollAt += min(scrollJump, lastEasing - scrollAt)
                 },
-                onBackClick = {
+                onBack = {
                     easingAt--
                     if (easingAt < scrollAt)
                         scrollAt--
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 },
-                onNextClick = {
+                onNext = {
                     easingAt++
                     if (easingAt - getPickerRows() >= scrollAt)
                         scrollAt++
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 },
-                onClearClick = {
+                onClear = {
                     picks.clear()
                     easingAt = -1
                 },
@@ -170,12 +170,12 @@ fun EasingsViewer() {
 private fun PicksCol(
     easingAt: Int,
     scrollAt: Int,
-    onUpClick: () -> Unit,
-    onDownClick: () -> Unit,
-    onBackClick: () -> Unit,
-    onNextClick: () -> Unit,
-    onClearClick: () -> Unit,
-    saveOnClick: () -> Unit = {},
+    onUp: () -> Unit,
+    onDown: () -> Unit,
+    onBack: () -> Unit,
+    onNext: () -> Unit,
+    onClear: () -> Unit,
+    saveOn: () -> Unit = {},
     onSelected: (Int) -> Unit,
 ) {
     Column {
@@ -189,27 +189,27 @@ private fun PicksCol(
         ) {
             Button(
                 enabled = picks.isNotEmpty(),
-                onClick = onClearClick
+                onClick = onClear
             ) { Text("Clear") }
 
             if (false) Button(
                 enabled = picks.size > 5,
-                onClick = saveOnClick
+                onClick = saveOn
             ) { Text("Save") }
         }
         Spacer(Modifier.height(20.dp))
         val lastEasing = Easings.lastIndex
-        val easingSet = easingAt>=0
+        val easingSet = easingAt >= 0
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
                 enabled = scrollAt > 0,
-                onClick = onUpClick
+                onClick = onUp
             ) { Text("Up") }
             Button(
                 enabled = scrollAt + getPickerRows() <= lastEasing,
-                onClick = onDownClick
+                onClick = onDown
             ) { Text("Down") }
         }
         Row(
@@ -217,11 +217,11 @@ private fun PicksCol(
         ) {
             Button(
                 enabled = easingSet,
-                onClick = onBackClick
+                onClick = onBack
             ) { Text("Back") }
             Button(
                 enabled = easingSet && easingAt < lastEasing,
-                onClick = onNextClick
+                onClick = onNext
             ) { Text("Next") }
         }
         Spacer(Modifier.height(20.dp))

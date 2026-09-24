@@ -44,7 +44,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
@@ -58,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 
 data class EasingOption(
     val name: String,
@@ -118,10 +118,11 @@ val Easings: List<EasingOption>
     )
 val picks: MutableList<EasingOption> = mutableListOf()
 
-var itemHeightDp = 38
+var itemHeightPx = 38
+var pickerHeightPx = 0
 var pickerHeightDp = 450
 fun getPickerRows(): Int {
-    val rows = pickerHeightDp / itemHeightDp
+    val rows = pickerHeightPx / itemHeightPx
     return rows
 }
 
@@ -139,18 +140,20 @@ fun EasingPicker(
         LaunchedEffect(scrollAt) {
 //            println("R1: value = ${scrollState.value}")
 //            println("R1: scrollAt = $scrollAt")
-            scrollState.scrollTo(scrollAt * itemHeightDp)
+            scrollState.scrollTo(scrollAt * itemHeightPx)
 //            println("R1: value~ = ${scrollState.value}")
         }
     }
 
-    val pxToDp = with(LocalDensity.current) { 1.0 / (1.dp.toPx()) }
+    val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
+    val pxToDp = 1.0 / dpToPx
     Column(
         modifier = Modifier
             .then(
                 if (gettingValues)
                     Modifier.onSizeChanged {
-                        pickerHeightDp = (it.height*pxToDp).toInt()
+                        pickerHeightPx = it.height
+                        pickerHeightDp = (pickerHeightPx*pxToDp).roundToInt()
                     } else Modifier.Companion
             )
             .width(170.dp)
@@ -159,7 +162,7 @@ fun EasingPicker(
                 color = Color.LightGray,
             )
 //            .heightIn(max = pickerHeightDp.dp/(if (list == Easings) 1 else 3))
-            .requiredHeight(pickerHeightDp.dp/if (list == Easings) 1 else 3)
+            .requiredHeight((pickerHeightDp/if (list == Easings) 1 else 3).dp)
             .verticalScroll(scrollState)
     ) {
         list.forEachIndexed { at, easing ->
@@ -169,7 +172,7 @@ fun EasingPicker(
                     .then(
                         if (gettingValues && at == 0)
                             Modifier.onSizeChanged {
-                                itemHeightDp = (it.height*pxToDp).toInt()
+                                itemHeightPx = it.height
                             }
                         else
                             Modifier.Companion
