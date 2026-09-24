@@ -153,7 +153,7 @@ fun EasingPicker(
                         pickerHeightDp = (it.height*pxToDp).toInt()
                     } else Modifier.Companion
             )
-            .width(175.dp)
+            .width(170.dp)
             .border(
                 width = 2.dp,
                 color = Color.LightGray,
