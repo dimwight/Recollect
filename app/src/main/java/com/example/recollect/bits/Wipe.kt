@@ -1,5 +1,6 @@
 package com.example.recollect.bits
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -32,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.example.recollect.timeMillis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -145,6 +145,9 @@ fun EasingsViewer() {
             Spacer(Modifier.width(10.dp))
         }
 
+        if (true) LogSlider(easingSet)
+        if (true) DetentSlider()
+
         AnimatedContent(
             targetState = wipeState.intValue,
             transitionSpec = {
@@ -249,117 +252,6 @@ fun AtBox(at: Int) {
     }
 }
 
-@Composable
-fun WipeDemoScreen__() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Spacer(Modifier.height(50.dp))
-
-        var selectedAt by remember { mutableIntStateOf(0) }
-        val scope = rememberCoroutineScope()
-        var wipeAt by remember { mutableIntStateOf(0) }
-
-        EasingPicker(
-            list = Easings,
-            scrollAt = 0,
-            easingAt = selectedAt,
-            onSelected = {
-                selectedAt = it
-                timeMillis("click")
-                scope.launch {
-                    delay(500.milliseconds)
-                    if (Random.nextFloat() < .5)
-                        wipeAt++
-                    else
-                        wipeAt--
-                }
-            },
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                enabled = selectedAt > 0,
-                onClick = { selectedAt-- }
-            ) {
-                Text("Previous")
-            }
-
-            Text(
-                text = Easings[selectedAt].name,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-
-            Button(
-                enabled = selectedAt < Easings.lastIndex,
-                onClick = { selectedAt++ }
-            ) {
-                Text("Next")
-            }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                onClick = {
-                    selectedAt =
-                        if (selectedAt == 0)
-                            Easings.lastIndex
-                        else
-                            selectedAt - 1
-                }
-            ) {
-                Text("Previous")
-            }
-
-            Button(
-                onClick = {
-                    selectedAt =
-                        if (selectedAt == Easings.lastIndex)
-                            0
-                        else
-                            selectedAt + 1
-                }
-            ) {
-                Text("Next")
-            }
-        }
-
-
-        Spacer(Modifier.height(50.dp))
-        Button(onClick = {
-            timeMillis("click")
-            if (Random.nextFloat() < .5)
-                wipeAt++
-            else
-                wipeAt--
-        }) {
-            Text("Wipe")
-        }
-
-        AnimatedContent(
-            targetState = wipeAt,
-            transitionSpec = {
-                val slideTween = tween<IntOffset>(
-                    durationMillis = 1500,
-                    easing = Easings[selectedAt].easing
-                )
-                if (targetState > initialState) {
-                    slideInHorizontally(slideTween) { it } togetherWith
-                            slideOutHorizontally(slideTween) { -it }
-                } else {
-                    slideInHorizontally(slideTween) { -it } togetherWith
-                            slideOutHorizontally(slideTween) { it }
-                }
-            }
-        ) { at -> AtBox(at) }
-    }
-}
 
 
 
