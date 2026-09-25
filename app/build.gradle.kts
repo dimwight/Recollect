@@ -6,9 +6,7 @@ plugins {
 android {
     namespace = "com.example.recollect"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -36,11 +34,19 @@ android {
     }
     buildFeatures {
         compose = true
+        resValues = true
     }
-    flavorDimensions += listOf("Snapshot")
+    flavorDimensions += "environment"
     productFlavors {
-        create("Drag") {
-            dimension = "Snapshot"
+        create("Easings") {
+            dimension = "environment"
+            applicationIdSuffix = ".wipe"
+            resValue("string", "app_name", "Easings")
+        }
+        create("Recollect") {
+            dimension = "environment"
+            applicationIdSuffix = ".app"
+            resValue("string", "app_name", "Recollect")
         }
     }
 }
@@ -48,7 +54,6 @@ android {
 dependencies {
     implementation(libs.androidx.compose.animation.core)
     implementation(libs.javarosa)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,7 +64,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.core.android)
     implementation(libs.androidx.compose.foundation.layout)
-    implementation("androidx.compose.foundation:foundation-layout:1.11.4")
+    implementation(libs.androidx.compose.foundation.layout.v1121)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

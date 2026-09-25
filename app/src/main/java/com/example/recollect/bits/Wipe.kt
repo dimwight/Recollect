@@ -145,8 +145,8 @@ fun EasingsViewer() {
             Spacer(Modifier.width(10.dp))
         }
 
-        if (true) LogSlider(easingSet)
-        if (true) DetentSlider()
+        if (false) LogSlider(easingSet)
+        if (false) DetentSlider()
 
         AnimatedContent(
             targetState = wipeState.intValue,
