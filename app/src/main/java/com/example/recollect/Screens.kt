@@ -39,68 +39,16 @@ import com.example.recollect.bits.EasingsViewer
 
 @Composable
 fun Screens(activity: InputActivity) {
-    if (true) {
+    if (false) {
         Box {
             EasingsViewer()
         }
     } else ImeScreen(activity)
 }
 
-@Composable
-private fun EndOfFormScreen_(inputActivity: InputActivity) {
-    SwipeBox(inputActivity) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "You are at the end of All question types.",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 32.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            NoticeCard()
-            Spacer(modifier = Modifier.height(40.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                SaveDraftButton(inputActivity)
-                FinalizeButton()
-            }
-        }
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            val screenState = inputActivity.screenState.collectAsState().value
-            FormTitleRow(screenState)
-            Box {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    if (false) Image(
-                        painter = painterResource(id = R.drawable.form_end),
-                        contentDescription = ""
-                    )
-                    BackNextRow(inputActivity, screenState)
-                    Spacer(Modifier.height(45.dp))
-                }
-            }
-        }
-    }
-}
-
 // Define the custom primary blue color from the image
 val FormBlue = Color(0xFF3FA3D2)
 val CardBackground = Color(0xFFF4F6F7)
-
 
 @Composable
 fun NoticeCard() {

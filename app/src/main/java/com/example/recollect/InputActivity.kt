@@ -109,7 +109,7 @@ class InputActivity : ComponentActivity() {
         "repeats",
         "all",
         "end"
-    )[1]
+    )[2]
 
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
