@@ -37,10 +37,21 @@ android {
     buildFeatures {
         compose = true
     }
-    flavorDimensions += listOf("Snapshot")
+    buildFeatures {
+        resValues = true
+    }
+    flavorDimensions += "environment"
     productFlavors {
-        create("Drag") {
-            dimension = "Snapshot"
+        create("Easings") {
+            dimension = "environment"
+            applicationIdSuffix = ".wipe"
+            resValue("string", "app_name", "Easings")
+        }
+        create("Recollect") {
+            dimension = "environment"
+            applicationIdSuffix = ".app"
+//            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "Recollect")
         }
     }
 }
