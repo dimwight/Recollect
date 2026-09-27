@@ -39,7 +39,7 @@ import com.example.recollect.bits.EasingsViewer
 
 @Composable
 fun Screens(activity: InputActivity) {
-    if (false) {
+    if (true) {
         Box {
             EasingsViewer()
         }

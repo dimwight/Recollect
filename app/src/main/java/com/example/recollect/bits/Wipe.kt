@@ -1,6 +1,5 @@
 package com.example.recollect.bits
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -59,13 +58,6 @@ private fun wipeEasing() {
     wipeState.intValue = if (wipeState.intValue == 1) 0 else 1
 }
 
-private fun wipeEasing_() {
-    if (Random.nextFloat() < .5)
-        wipeState.intValue++
-    else
-        wipeState.intValue--
-}
-
 private val wipeState = mutableIntStateOf(0)
 
 @Preview
@@ -76,9 +68,10 @@ fun EasingsViewer() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var gettingValues by remember { mutableStateOf(true) }
+        var gettingValues by remember { mutableStateOf(false) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var scrollAt by remember { mutableIntStateOf(0) }
+        var durationMillis by remember { mutableIntStateOf(1000) }
         Spacer(Modifier.height(50.dp))
         val easingSet = easingAt >= 0
         Row(
@@ -145,14 +138,25 @@ fun EasingsViewer() {
             Spacer(Modifier.width(10.dp))
         }
 
-        if (false) LogSlider(easingSet)
-        if (false) DetentSlider()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Spacer(Modifier.width(20.dp))
+            DurationSlider(
+                easingSet,
+                durationMillis,
+            ) {
+                durationMillis = it
+                wipeEasing()
+            }
+        }
 
         AnimatedContent(
             targetState = wipeState.intValue,
             transitionSpec = {
                 val slideTween = tween<IntOffset>(
-                    durationMillis = 1500,
+                    durationMillis = durationMillis,
                     easing = Easings[
                         if (easingAt < 0) 0 else easingAt
                     ].easing
