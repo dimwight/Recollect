@@ -36,7 +36,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
-import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val scrollJump = 5
@@ -68,7 +67,8 @@ fun EasingsViewer() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var gettingValues by remember { mutableStateOf(false) }
+        var firstPass by remember { mutableStateOf(false) }
+        var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var scrollAt by remember { mutableIntStateOf(0) }
         var durationMillis by remember { mutableIntStateOf(1000) }
@@ -82,22 +82,22 @@ fun EasingsViewer() {
             val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
-                gettingValues = gettingValues,
+                gettingValues = gettingValues||firstPass,
                 scrollAt = scrollAt,
                 easingAt = easingAt
             ) { listAt ->
                 easingAt = listAt
                 adjustPicksWithWipe(Easings[easingAt], scope)
             }
+            if (firstPass)firstPass=false
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
                 }
-                return
+                if (true) return
             }
 
             Spacer(Modifier.width(10.dp))
-            val lastEasing = Easings.lastIndex
             PicksCol(
                 easingAt = easingAt,
                 scrollAt = scrollAt,
@@ -105,7 +105,7 @@ fun EasingsViewer() {
                     scrollAt -= min(scrollJump, scrollAt)
                 },
                 onDown = {
-                    scrollAt += min(scrollJump, lastEasing - scrollAt)
+                    scrollAt += min(scrollJump, Easings.lastIndex - scrollAt)
                 },
                 onBack = {
                     easingAt--
@@ -133,7 +133,7 @@ fun EasingsViewer() {
                             scrollAt += fromScroll
                     }
                     adjustPicksWithWipe(Easings[easingAt], scope)
-                },
+                }
             )
             Spacer(Modifier.width(10.dp))
         }
