@@ -140,7 +140,6 @@ fun EasingPicker(
         LaunchedEffect(state) {
             scrollTo.intValue = (state.toFloat() /
                     itemHeightPx.toFloat()).roundToInt()
-
         }
         val to = scrollTo.intValue
         LaunchedEffect(to) {
@@ -149,14 +148,14 @@ fun EasingPicker(
     }
 
     val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
-    val pxToDp = 1.0 / dpToPx
+//    val pxToDp = 1.0 / dpToPx
     Column(
         modifier = Modifier
             .then(
                 if (gettingValues)
                     Modifier.onSizeChanged {
                         pickerHeightPx = it.height
-                        pickerHeightDp = (pickerHeightPx * pxToDp).roundToInt()
+                        pickerHeightDp = (pickerHeightPx / dpToPx).roundToInt()
                     } else Modifier.Companion
             )
             .width((if (list == Easings) 170 else 165).dp)
