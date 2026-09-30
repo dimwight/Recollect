@@ -50,40 +50,37 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Throws(IOException::class, RuntimeException::class)
 fun importInstance(instanceFile: File, fec: FormEntryController) {
-    val fileName = instanceFile.getName()
     // convert files into a byte array
     val fileBytes = FileUtils.readFileToByteArray(instanceFile)
 
     // get the root of the saved and template instances
     val savedRoot = XFormParser.restoreDataModel(fileBytes, null).getRoot()
-    val saved = savedRoot.treeString()
-    val templateRoot = fec.getModel().getForm().getInstance().getRoot().deepCopy(true)
-    val template = templateRoot.treeString()
+    val templateRoot = fec.getModel().form.instance.getRoot().deepCopy(true)
 
     // weak check for matching forms
 
     // populate the data model
     val tr = TreeReference.rootRef()
-    tr.add(templateRoot.getName(), TreeReference.INDEX_UNBOUND)
+    tr.add(templateRoot.name, TreeReference.INDEX_UNBOUND)
 
     // Here we set the Collect's implementation of the IAnswerResolver.
     // We set it back to the default after select choices have been populated.
-    val formDef = fec.getModel().getForm()
+    val formDef = fec.getModel().form
     templateRoot.populate(savedRoot, formDef)
     XFormParser.setAnswerResolver(DefaultAnswerResolver())
 
     // FormInstanceParser.parseInstance is responsible for initial creation of instances. It explicitly sets the
     // main instance name to null so we force this again on deserialization because some code paths rely on the main
     // instance not having a name. Must be before the call on setRoot because setRoot also sets the root's name.
-    fec.getModel().getForm().getInstance().setName(null)
+    fec.getModel().form.instance.name = null
 
     // populated model to current form
-    fec.getModel().getForm().getInstance().setRoot(templateRoot)
+    fec.getModel().form.instance.setRoot(templateRoot)
 }
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
-const val QuestionFrom = 0
+const val QuestionFrom = 2
 
 @Throws(IOException::class)
 fun File.saveToFile(inputStream: InputStream) {
@@ -106,15 +103,23 @@ class InputActivity : ComponentActivity() {
         }
     }
 
-    private lateinit var formName: String
+    private val formName = arrayOf(
+        "simple",
+        "groups",
+        "repeats",
+        "all",
+        "end"
+    )[2]
+
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
     var event: Int = -1
     var questionAt = -1
     private var hasError: Boolean = false
     private val _screenState = MutableStateFlow(ScreenState())
-    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
+    val screenState = _screenState.asStateFlow()
     private fun traceEventAndQuestion(msg: Any? = null) {
+        if (false) return
         val top = if (msg != null && msg !is ScreenState) " msg = $msg" else ""
         val tail = " event = $event questionAt = $questionAt"
         println("R1:$top$tail")
@@ -126,13 +131,6 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        formName = arrayOf(
-            "simple",
-            "groups",
-            "repeats",
-            "all",
-            "end"
-        )[2]
         var formDef = FormDef()
         try {
             val file = File(getExternalFilesDir(null), "$formName.xml")
@@ -142,30 +140,23 @@ class InputActivity : ComponentActivity() {
             println("R1: = $e")
         }
         controller = FormEntryController(FormEntryModel(formDef))
-        val instanceFile = fetchInstanceFile (formName)
-        if (true&& instanceFile.exists())
+        val instanceFile = fetchInstanceFile(formName)
+        if (instanceFile.exists())
             importInstance(
-            instanceFile = instanceFile,
-            fec = controller
-        )
+                instanceFile = instanceFile,
+                fec = controller
+            )
         event = controller.model.event
-        if (false) event = controller.stepToNextEvent()
         if (ApplyQuestionFromBefore)
-            while (questionAt < QuestionFrom)
-                doNext()
+            while (questionAt < QuestionFrom) {
+                nextEvent()
+            }
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
                 Screens(this)
             }
         }
-    }
-
-    private fun doNext(forward: Boolean = true) {
-        if (false) {
-            if (forward) nextQuestion()
-            else previousQuestion()
-        } else nextEvent(forward)
     }
 
     private fun nextEvent(forward: Boolean = true) {
@@ -194,6 +185,7 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
+                    traceEventAndQuestion("skip")
                     nextEvent()
                 }
             }
@@ -210,7 +202,7 @@ class InputActivity : ComponentActivity() {
             when (event) {
                 EVENT_QUESTION -> {
                     questionAt--
-                    updateScreenState()
+                    updateScreenState(false)
                 }
 
                 EVENT_BEGINNING_OF_FORM,
@@ -218,7 +210,8 @@ class InputActivity : ComponentActivity() {
                 EVENT_GROUP,
                 EVENT_REPEAT,
                 EVENT_REPEAT_JUNCTURE -> {
-                    nextEvent(forward = false)
+                    traceEventAndQuestion("skip")
+                    nextEvent(false)
                 }
             }
         }
@@ -239,7 +232,81 @@ class InputActivity : ComponentActivity() {
                 )
             }
         }
-        if (!hasError && event != EVENT_END_OF_FORM) doNext()
+        if (!hasError && event != EVENT_END_OF_FORM) {
+            nextEvent()
+        }
+    }
+
+    fun onBack() {
+        if (questionAt == 0) return
+        _screenState.update {
+            hasError = false
+            it.copy(
+                hasError = hasError,
+            )
+        }
+        nextEvent(false)
+    }
+
+    private fun updateScreenState(forward: Boolean = true, endOfForm: Boolean = false) {
+        val nowWipeToRight = forward
+        val thenWipeToRight = !forward
+        val thenState = _screenState.value.copy(
+            wipeFromRight = thenWipeToRight
+        )
+        val model = controller.model
+        if (endOfForm) {
+            _screenState.update {
+                it.copy(
+                    thenState = thenState,
+                    endOfForm = true,
+                    forWipe = DoWipe,
+                    showBack = true,
+                    showNext = false,
+                    formTitle = model.formTitle,
+                    wipeFromRight = true
+                )
+            }
+            traceEventAndQuestion(_screenState.value)
+            return
+        }
+        val questionPrompt = model.questionPrompt
+        val formElement = questionPrompt.formElement
+        if (questionAt == 0 && firstQuestionPrompt == null) {
+            firstQuestionPrompt = questionPrompt
+        }
+        val showBack = formElement != firstQuestionPrompt?.formElement
+        val question = questionPrompt.question
+        _screenState.update {
+            val labelText = question.labelInnerText
+            if (false) timeMillis("update")
+            it.copy(
+                thenState = thenState,
+                wipeFromRight = nowWipeToRight,
+                forWipe = DoWipe &&
+                        (questionAt > 0 || thenState.wipeFromRight),
+                textFieldState = TextFieldState(questionPrompt.answerText ?: ""),
+                endOfForm = endOfForm,
+                showBack = showBack,
+                showNext = !endOfForm,
+                formTitle = model.formTitle,
+                questionSpec = QuestionSpec(
+                    captions = model.captionHierarchy,
+                    labelText = labelText,
+                    helpText = question.helpText ?: "",
+                    keyboardType = when (questionPrompt.dataType) {
+                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
+                        Constants.DATATYPE_TEXT -> KeyboardType.Text
+                        Constants.DATATYPE_INTEGER -> KeyboardType.Number
+                        else -> KeyboardType.Unspecified
+                    }
+                )
+            )
+        }
+//        val nowAt = screenState.value.wipeTo
+//        val thenAt = screenState.value.thenState?.wipeTo ?: -1
+//        if (false) println("R1: nowAt = $nowAt, thenAt = $thenAt")
+        traceEventAndQuestion(_screenState.value)
     }
 
     fun saveAsDraft() {
@@ -258,113 +325,10 @@ class InputActivity : ComponentActivity() {
         clearAddRepeat()
     }
 
-    fun onBack() {
-        if (questionAt == 0) return
-        _screenState.update {
-            hasError = false
-            it.copy(
-                hasError = hasError,
-            )
-        }
-        doNext(false)
-    }
-
-    private fun updateScreenState(endOfForm: Boolean = false) {
-        val thenState: ScreenState = _screenState.value
-        val model = controller.model
-        if (endOfForm) {
-            _screenState.update {
-                it.copy(
-                    thenState = thenState,
-                    endOfForm = true,
-                    forWipe = DoWipe,
-                    showBack = true,
-                    showNext = false,
-                    formTitle = model.formTitle,
-                    questionAt = ++questionAt
-                )
-            }
-            traceEventAndQuestion(_screenState.value)
-            return
-        }
-        val questionPrompt = model.questionPrompt
-        val answerText = questionPrompt.answerText ?: "!"
-        val formElement = questionPrompt.formElement
-        if (questionAt == 0 && firstQuestionPrompt == null) {
-            firstQuestionPrompt = questionPrompt
-        }
-        val showBack = if (true)
-            formElement != firstQuestionPrompt?.formElement
-        else questionAt != 0
-        val question = questionPrompt.question
-        _screenState.update {
-            val labelText = question.labelInnerText
-            if (false) times("update")
-            it.copy(
-                thenState = thenState,
-                questionAt = questionAt,
-                newWidget_ = false,
-                forWipe = DoWipe &&
-                        (questionAt > 0 || thenState.questionAt == 1),
-                textFieldState = TextFieldState(answerText),
-                endOfForm = endOfForm,
-                showBack = showBack,
-                showNext = !endOfForm,
-                formTitle = model.formTitle,
-                questionSpec = QuestionSpec(
-                    captions = model.captionHierarchy,
-                    labelText = labelText,
-                    helpText = question.helpText ?: "",
-                    keyboardType = when (questionPrompt.dataType) {
-                        Constants.DATATYPE_DECIMAL -> KeyboardType.Decimal
-                        Constants.DATATYPE_TEXT -> KeyboardType.Text
-                        Constants.DATATYPE_INTEGER -> KeyboardType.Number
-                        else -> KeyboardType.Unspecified
-                    }
-                )
-            )
-        }
-        val nowAt = screenState.value.questionAt
-        val thenAt = screenState.value.thenState?.questionAt ?: -1
-        if (false) println("R1: nowAt = $nowAt, thenAt = $thenAt")
-        traceEventAndQuestion(_screenState.value)
-    }
-
-    private fun nextQuestion() {
-        do {
-            event = controller.stepToNextEvent()
-            traceEventAndQuestion()
-            if (event == EVENT_END_OF_FORM) {
-                updateScreenState(true)
-                return
-            }
-        } while (event != EVENT_QUESTION)
-        questionAt++
-        updateScreenState()
-    }
-
-    private fun previousQuestion() {
-        do {
-            event = controller.stepToPreviousEvent()
-            traceEventAndQuestion()
-        } while (event != EVENT_QUESTION)
-        questionAt--
-        updateScreenState()
-    }
-
-    fun clearNewWidget_() {
-        _screenState.update {
-            it.copy(
-                newWidget_ = false
-            )
-        }
-    }
-
     fun clearForWipe() {
         _screenState.update {
             it.copy(
                 forWipe = false,
-                newWidget_ = false
             )
         }
     }
@@ -380,21 +344,24 @@ class InputActivity : ComponentActivity() {
 }
 
 data class ScreenState(
-    val textFieldState: TextFieldState = TextFieldState("[A string]"),
+    val textFieldState: TextFieldState = TextFieldState(""),
     val questionSpec: QuestionSpec = QuestionSpec(),
     val formTitle: String = "",
     val hasError: Boolean = false,
     val showBack: Boolean = false,
     val showNext: Boolean = false,
     val endOfForm: Boolean = false,
-    val newWidget_: Boolean = true,
-    val questionAt: Int = -1,
+    val wipeFromRight: Boolean = true,
     val thenState: ScreenState? = null,
     val forWipe: Boolean = false,
     val addRepeat: Boolean = false
 ) {
+    fun wipeInt(): Int = if (wipeFromRight) 1 else 0
     override fun toString(): String {
-        return if (true) "${questionSpec.labelText} $questionAt"
+        val labelText = questionSpec.labelText
+        val nowInt = wipeInt()
+        val thenInt = thenState?.wipeInt()
+        return if (true) "$labelText $nowInt $thenInt"
 //            "showBack = $showBack showNext = $showNext "
         else ("${hashCode()}")
     }
@@ -413,16 +380,16 @@ data class QuestionSpec(
     }
 }
 
-var start = -1L
-fun times(msg: String = "") {
-    val elapsed = currentTimeMillis() - start
-    if (start < 0 || elapsed > 5000) {
-        start = currentTimeMillis()
-        println("R1: Times reset in $msg")
-    } else println("R1: $msg=${elapsed / 10}")
+private var timeThen = -1L
+fun timeMillis(msg: String = "") {
+    val timeSince = currentTimeMillis() - timeThen
+    if (timeThen < 0 || timeSince > 15000) {
+        timeThen = currentTimeMillis()
+        println("R1: Time reset for $msg")
+    } else println("R1: $msg=${timeSince / 10}")
 }
 
-fun getNumbers1_(): Flow<Int> = flow {
+fun getNumbers1_(): Flow<Any> = flow {
     (1..3).forEach { delay(1000.milliseconds) }
 }
 

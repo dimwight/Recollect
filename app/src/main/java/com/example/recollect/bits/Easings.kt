@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 
 data class EasingOption(
     val name: String,
@@ -91,36 +92,37 @@ val Easings: List<EasingOption>
         EasingOption("EaseOutQuart", EaseOutQuart),
         EasingOption("EaseInOutQuart", EaseInOutQuart),
 
-             EasingOption("EaseInQuint", EaseInQuint),
-             EasingOption("EaseOutQuint", EaseOutQuint),
-             EasingOption("EaseInOutQuint", EaseInOutQuint),
+        EasingOption("EaseInQuint", EaseInQuint),
+        EasingOption("EaseOutQuint", EaseOutQuint),
+        EasingOption("EaseInOutQuint", EaseInOutQuint),
 
-             EasingOption("EaseInExpo", EaseInExpo),
-             EasingOption("EaseOutExpo", EaseOutExpo),
-             EasingOption("EaseInOutExpo", EaseInOutExpo),
+        EasingOption("EaseInExpo", EaseInExpo),
+        EasingOption("EaseOutExpo", EaseOutExpo),
+        EasingOption("EaseInOutExpo", EaseInOutExpo),
 
-             EasingOption("EaseInCirc", EaseInCirc),
-             EasingOption("EaseOutCirc", EaseOutCirc),
-             EasingOption("EaseInOutCirc", EaseInOutCirc),
+        EasingOption("EaseInCirc", EaseInCirc),
+        EasingOption("EaseOutCirc", EaseOutCirc),
+        EasingOption("EaseInOutCirc", EaseInOutCirc),
 
-             EasingOption("EaseInBack", EaseInBack),
-             EasingOption("EaseOutBack", EaseOutBack),
-             EasingOption("EaseInOutBack", EaseInOutBack),
+        EasingOption("EaseInBack", EaseInBack),
+        EasingOption("EaseOutBack", EaseOutBack),
+        EasingOption("EaseInOutBack", EaseInOutBack),
 
-             EasingOption("EaseInElastic", EaseInElastic),
-             EasingOption("EaseOutElastic", EaseOutElastic),
-             EasingOption("EaseInOutElastic", EaseInOutElastic),
+        EasingOption("EaseInElastic", EaseInElastic),
+        EasingOption("EaseOutElastic", EaseOutElastic),
+        EasingOption("EaseInOutElastic", EaseInOutElastic),
 
-             EasingOption("EaseInBounce", EaseInBounce),
-             EasingOption("EaseOutBounce", EaseOutBounce),
-             EasingOption("EaseInOutBounce", EaseInOutBounce),
+        EasingOption("EaseInBounce", EaseInBounce),
+        EasingOption("EaseOutBounce", EaseOutBounce),
+        EasingOption("EaseInOutBounce", EaseInOutBounce),
     )
 val picks: MutableList<EasingOption> = mutableListOf()
 
-var itemHeightDp = 38
+var itemHeightPx = 38
+var pickerHeightPx = 0
 var pickerHeightDp = 450
 fun getPickerRows(): Int {
-    val rows = pickerHeightDp / itemHeightDp
+    val rows = pickerHeightPx / itemHeightPx
     return rows
 }
 
@@ -128,36 +130,42 @@ fun getPickerRows(): Int {
 fun EasingPicker(
     list: List<EasingOption>,
     gettingValues: Boolean = false,
-    scrollAt: Int = 0,
     easingAt: Int,
     onSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
     if (list == Easings && !gettingValues) {
-        LaunchedEffect(scrollAt) {
-            println("R1: value = ${scrollState.value}")
-            println("R1: scrollAt = $scrollAt")
-            scrollState.scrollTo(scrollAt * itemHeightDp)
-            println("R1: value~ = ${scrollState.value}")
+        val state = scrollState.value
+        LaunchedEffect(state) {
+            scrollTo.intValue = (state.toFloat() /
+                    itemHeightPx.toFloat()).roundToInt()
+
+        }
+        val to = scrollTo.intValue
+        LaunchedEffect(to) {
+            scrollState.animateScrollTo(to * itemHeightPx)
         }
     }
-    val pxToDp = with(LocalDensity.current) { 1.0 / (1.dp.toPx()) }
 
+    val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
+    val pxToDp = 1.0 / dpToPx
     Column(
         modifier = Modifier
             .then(
                 if (gettingValues)
                     Modifier.onSizeChanged {
-                        pickerHeightDp = (it.height*pxToDp).toInt()
+                        pickerHeightPx = it.height
+                        pickerHeightDp = (pickerHeightPx * pxToDp).roundToInt()
                     } else Modifier.Companion
             )
-            .width(175.dp)
+            .width((if (list == Easings) 170 else 165).dp)
             .border(
                 width = 2.dp,
                 color = Color.LightGray,
             )
-            .requiredHeight(pickerHeightDp.dp/if (list == Easings) 1 else 3)
+//            .heightIn(max = pickerHeightDp.dp/(if (list == Easings) 1 else 3))
+            .requiredHeight((pickerHeightDp / if (list == Easings) 1 else 3).dp)
             .verticalScroll(scrollState)
     ) {
         list.forEachIndexed { at, easing ->
@@ -167,7 +175,7 @@ fun EasingPicker(
                     .then(
                         if (gettingValues && at == 0)
                             Modifier.onSizeChanged {
-                                itemHeightDp = (it.height*pxToDp).toInt()
+                                itemHeightPx = it.height
                             }
                         else
                             Modifier.Companion
