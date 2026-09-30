@@ -58,6 +58,7 @@ private fun wipeEasing() {
 }
 
 private val wipeState = mutableIntStateOf(0)
+var scrollTo=mutableIntStateOf(0)
 
 @Preview
 @Composable
@@ -70,7 +71,6 @@ fun EasingsViewer() {
         var firstPass by remember { mutableStateOf(false) }
         var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
-        var scrollAt by remember { mutableIntStateOf(0) }
         var durationMillis by remember { mutableIntStateOf(1000) }
         Spacer(Modifier.height(50.dp))
         val easingSet = easingAt >= 0
@@ -83,7 +83,6 @@ fun EasingsViewer() {
             EasingPicker(
                 list = Easings,
                 gettingValues = gettingValues||firstPass,
-                scrollAt = scrollAt,
                 easingAt = easingAt
             ) { listAt ->
                 easingAt = listAt
@@ -100,23 +99,22 @@ fun EasingsViewer() {
             Spacer(Modifier.width(10.dp))
             PicksCol(
                 easingAt = easingAt,
-                scrollAt = scrollAt,
                 onUp = {
-                    scrollAt -= min(scrollJump, scrollAt)
+                    scrollTo.intValue -= min(scrollJump, scrollTo.intValue)
                 },
                 onDown = {
-                    scrollAt += min(scrollJump, Easings.lastIndex - scrollAt)
+                    scrollTo.intValue += min(scrollJump, Easings.lastIndex - scrollTo.intValue)
                 },
                 onBack = {
                     easingAt--
-                    if (easingAt < scrollAt)
-                        scrollAt--
+                    if (easingAt < scrollTo.intValue)
+                        scrollTo.intValue = easingAt--
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 },
                 onNext = {
                     easingAt++
-                    if (easingAt - getPickerRows() >= scrollAt)
-                        scrollAt++
+                    if (easingAt - getPickerRows() >= scrollTo.intValue)
+                        scrollTo.intValue++
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 },
                 onClear = {
@@ -125,12 +123,12 @@ fun EasingsViewer() {
                 },
                 onSelected = { listAt ->
                     easingAt = Easings.indexOf(picks[listAt])
-                    if (easingAt < scrollAt)
-                        scrollAt = easingAt
+                    if (easingAt < scrollTo.intValue)
+                        scrollTo.intValue = easingAt
                     else {
                         val fromScroll = easingAt - getPickerRows()
-                        if (fromScroll > scrollAt)
-                            scrollAt += fromScroll
+                        if (fromScroll > scrollTo.intValue)
+                            scrollTo.intValue += fromScroll
                     }
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 }
@@ -176,7 +174,6 @@ fun EasingsViewer() {
 @Composable
 private fun PicksCol(
     easingAt: Int,
-    scrollAt: Int,
     onUp: () -> Unit,
     onDown: () -> Unit,
     onBack: () -> Unit,
@@ -211,11 +208,11 @@ private fun PicksCol(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                enabled = scrollAt > 0,
+                enabled = scrollTo.intValue > 0,
                 onClick = onUp
             ) { Text("Up") }
             Button(
-                enabled = scrollAt + getPickerRows() <= lastEasing,
+                enabled = scrollTo.intValue + getPickerRows() <= lastEasing,
                 onClick = onDown
             ) { Text("Down") }
         }

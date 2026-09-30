@@ -130,18 +130,21 @@ fun getPickerRows(): Int {
 fun EasingPicker(
     list: List<EasingOption>,
     gettingValues: Boolean = false,
-    scrollAt: Int = 0,
     easingAt: Int,
     onSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
     if (list == Easings && !gettingValues) {
-        LaunchedEffect(scrollAt) {
-//            println("R1: value = ${scrollState.value}")
-//            println("R1: scrollAt = $scrollAt")
-            scrollState.scrollTo(scrollAt * itemHeightPx)
-//            println("R1: value~ = ${scrollState.value}")
+        val state = scrollState.value
+        LaunchedEffect(state) {
+            scrollTo.intValue = (state.toFloat() /
+                    itemHeightPx.toFloat()).roundToInt()
+
+        }
+        val to = scrollTo.intValue
+        LaunchedEffect(to) {
+            scrollState.animateScrollTo(to * itemHeightPx)
         }
     }
 
