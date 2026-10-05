@@ -64,8 +64,7 @@ data class EasingOption(
     val easing: Easing
 )
 
-val Easings: List<EasingOption>
-    get() = listOf(
+val Easings = listOf(
         EasingOption("Linear....", LinearEasing),
         EasingOption("FastOutSlowIn....", FastOutSlowInEasing),
         EasingOption("LinearOutSlowIn....", LinearOutSlowInEasing),
@@ -116,6 +115,7 @@ val Easings: List<EasingOption>
         EasingOption("EaseOutBounce", EaseOutBounce),
         EasingOption("EaseInOutBounce", EaseInOutBounce),
     )
+    .subList(0,3)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
 var itemHeightPx = 38
@@ -128,7 +128,7 @@ fun getPickerRows(): Int {
 
 @Composable
 fun EasingPicker(
-    list: List<EasingOption>,
+    list: List<EasingOption> = Easings,
     gettingValues: Boolean = false,
     easingAt: Int,
     onSelected: (Int) -> Unit,
@@ -169,7 +169,7 @@ fun EasingPicker(
     ) {
         list.forEachIndexed { at, easing ->
             Text(
-                text = if (false) "$at " else "" + easing.name,
+                text = if (true) "$at" else ("" + easing.name),
                 modifier = Modifier
                     .then(
                         if (gettingValues && at == 0)
