@@ -36,8 +36,7 @@ android {
         }
         create("Easings") {
             dimension = "environment"
-            applicationIdSuffix = ".wipe"
-            resValue("string", "app_name", "Easings")
+            applicationIdSuffix = ".div"
         }
     }
 }

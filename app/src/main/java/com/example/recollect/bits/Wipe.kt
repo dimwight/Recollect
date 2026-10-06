@@ -44,9 +44,10 @@ private fun adjustPicksWithWipe(
     selected: EasingOption,
     scope: CoroutineScope
 ) {
-    if (picks.contains(selected))
-        picks.remove(selected)
-    picks.add(0, selected)
+    val picks_ = picks
+    if (picks_.contains(selected))
+        picks_.remove(selected)
+    picks_.add(0, selected)
     scope.launch {
         delay(100.milliseconds)
         wipeEasing()
@@ -167,7 +168,9 @@ fun EasingsViewer() {
                             slideOutHorizontally(slideTween) { it }
                 }
             }
-        ) { at -> AtBox(at) }
+        ) { at ->
+            AtBox(at)
+        }
     }
 }
 
@@ -231,8 +234,10 @@ private fun PicksCol(
         Spacer(Modifier.height(20.dp))
         Row {
             Button(
-                enabled = easingSet,
-                onClick = { wipeEasing() }
+                enabled = true || easingSet,
+                onClick = {
+                    wipeEasing()
+                }
             ) {
                 Text("Wipe")
             }

@@ -37,15 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recollect.bits.EasingsViewer
 
-@Composable
-fun Screens(activity: InputActivity) {
-    if (true) {
-        Box {
-            EasingsViewer()
-        }
-    } else ImeScreen(activity)
-}
-
 // Define the custom primary blue color from the image
 val FormBlue = Color(0xFF3FA3D2)
 val CardBackground = Color(0xFFF4F6F7)

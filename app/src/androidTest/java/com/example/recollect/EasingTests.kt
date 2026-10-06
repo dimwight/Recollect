@@ -32,9 +32,9 @@ class MyTests {
 
         rule
             .onNode(hasText("2"),true)
-            .assertIsDisplayed()
             .assertExists()
-            .performScrollTo()
+            .assertIsDisplayed()
+//            .performScrollTo()
             .performClick()
 
         Thread.sleep(50000)

@@ -11,11 +11,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.recollect.bits.EasingsViewer
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
@@ -131,6 +131,17 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val divApp = true
+        if (!divApp) prepareForInput()
+        enableEdgeToEdge()
+        setContent {
+            RecollectTheme {
+                if (divApp) EasingsViewer() else ImeScreen(this)
+            }
+        }
+    }
+
+    private fun prepareForInput() {
         var formDef = FormDef()
         try {
             val file = File(getExternalFilesDir(null), "$formName.xml")
@@ -151,12 +162,6 @@ class InputActivity : ComponentActivity() {
             while (questionAt < QuestionFrom) {
                 nextEvent()
             }
-        enableEdgeToEdge()
-        setContent {
-            RecollectTheme {
-                Screens(this)
-            }
-        }
     }
 
     private fun nextEvent(forward: Boolean = true) {
