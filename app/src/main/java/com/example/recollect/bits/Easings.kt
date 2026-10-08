@@ -65,57 +65,57 @@ data class EasingOption(
 )
 
 val Easings = listOf(
-        EasingOption("Linear....", LinearEasing),
-        EasingOption("FastOutSlowIn....", FastOutSlowInEasing),
-        EasingOption("LinearOutSlowIn....", LinearOutSlowInEasing),
-        EasingOption("FastOutLinearIn....", FastOutLinearInEasing),
+    EasingOption("Linear....", LinearEasing),
+    EasingOption("FastOutSlowIn....", FastOutSlowInEasing),
+    EasingOption("LinearOutSlowIn....", LinearOutSlowInEasing),
+    EasingOption("FastOutLinearIn....", FastOutLinearInEasing),
 
-        EasingOption("Ease", Ease),
-        EasingOption("EaseIn", EaseIn),
-        EasingOption("EaseOut", EaseOut),
-        EasingOption("EaseInOut", EaseInOut),
+    EasingOption("Ease", Ease),
+    EasingOption("EaseIn", EaseIn),
+    EasingOption("EaseOut", EaseOut),
+    EasingOption("EaseInOut", EaseInOut),
 
-        EasingOption("EaseInSine", EaseInSine),
-        EasingOption("EaseOutSine", EaseOutSine),
-        EasingOption("EaseInOutSine", EaseInOutSine),
+    EasingOption("EaseInSine", EaseInSine),
+    EasingOption("EaseOutSine", EaseOutSine),
+    EasingOption("EaseInOutSine", EaseInOutSine),
 
-        EasingOption("EaseInQuad", EaseInQuad),
-        EasingOption("EaseOutQuad", EaseOutQuad),
-        EasingOption("EaseInOutQuad", EaseInOutQuad),
+    EasingOption("EaseInQuad", EaseInQuad),
+    EasingOption("EaseOutQuad", EaseOutQuad),
+    EasingOption("EaseInOutQuad", EaseInOutQuad),
 
-        EasingOption("EaseInCubic", EaseInCubic),
-        EasingOption("EaseOutCubic", EaseOutCubic),
-        EasingOption("EaseInOutCubic", EaseInOutCubic),
+    EasingOption("EaseInCubic", EaseInCubic),
+    EasingOption("EaseOutCubic", EaseOutCubic),
+    EasingOption("EaseInOutCubic", EaseInOutCubic),
 
-        EasingOption("EaseInQuart", EaseInQuart),
-        EasingOption("EaseOutQuart", EaseOutQuart),
-        EasingOption("EaseInOutQuart", EaseInOutQuart),
+    EasingOption("EaseInQuart", EaseInQuart),
+    EasingOption("EaseOutQuart", EaseOutQuart),
+    EasingOption("EaseInOutQuart", EaseInOutQuart),
 
-        EasingOption("EaseInQuint", EaseInQuint),
-        EasingOption("EaseOutQuint", EaseOutQuint),
-        EasingOption("EaseInOutQuint", EaseInOutQuint),
+    EasingOption("EaseInQuint", EaseInQuint),
+    EasingOption("EaseOutQuint", EaseOutQuint),
+    EasingOption("EaseInOutQuint", EaseInOutQuint),
 
-        EasingOption("EaseInExpo", EaseInExpo),
-        EasingOption("EaseOutExpo", EaseOutExpo),
-        EasingOption("EaseInOutExpo", EaseInOutExpo),
+    EasingOption("EaseInExpo", EaseInExpo),
+    EasingOption("EaseOutExpo", EaseOutExpo),
+    EasingOption("EaseInOutExpo", EaseInOutExpo),
 
-        EasingOption("EaseInCirc", EaseInCirc),
-        EasingOption("EaseOutCirc", EaseOutCirc),
-        EasingOption("EaseInOutCirc", EaseInOutCirc),
+    EasingOption("EaseInCirc", EaseInCirc),
+    EasingOption("EaseOutCirc", EaseOutCirc),
+    EasingOption("EaseInOutCirc", EaseInOutCirc),
 
-        EasingOption("EaseInBack", EaseInBack),
-        EasingOption("EaseOutBack", EaseOutBack),
-        EasingOption("EaseInOutBack", EaseInOutBack),
+    EasingOption("EaseInBack", EaseInBack),
+    EasingOption("EaseOutBack", EaseOutBack),
+    EasingOption("EaseInOutBack", EaseInOutBack),
 
-        EasingOption("EaseInElastic", EaseInElastic),
-        EasingOption("EaseOutElastic", EaseOutElastic),
-        EasingOption("EaseInOutElastic", EaseInOutElastic),
+    EasingOption("EaseInElastic", EaseInElastic),
+    EasingOption("EaseOutElastic", EaseOutElastic),
+    EasingOption("EaseInOutElastic", EaseInOutElastic),
 
-        EasingOption("EaseInBounce", EaseInBounce),
-        EasingOption("EaseOutBounce", EaseOutBounce),
-        EasingOption("EaseInOutBounce", EaseInOutBounce),
-    )
-    .subList(0,3)// ?38
+    EasingOption("EaseInBounce", EaseInBounce),
+    EasingOption("EaseOutBounce", EaseOutBounce),
+    EasingOption("EaseInOutBounce", EaseInOutBounce),
+)
+    .subList(0, 13)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
 var itemHeightPx = 38
@@ -135,7 +135,8 @@ fun EasingPicker(
 ) {
     val scrollState = rememberScrollState()
 
-    if (list == Easings && !gettingValues) {
+    val forEasings = list == Easings
+    if (forEasings && !gettingValues) {
         val state = scrollState.value
         LaunchedEffect(state) {
             scrollTo.intValue = (state.toFloat() /
@@ -158,18 +159,20 @@ fun EasingPicker(
                         pickerHeightDp = (pickerHeightPx / dpToPx).roundToInt()
                     } else Modifier.Companion
             )
-            .width((if (list == Easings) 170 else 165).dp)
+            .width((if (forEasings) 170 else 165).dp)
             .border(
                 width = 2.dp,
                 color = Color.LightGray,
             )
 //            .heightIn(max = pickerHeightDp.dp/(if (list == Easings) 1 else 3))
-            .requiredHeight((pickerHeightDp / if (list == Easings) 1 else 3).dp)
+            .requiredHeight((pickerHeightDp / if (forEasings) 1 else 3).dp)
             .verticalScroll(scrollState)
     ) {
         list.forEachIndexed { at, easing ->
             Text(
-                text = if (true) "$at" else ("" + easing.name),
+                text = if (true) {
+                    "$at" + if (forEasings) "" else "+"
+                } else ("" + easing.name),
                 modifier = Modifier
                     .then(
                         if (gettingValues && at == 0)
@@ -180,7 +183,7 @@ fun EasingPicker(
                             Modifier.Companion
                     )
                     .background(
-                        if (list == Easings && easingAt >= 0 &&
+                        if (forEasings && easingAt >= 0 &&
                             easing == list[easingAt]
                         )
                             Color.Gray else Color.White

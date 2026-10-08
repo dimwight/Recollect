@@ -1,14 +1,17 @@
 package com.example.compose.rally
 
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.printToLog
+import com.example.recollect.InputActivity
 import com.example.recollect.bits.EasingsViewer
 import org.junit.Rule
 import org.junit.Test
@@ -19,30 +22,37 @@ class MyTests {
         rule.setContent {
             EasingsViewer()
         }
-        rule.onRoot(useUnmergedTree = true)
-            .printToLog("Easings")
     }
 
+    @Test
+    fun printToLog() {
+        rule.onRoot(useUnmergedTree = true).printToLog("")
+    }
+
+    val useAndroidRule = true
+
     @get:Rule
-    val rule = createComposeRule()
+    val rule = if (useAndroidRule)
+        createAndroidComposeRule<InputActivity>()
+    else createComposeRule()
 
     @Test
     fun scrollAndClick() {
-        setContent()
+        if (!useAndroidRule) setContent()
+        printToLog()
 
-        rule
-            .onNode(hasText("2"),true)
+        nodeHasText("2")
             .assertExists()
-            .assertIsDisplayed()
-//            .performScrollTo()
             .performClick()
 
-        Thread.sleep(50000)
+        nodeHasText("0+")
+            .assertExists()
+
+        Thread.sleep(1000)
     }
-    @Test
-    fun printToLog() {
-        setContent()
-    }
+
+    private fun nodeHasText(text: String): SemanticsNodeInteraction =
+        rule.onNode(hasText(text), true)
 }
 
 
