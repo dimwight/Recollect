@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.printToLog
 import com.example.recollect.InputActivity
 import com.example.recollect.bits.EasingsViewer
+import com.example.recollect.timeMillis_
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,7 +30,7 @@ class MyTests {
         rule.onRoot(useUnmergedTree = true).printToLog("")
     }
 
-    val useAndroidRule = false
+    val useAndroidRule = true
 
     @get:Rule
     val rule = if (useAndroidRule)
@@ -38,8 +39,11 @@ class MyTests {
 
     @Test
     fun scrollAndClick() {
+        timeMillis_()
         if (!useAndroidRule) setContent()
+        timeMillis_("setContent~")
         printToLog()
+        timeMillis_("printToLog~")
 
         nodeHasText("2")
             .assertExists()
@@ -52,7 +56,9 @@ class MyTests {
     }
 
     private fun nodeHasText(text: String): SemanticsNodeInteraction {
+//        timeMillis_()
         val node = rule.onNode(hasText(text), true)
+        timeMillis_("$text~")
         return node
     }
 }
