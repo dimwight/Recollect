@@ -29,7 +29,7 @@ class MyTests {
         rule.onRoot(useUnmergedTree = true).printToLog("")
     }
 
-    val useAndroidRule = true
+    val useAndroidRule = false
 
     @get:Rule
     val rule = if (useAndroidRule)
@@ -51,8 +51,10 @@ class MyTests {
         Thread.sleep(1000)
     }
 
-    private fun nodeHasText(text: String): SemanticsNodeInteraction =
-        rule.onNode(hasText(text), true)
+    private fun nodeHasText(text: String): SemanticsNodeInteraction {
+        val node = rule.onNode(hasText(text), true)
+        return node
+    }
 }
 
 

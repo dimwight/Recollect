@@ -386,12 +386,26 @@ data class QuestionSpec(
 }
 
 private var timeThen = -1L
+
 fun timeMillis(msg: String = "") {
     val timeSince = currentTimeMillis() - timeThen
     if (timeThen < 0 || timeSince > 15000) {
         timeThen = currentTimeMillis()
         println("R1: Time reset for $msg")
     } else println("R1: $msg=${timeSince / 10}")
+}
+fun timeMillis_(msg: String = "") {
+    val blankMsg = msg.isBlank()
+    var timeSince = 0L
+    if (timeThen < 0 || blankMsg) {
+        timeThen = currentTimeMillis()
+//        println("R1: Time reset for $msg")
+    }
+    timeSince = currentTimeMillis() - timeThen
+    println(
+        (if (blankMsg) "" else "$msg=") +
+                "${timeSince / 1}"
+    )
 }
 
 fun getNumbers1_(): Flow<Any> = flow {
