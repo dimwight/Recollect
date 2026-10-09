@@ -385,6 +385,8 @@ data class QuestionSpec(
     }
 }
 
+
+
 private var timeThen = -1L
 
 fun timeMillis(msg: String = "") {
@@ -399,10 +401,9 @@ fun timeMillis_(msg: String = "") {
     var timeSince = 0L
     if (timeThen < 0 || blankMsg) {
         timeThen = currentTimeMillis()
-//        println("R1: Time reset for $msg")
     }
     timeSince = currentTimeMillis() - timeThen
-    println(
+    println("R1: "+
         (if (blankMsg) "" else "$msg=") +
                 "${timeSince / 1}"
     )

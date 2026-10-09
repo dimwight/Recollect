@@ -253,7 +253,7 @@ fun AtBox(at: Int) {
             .background(Color.White), contentAlignment = Alignment.Center
     ) {
         Text(
-            "$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
+            "W$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
         )
     }
 }
