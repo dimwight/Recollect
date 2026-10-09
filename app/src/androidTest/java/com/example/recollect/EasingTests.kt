@@ -45,12 +45,15 @@ class MyTests {
         printToLog()
         timeMillis_("printToLog~")
 
-        nodeHasText("2")
-            .assertExists()
+        nodeHasText("2").assertExists()
             .performClick()
 
-        nodeHasText("0+")
-            .assertExists()
+
+        nodeHasText("0+").assertExists()
+
+        rule.waitForIdle()
+
+        nodeHasText("W1").assertExists()
 
         Thread.sleep(1000)
     }
