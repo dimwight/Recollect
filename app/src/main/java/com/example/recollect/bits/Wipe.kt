@@ -44,9 +44,10 @@ private fun adjustPicksWithWipe(
     selected: EasingOption,
     scope: CoroutineScope
 ) {
-    if (picks.contains(selected))
-        picks.remove(selected)
-    picks.add(0, selected)
+    val picks_ = picks
+    if (picks_.contains(selected))
+        picks_.remove(selected)
+    picks_.add(0, selected)
     scope.launch {
         delay(100.milliseconds)
         wipeEasing()
@@ -58,7 +59,7 @@ private fun wipeEasing() {
 }
 
 private val wipeState = mutableIntStateOf(0)
-var scrollTo=mutableIntStateOf(0)
+var scrollTo = mutableIntStateOf(0)
 
 @Preview
 @Composable
@@ -82,13 +83,13 @@ fun EasingsViewer() {
             val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
-                gettingValues = gettingValues||firstPass,
+                gettingValues = gettingValues || firstPass,
                 easingAt = easingAt
             ) { listAt ->
                 easingAt = listAt
                 adjustPicksWithWipe(Easings[easingAt], scope)
             }
-            if (firstPass)firstPass=false
+            if (firstPass) firstPass = false
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
@@ -142,7 +143,7 @@ fun EasingsViewer() {
         ) {
             Spacer(Modifier.width(20.dp))
             DurationSlider(
-                easingSet,
+                true || easingSet,
                 durationMillis,
             ) {
                 durationMillis = it
@@ -167,7 +168,9 @@ fun EasingsViewer() {
                             slideOutHorizontally(slideTween) { it }
                 }
             }
-        ) { at -> AtBox(at) }
+        ) { at ->
+            AtBox(at)
+        }
     }
 }
 
@@ -231,8 +234,10 @@ private fun PicksCol(
         Spacer(Modifier.height(20.dp))
         Row {
             Button(
-                enabled = easingSet,
-                onClick = { wipeEasing() }
+                enabled = true || easingSet,
+                onClick = {
+                    wipeEasing()
+                }
             ) {
                 Text("Wipe")
             }
