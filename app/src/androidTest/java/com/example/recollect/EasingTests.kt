@@ -37,7 +37,7 @@ class MyTests {
     else createComposeRule()
 
     @Test
-    fun scrollAndClick() {
+    fun clickEasings() {
         setContentIf()
         printToLog()
 
