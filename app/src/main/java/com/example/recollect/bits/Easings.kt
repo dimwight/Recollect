@@ -59,9 +59,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
+var ats = 0
+
 data class EasingOption(
     val name: String,
-    val easing: Easing
+    val easing: Easing,
+    val listAt: Int = ats++
 )
 
 val Easings = listOf(
@@ -115,7 +118,7 @@ val Easings = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
-    .subList(0, 13)// ?38
+    .subList(0, 20)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
 var itemHeightPx = 38
@@ -171,7 +174,7 @@ fun EasingPicker(
         list.forEachIndexed { at, easing ->
             Text(
                 text = if (true) {
-                    "$at" + if (forEasings) "" else "+"
+                    "${easing.listAt}" + if (forEasings) "" else "+"
                 } else ("" + easing.name),
                 modifier = Modifier
                     .then(
