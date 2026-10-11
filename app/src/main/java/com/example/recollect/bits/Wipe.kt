@@ -121,16 +121,20 @@ fun EasingsViewer() {
                 onClear = {
                     picks.clear()
                     easingAt = -1
+                    scrollTo.intValue = 0
                 },
                 onSelected = { listAt ->
                     easingAt = Easings.indexOf(picks[listAt])
-                    if (easingAt < scrollTo.intValue)
+                    if (false || easingAt < scrollTo.intValue)
                         scrollTo.intValue = easingAt
                     else {
                         val fromScroll = easingAt - getPickerRows()
-                        if (fromScroll > scrollTo.intValue)
+                        if (false || fromScroll > scrollTo.intValue)
                             scrollTo.intValue += fromScroll
                     }
+                    println("R1: \rlistAt = ${listAt}" +
+                            " \reasingAt = ${easingAt}" +
+                            " \rscrollTo = ${scrollTo.intValue}")
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 }
             )
@@ -253,7 +257,7 @@ fun AtBox(at: Int) {
             .background(Color.White), contentAlignment = Alignment.Center
     ) {
         Text(
-            "$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
+            "W$at", color = Color.Red, style = MaterialTheme.typography.headlineLarge
         )
     }
 }
