@@ -146,8 +146,11 @@ fun EasingPicker(
                     itemHeightPx.toFloat()).roundToInt()
         }
         val to = scrollTo.intValue
+        val toPx = to * itemHeightPx
         LaunchedEffect(to) {
-            scrollState.animateScrollTo(to * itemHeightPx)
+            var down = toPx > state
+            if (true||down) scrollState.scrollTo(toPx)
+            else scrollState.animateScrollTo(toPx)
         }
     }
 
@@ -174,7 +177,7 @@ fun EasingPicker(
         list.forEachIndexed { at, easing ->
             Text(
                 text = if (true) {
-                    "${easing.listAt}" + if (forEasings) "" else "+"
+                    "${easing.listAt}" + if (forEasings) "" else "P"
                 } else ("" + easing.name),
                 modifier = Modifier
                     .then(
