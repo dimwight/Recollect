@@ -17,6 +17,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="1082831814">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung SM-A536B" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="1517855018">
           <value>
             <AndroidTestResultsTableState>
@@ -26,6 +39,7 @@
                   <entry key="Pixel_7" value="120" />
                   <entry key="Pixel_7_2" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung SM-A536B" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

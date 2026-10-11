@@ -25,7 +25,8 @@ class MyTests {
 
     @Test
     fun printToLog() {
-        rule.onRoot(useUnmergedTree = true).printToLog("")
+        rule.onRoot(useUnmergedTree = true)
+            .printToLog("")
         timeMillis_("printToLog~")
     }
 
@@ -46,7 +47,7 @@ class MyTests {
         nodeHasText("2").assertExists()
             .performClick()
 
-        nodeHasText("0+").assertExists()
+        nodeHasText("2P").assertExists()
 
         val animationDurationMillis = 1000L
         rule.waitUntil(timeoutMillis = animationDurationMillis * 4 / 3) {
