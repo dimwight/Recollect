@@ -2,7 +2,6 @@ package com.example.compose.rally
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
@@ -42,6 +41,16 @@ class MyTests {
     else createComposeRule()
 
     @Test
+    fun assertIsNotEnabled() {
+        setContentIf()
+        printToLog()
+        println("+Hi")
+        rule.onNode(hasText("Down"), true).assertIsNotEnabled()
+        println("+Ho")
+
+        Thread.sleep(10000)
+    }
+    @Test
     fun clickEasings() {
         setContentIf()
         printToLog()
@@ -54,18 +63,20 @@ class MyTests {
         picks2.assertIsDisplayed()
 
         val easings19 = nodeHasText("19")
-        easings19//.assertExists()
+        easings19
             .assertIsNotDisplayed()
 
         val down = nodeHasText("Down")
-        down//.assertExists()
+        down
             .performClick()
             .performClick()
 
         easings19.assertIsDisplayed()
         printToLog()
-        down.assertExists()
-            .assertIsEnabled()
+        println("+Hi")
+        val node = rule.onNode(hasText("Down"), true)
+        node.assertIsNotEnabled()
+        println("+Ho")
         easings19.performClick()
         val picks19 = nodeHasText("19P")
         picks19.assertIsDisplayed()
