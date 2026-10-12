@@ -1,6 +1,10 @@
 package com.example.compose.rally
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -39,6 +43,43 @@ class MyTests {
 
     @Test
     fun clickEasings() {
+        setContentIf()
+        printToLog()
+
+        val easings2 = nodeHasText("2")
+        easings2.assertIsDisplayed()
+            .performClick()
+
+        val picks2 = nodeHasText("2P")
+        picks2.assertIsDisplayed()
+
+        val easings19 = nodeHasText("19")
+        easings19//.assertExists()
+            .assertIsNotDisplayed()
+
+        val down = nodeHasText("Down")
+        down//.assertExists()
+            .performClick()
+            .performClick()
+
+        easings19.assertIsDisplayed()
+        printToLog()
+        down.assertExists()
+            .assertIsEnabled()
+        easings19.performClick()
+        val picks19 = nodeHasText("19P")
+        picks19.assertIsDisplayed()
+
+        picks2.performClick()
+        easings2.assertIsDisplayed()
+
+        picks19.performClick()
+        easings19.assertIsDisplayed()
+
+        Thread.sleep(10000)
+    }
+    @Test
+    fun wipeIsTriggered() {
         setContentIf()
         printToLog()
 
