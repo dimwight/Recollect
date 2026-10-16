@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
@@ -45,7 +46,10 @@ class MyTests {
         setContentIf()
         printToLog()
         println("+Hi")
-        rule.onNode(hasText("Down"), true).assertIsNotEnabled()
+        val next = rule.onNode(hasText("Next"), true).onParent()
+        next.onParent().printToLog("Hum")
+        next.assertIsDisplayed()
+            .assertIsNotEnabled()
         println("+Ho")
 
         Thread.sleep(10000)
@@ -72,11 +76,7 @@ class MyTests {
             .performClick()
 
         easings19.assertIsDisplayed()
-        printToLog()
-        println("+Hi")
-        val node = rule.onNode(hasText("Down"), true)
-        node.assertIsNotEnabled()
-        println("+Ho")
+        down.onParent().assertIsNotEnabled()
         easings19.performClick()
         val picks19 = nodeHasText("19P")
         picks19.assertIsDisplayed()
@@ -87,7 +87,7 @@ class MyTests {
         picks19.performClick()
         easings19.assertIsDisplayed()
 
-        Thread.sleep(10000)
+//        Thread.sleep(10000)
     }
     @Test
     fun wipeIsTriggered() {

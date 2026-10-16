@@ -219,8 +219,8 @@ private fun PicksCol(
                 onClick = onUp
             ) { Text("Up") }
             Button(
-//                enabled = scrollTo.intValue + getPickerRows() < lastEasing,
-                enabled = false,
+                enabled = scrollTo.intValue + getPickerRows() < lastEasing,
+//                enabled = false,
                 onClick = onDown
             ) { Text("Down") }
         }
