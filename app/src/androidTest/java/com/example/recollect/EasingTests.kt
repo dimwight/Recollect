@@ -1,13 +1,16 @@
 package com.example.compose.rally
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
@@ -16,6 +19,9 @@ import com.example.recollect.bits.EasingsViewer
 import com.example.recollect.timeMillis_
 import org.junit.Rule
 import org.junit.Test
+
+fun hasRole(role: Role): SemanticsMatcher =
+    SemanticsMatcher.expectValue(SemanticsProperties.Role, role)
 
 class MyTests {
 
@@ -44,20 +50,24 @@ class MyTests {
     @Test
     fun assertIsNotEnabled() {
         setContentIf()
-        printToLog()
         println("+Hi")
-        val next = rule.onNode(hasText("Next"), true).onParent()
-        next.onParent().printToLog("Hum")
+        val next = rule.onNode(MatchStyle.Bare.hasValue)
         next.assertIsDisplayed()
             .assertIsNotEnabled()
+            .printToLog("")
         println("+Ho")
 
-        Thread.sleep(10000)
     }
+
+    enum class MatchStyle(val hasValue: SemanticsMatcher) {
+        Bare(hasText("Down", true)),
+        HasRole(hasText("Down", true) and hasRole(Role.Button)),
+        CanClick(hasText("Down", true) and hasClickAction())
+    }
+
     @Test
     fun clickEasings() {
         setContentIf()
-        printToLog()
 
         val easings2 = nodeHasText("2")
         easings2.assertIsDisplayed()
@@ -70,13 +80,17 @@ class MyTests {
         easings19
             .assertIsNotDisplayed()
 
-        val down = nodeHasText("Down")
+        val text = "Down"
+        val down = if (false) rule.onNode(hasText(text), true)
+        else nodeIsButton(text)
+
         down
             .performClick()
             .performClick()
 
         easings19.assertIsDisplayed()
-        down.onParent().assertIsNotEnabled()
+        down.printToLog("")
+        down.assertIsNotEnabled()
         easings19.performClick()
         val picks19 = nodeHasText("19P")
         picks19.assertIsDisplayed()
@@ -89,6 +103,7 @@ class MyTests {
 
 //        Thread.sleep(10000)
     }
+
     @Test
     fun wipeIsTriggered() {
         setContentIf()
@@ -111,13 +126,15 @@ class MyTests {
         Thread.sleep(1000)
     }
 
-    private fun nodeHasText(text: String): SemanticsNodeInteraction {
-//        timeMillis_()
-        val node = rule.onNode(hasText(text), true)
-//        timeMillis_("$text~")
-        return node
-    }
+    private fun nodeHasText(text: String): SemanticsNodeInteraction =
+        rule.onNode(hasText(text), true)
 }
+
+private fun MyTests.nodeIsButton(text: String): SemanticsNodeInteraction = rule.onNode(
+    hasText(text, true) and SemanticsMatcher.expectValue(
+        SemanticsProperties.Role, Role.Button
+    )
+)
 
 
 
