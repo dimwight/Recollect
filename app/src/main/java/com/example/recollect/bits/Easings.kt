@@ -118,7 +118,7 @@ val Easings = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
-    .subList(0, 20)// ?38
+    .subList(0, 30)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
 var itemHeightPx = 38
