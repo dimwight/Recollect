@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
@@ -77,9 +78,11 @@ class EasingTests {
 
         pick2.performClick()
         easing2.assertIsDisplayed()
+        down.assertIsEnabled()
 
         pick19.performClick()
         easing19.assertIsDisplayed()
+        down.assertIsNotEnabled()
 
 //        Thread.sleep(10000)
     }
