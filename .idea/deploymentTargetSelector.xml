@@ -21,7 +21,7 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="EasingTests">
+      <SelectionState runConfigName="downAndUp()">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-10-11T20:55:22.383056400Z">
           <Target type="DEFAULT_BOOT">

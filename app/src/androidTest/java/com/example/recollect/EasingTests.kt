@@ -49,42 +49,47 @@ class EasingTests {
 
 
     @Test
-    fun clickEasings() {
+    fun downAndUp() {
         setContentIf()
 
-        val easing2 = nodeWithText("2")
-        easing2.assertIsDisplayed()
+        val up = nodeAsButton("Up")
+            .assertIsNotEnabled()
+        val down = nodeAsButton("Down")
+            .assertIsEnabled()
+
+        val easing0 = nodeWithText("0")
+            .assertIsDisplayed()
             .performClick()
 
-        val pick2 = nodeWithText("2P")
-        pick2.assertIsDisplayed()
+        val pick0 = nodeWithText("0P")
+            .assertIsDisplayed()
 
         val easing19 = nodeWithText("19")
-        easing19
             .assertIsNotDisplayed()
-
-        val down = nodeAsButton("Down")
 
         down
             .performClick()
             .performClick()
+            .assertIsNotEnabled()
+        up.assertIsEnabled()
 
         easing19.assertIsDisplayed()
-        down.assertIsNotEnabled()
-        easing19.performClick()
+            .performClick()
 
         val pick19 = nodeWithText("19P")
-        pick19.assertIsDisplayed()
+            .assertIsDisplayed()
 
-        pick2.performClick()
-        easing2.assertIsDisplayed()
+        pick0.performClick()
+        easing0.assertIsDisplayed()
+        up.assertIsNotEnabled()
         down.assertIsEnabled()
 
         pick19.performClick()
         easing19.assertIsDisplayed()
+        up.assertIsEnabled()
         down.assertIsNotEnabled()
+        Thread.sleep(20000)
 
-//        Thread.sleep(10000)
     }
 
     @Test
@@ -103,9 +108,7 @@ class EasingTests {
             rule.onAllNodes(hasText("W1", true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
-        timeMillis_("scrollAndClick~")
-
-//        Thread.sleep(1000)
+        Thread.sleep(20000)
     }
 }
 
