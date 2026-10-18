@@ -59,7 +59,7 @@ private fun wipeEasing() {
 }
 
 private val wipeState = mutableIntStateOf(0)
-var scrollTo = mutableIntStateOf(0)
+var scrollTo = mutableIntStateOf(-1)
 
 @Preview
 @Composable
@@ -70,7 +70,7 @@ fun WipeViewer() {
             .background(Color.White)
     ) {
         var firstPass by remember { mutableStateOf(true) }
-        var gettingValues by remember { mutableStateOf(!firstPass) }
+//        var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var durationMillis by remember { mutableIntStateOf(1000) }
         Spacer(Modifier.height(50.dp))
@@ -83,19 +83,18 @@ fun WipeViewer() {
             val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
-                gettingValues = gettingValues || firstPass,
+                getValues = firstPass,
                 easingAt = easingAt,
                 onSelected = { listAt ->
                     easingAt = listAt
                     adjustPicksWithWipe(Easings[easingAt], scope)
+                })
+            if (firstPass) {
+                if (true) LaunchedEffect(firstPass) {// No effect?
+                    var then = scrollTo.intValue
+                    scrollTo.intValue=0
                 }
-            )
-            if (true || firstPass) firstPass = false
-            if (gettingValues) {
-                LaunchedEffect(gettingValues) {
-                    gettingValues = false
-                }
-                if (true) return
+            firstPass = false
             }
 
             Spacer(Modifier.width(10.dp))
@@ -105,7 +104,11 @@ fun WipeViewer() {
                     scrollTo.intValue -= min(scrollJump, scrollTo.intValue)
                 },
                 onDown = {
-                    scrollTo.intValue += min(scrollJump, Easings.lastIndex - scrollTo.intValue)
+                    val jump = scrollJump
+                    val lastIndex = Easings.lastIndex
+                    val then = scrollTo.intValue
+                    val now = then + min(jump, lastIndex - then)
+                    scrollTo.intValue = now
                 },
                 onBack = {
                     easingAt--
@@ -223,7 +226,12 @@ private fun PicksCol(
                 enabled = scrollTo.intValue + getPickerRows() < lastEasing,
 //                enabled = false,
                 onClick = onDown
-            ) { Text("Down") }
+            ) {
+                Column {
+                    Text("Down")
+                    Text("scrollTo: ${scrollTo.intValue}")
+                }
+            }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)

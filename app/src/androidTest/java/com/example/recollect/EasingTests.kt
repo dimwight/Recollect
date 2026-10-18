@@ -70,6 +70,8 @@ class EasingTests {
         down
             .performClick()
             .performClick()
+            .performClick()
+            .performClick()
             .assertIsNotEnabled()
         up.assertIsEnabled()
 

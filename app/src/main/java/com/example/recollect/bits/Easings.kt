@@ -118,7 +118,7 @@ val Easings = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
-    .subList(0, 20)// ?38
+    .subList(0, 30)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
 var itemHeightPx = 38
@@ -132,22 +132,23 @@ fun getPickerRows(): Int {
 @Composable
 fun EasingPicker(
     list: List<EasingOption> = Easings,
-    gettingValues: Boolean = false,
+    getValues: Boolean = false,
     easingAt: Int,
     onSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
     val forEasings = list == Easings
-    if (forEasings && !gettingValues) {
+    if (forEasings && !getValues
+        ) {
         val state = scrollState.value
         LaunchedEffect(state) {
             scrollTo.intValue = (state.toFloat() /
                     itemHeightPx.toFloat()).roundToInt()
         }
-        val to = scrollTo.intValue
-        val toPx = to * itemHeightPx
-        LaunchedEffect(to) {
+        LaunchedEffect(scrollTo.intValue) {
+            val to = scrollTo.intValue
+            val toPx = to * itemHeightPx
             var down = toPx > state
             if (true||down) scrollState.scrollTo(toPx)
             else scrollState.animateScrollTo(toPx)
@@ -159,7 +160,7 @@ fun EasingPicker(
     Column(
         modifier = Modifier
             .then(
-                if (gettingValues)
+                if (getValues)
                     Modifier.onSizeChanged {
                         pickerHeightPx = it.height
                         pickerHeightDp = (pickerHeightPx / dpToPx).roundToInt()
@@ -181,7 +182,7 @@ fun EasingPicker(
                 } else ("" + easing.name),
                 modifier = Modifier
                     .then(
-                        if (gettingValues && at == 0)
+                        if (getValues && at == 0)
                             Modifier.onSizeChanged {
                                 itemHeightPx = it.height
                             }
