@@ -13,7 +13,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
-import com.example.recollect.bits.EasingsViewer
+import com.example.recollect.bits.WipeViewer
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,7 +24,7 @@ class EasingTests {
     private fun setContentIf() {
         timeMillis_()
         if (!useAndroidRule) rule.setContent {
-            EasingsViewer()
+            WipeViewer()
         }
         timeMillis_("setContentIf~")
     }
@@ -108,7 +108,7 @@ class EasingTests {
             rule.onAllNodes(hasText("W1", true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
-        Thread.sleep(20000)
+//        Thread.sleep(20000)
     }
 }
 

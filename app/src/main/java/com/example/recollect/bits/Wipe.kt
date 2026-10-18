@@ -63,7 +63,7 @@ var scrollTo = mutableIntStateOf(0)
 
 @Preview
 @Composable
-fun EasingsViewer() {
+fun WipeViewer() {
     Column(
         modifier = Modifier
             .fillMaxSize()

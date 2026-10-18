@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.recollect.bits.EasingsViewer
+import com.example.recollect.bits.WipeViewer
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -136,7 +136,7 @@ class InputActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
-                if (divApp) EasingsViewer() else ImeScreen(this)
+                if (divApp) WipeViewer() else ImeScreen(this)
             }
         }
     }
