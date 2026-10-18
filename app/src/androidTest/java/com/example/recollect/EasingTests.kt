@@ -88,7 +88,7 @@ class EasingTests {
         easing19.assertIsDisplayed()
         up.assertIsEnabled()
         down.assertIsNotEnabled()
-        Thread.sleep(20000)
+//        Thread.sleep(20000)
 
     }
 

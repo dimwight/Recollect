@@ -69,7 +69,7 @@ fun WipeViewer() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var firstPass by remember { mutableStateOf(false) }
+        var firstPass by remember { mutableStateOf(true) }
         var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var durationMillis by remember { mutableIntStateOf(1000) }
@@ -84,12 +84,13 @@ fun WipeViewer() {
             EasingPicker(
                 list = Easings,
                 gettingValues = gettingValues || firstPass,
-                easingAt = easingAt
-            ) { listAt ->
-                easingAt = listAt
-                adjustPicksWithWipe(Easings[easingAt], scope)
-            }
-            if (firstPass) firstPass = false
+                easingAt = easingAt,
+                onSelected = { listAt ->
+                    easingAt = listAt
+                    adjustPicksWithWipe(Easings[easingAt], scope)
+                }
+            )
+            if (true || firstPass) firstPass = false
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
