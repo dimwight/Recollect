@@ -67,6 +67,9 @@ class EasingTests {
         down
             .performClick()
             .performClick()
+            .performClick()
+            .performClick()
+        Thread.sleep(10000)
 
         easing19.assertIsDisplayed()
         down.assertIsNotEnabled()
@@ -81,7 +84,6 @@ class EasingTests {
         pick19.performClick()
         easing19.assertIsDisplayed()
 
-//        Thread.sleep(10000)
     }
 
     @Test
