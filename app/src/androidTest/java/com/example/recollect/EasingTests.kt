@@ -18,14 +18,22 @@ import org.junit.Test
 
 class EasingTests {
 
-    val useAndroidRule = true
+    val useAndroidRule = false
+
+    private fun setContentIf() {
+        timeMillis_()
+        if (!useAndroidRule) rule.setContent {
+            EasingsViewer()
+        }
+        timeMillis_("setContentIf~")
+    }
 
     @get:Rule
     val rule = if (useAndroidRule)
         createAndroidComposeRule<InputActivity>()
     else createComposeRule()
 
-    private fun nodeHasText(text: String): SemanticsNodeInteraction =
+    private fun nodeWithText(text: String): SemanticsNodeInteraction =
         rule.onNode(hasText(text), true)
 
     private fun nodeAsButton(text: String): SemanticsNodeInteraction {
@@ -38,27 +46,20 @@ class EasingTests {
         return node
     }
 
-    private fun setContentIf() {
-        timeMillis_()
-        if (!useAndroidRule) rule.setContent {
-            EasingsViewer()
-        }
-        timeMillis_("setContent~")
-    }
 
     @Test
     fun clickEasings() {
         setContentIf()
 
-        val easings2 = nodeHasText("2")
-        easings2.assertIsDisplayed()
+        val easing2 = nodeWithText("2")
+        easing2.assertIsDisplayed()
             .performClick()
 
-        val picks2 = nodeHasText("2P")
-        picks2.assertIsDisplayed()
+        val pick2 = nodeWithText("2P")
+        pick2.assertIsDisplayed()
 
-        val easings19 = nodeHasText("19")
-        easings19
+        val easing19 = nodeWithText("19")
+        easing19
             .assertIsNotDisplayed()
 
         val down = nodeAsButton("Down")
@@ -67,34 +68,35 @@ class EasingTests {
             .performClick()
             .performClick()
 
-        easings19.assertIsDisplayed()
+        easing19.assertIsDisplayed()
         down.assertIsNotEnabled()
-        easings19.performClick()
-        val picks19 = nodeHasText("19P")
-        picks19.assertIsDisplayed()
+        easing19.performClick()
 
-        picks2.performClick()
-        easings2.assertIsDisplayed()
+        val pick19 = nodeWithText("19P")
+        pick19.assertIsDisplayed()
 
-        picks19.performClick()
-        easings19.assertIsDisplayed()
+        pick2.performClick()
+        easing2.assertIsDisplayed()
+
+        pick19.performClick()
+        easing19.assertIsDisplayed()
 
 //        Thread.sleep(10000)
     }
 
     @Test
-    fun wipeIsTriggered() {
+    fun a_wipeIsTriggered() {
         setContentIf()
 
-        nodeHasText("W0").assertExists()
+        nodeWithText("W0").assertExists()
 
-        nodeHasText("2").assertExists()
+        nodeWithText("2").assertExists()
             .performClick()
 
-        nodeHasText("2P").assertExists()
+        nodeWithText("2P").assertExists()
 
         val animationDurationMillis = 1000L
-        rule.waitUntil(timeoutMillis = animationDurationMillis * 5 / 3) {
+        rule.waitUntil(timeoutMillis = animationDurationMillis * 4 / 3) {
             rule.onAllNodes(hasText("W1", true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
