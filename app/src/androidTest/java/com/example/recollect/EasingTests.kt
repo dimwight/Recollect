@@ -1,69 +1,110 @@
-package com.example.compose.rally
+package com.example.recollect
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotSelected
-import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.printToLog
-import com.example.recollect.InputActivity
 import com.example.recollect.bits.EasingsViewer
-import com.example.recollect.timeMillis_
 import org.junit.Rule
 import org.junit.Test
 
-class MyTests {
+class EasingTests {
 
-    private fun setContent() {
-        rule.setContent {
+    val useAndroidRule = false
+
+    private fun setContentIf() {
+        timeMillis_()
+        if (!useAndroidRule) rule.setContent {
             EasingsViewer()
         }
+        timeMillis_("setContentIf~")
     }
-
-    @Test
-    fun printToLog() {
-        rule.onRoot(useUnmergedTree = true).printToLog("")
-    }
-
-    val useAndroidRule = true
 
     @get:Rule
     val rule = if (useAndroidRule)
         createAndroidComposeRule<InputActivity>()
     else createComposeRule()
 
-    @Test
-    fun scrollAndClick() {
-        timeMillis_()
-        if (!useAndroidRule) setContent()
-        timeMillis_("setContent~")
-        printToLog()
-        timeMillis_("printToLog~")
+    private fun nodeWithText(text: String): SemanticsNodeInteraction =
+        rule.onNode(hasText(text), true)
 
-        nodeHasText("2")
-            .assertExists()
-            .performClick()
-
-        nodeHasText("0+")
-            .assertExists()
-
-        Thread.sleep(1000)
-    }
-
-    private fun nodeHasText(text: String): SemanticsNodeInteraction {
-//        timeMillis_()
-        val node = rule.onNode(hasText(text), true)
-        timeMillis_("$text~")
+    private fun nodeAsButton(text: String): SemanticsNodeInteraction {
+        val node = rule.onNode(
+            hasText(text, true) and SemanticsMatcher.expectValue(
+                SemanticsProperties.Role, Role.Button
+            )
+        )
+        node.printToLog("")
         return node
     }
+
+
+    @Test
+    fun clickEasings() {
+        setContentIf()
+
+        val easing2 = nodeWithText("2")
+        easing2.assertIsDisplayed()
+            .performClick()
+
+        val pick2 = nodeWithText("2P")
+        pick2.assertIsDisplayed()
+
+        val easing19 = nodeWithText("19")
+        easing19
+            .assertIsNotDisplayed()
+
+        val down = nodeAsButton("Down")
+
+        down
+            .performClick()
+            .performClick()
+
+        easing19.assertIsDisplayed()
+        down.assertIsNotEnabled()
+        easing19.performClick()
+
+        val pick19 = nodeWithText("19P")
+        pick19.assertIsDisplayed()
+
+        pick2.performClick()
+        easing2.assertIsDisplayed()
+
+        pick19.performClick()
+        easing19.assertIsDisplayed()
+
+//        Thread.sleep(10000)
+    }
+
+    @Test
+    fun a_wipeIsTriggered() {
+        setContentIf()
+
+        nodeWithText("W0").assertExists()
+
+        nodeWithText("2").assertExists()
+            .performClick()
+
+        nodeWithText("2P").assertExists()
+
+        val animationDurationMillis = 1000L
+        rule.waitUntil(timeoutMillis = animationDurationMillis * 4 / 3) {
+            rule.onAllNodes(hasText("W1", true))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        timeMillis_("scrollAndClick~")
+
+//        Thread.sleep(1000)
+    }
 }
-
-
 
 
 
