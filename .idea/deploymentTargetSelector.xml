@@ -21,9 +21,9 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="printToLog()">
+      <SelectionState runConfigName="EasingTests">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-05T15:10:42.443950100Z">
+        <DropdownSelection timestamp="2026-10-11T20:55:22.383056400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=D:\Android\.android\avd\Pixel_7.avd" />
@@ -40,28 +40,9 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="clickEasings()">
+      <SelectionState runConfigName="wipeIsTriggered()">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-12T11:23:15.892410300Z">
-          <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=D:\Android\.android\avd\Pixel_7.avd" />
-            </handle>
-          </Target>
-        </DropdownSelection>
-        <DialogSelection>
-          <targets>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\dimwi\.android\avd\Pixel_7.avd" />
-              </handle>
-            </Target>
-          </targets>
-        </DialogSelection>
-      </SelectionState>
-      <SelectionState runConfigName="assertIsNotEnabled()">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-12T11:23:15.892410300Z">
+        <DropdownSelection timestamp="2026-10-11T20:55:22.383056400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=D:\Android\.android\avd\Pixel_7.avd" />
