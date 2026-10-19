@@ -69,7 +69,7 @@ fun EasingsViewer() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var firstPass by remember { mutableStateOf(false) }
+        var firstPass by remember { mutableStateOf(true) }
         var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var durationMillis by remember { mutableIntStateOf(1000) }
@@ -90,7 +90,7 @@ fun EasingsViewer() {
                 adjustPicksWithWipe(Easings[easingAt], scope)
             }
             if (firstPass) {
-                if (true) LaunchedEffect(firstPass) {
+                if (true) LaunchedEffect(firstPass) {// No effect?
                     var then = scrollTo.intValue
                     scrollTo.intValue=0
                 }
@@ -232,7 +232,12 @@ private fun PicksCol(
                 enabled = scrollTo.intValue + getPickerRows() < lastEasing,
 //                enabled = false,
                 onClick = onDown
-            ) { Text("Down") }
+            ) {
+                Column {
+                    Text("Down")
+                    Text("scrollTo: ${scrollTo.intValue}")
+                }
+            }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
