@@ -59,7 +59,7 @@ private fun wipeEasing() {
 }
 
 private val wipeState = mutableIntStateOf(0)
-var scrollTo = mutableIntStateOf(0)
+var scrollTo = mutableIntStateOf(-1)
 
 @Preview
 @Composable
@@ -83,13 +83,19 @@ fun EasingsViewer() {
             val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
-                gettingValues = gettingValues || firstPass,
+                getValues = gettingValues || firstPass,
                 easingAt = easingAt
             ) { listAt ->
                 easingAt = listAt
                 adjustPicksWithWipe(Easings[easingAt], scope)
             }
-            if (firstPass) firstPass = false
+            if (firstPass) {
+                if (true) LaunchedEffect(firstPass) {
+                    var then = scrollTo.intValue
+                    scrollTo.intValue=0
+                }
+                firstPass = false
+            }
             if (gettingValues) {
                 LaunchedEffect(gettingValues) {
                     gettingValues = false
@@ -104,7 +110,11 @@ fun EasingsViewer() {
                     scrollTo.intValue -= min(scrollJump, scrollTo.intValue)
                 },
                 onDown = {
-                    scrollTo.intValue += min(scrollJump, Easings.lastIndex - scrollTo.intValue)
+                    val jump = scrollJump
+                    val lastIndex = Easings.lastIndex
+                    val then = scrollTo.intValue
+                    val now = then + min(jump, lastIndex - then)
+                    scrollTo.intValue = now
                 },
                 onBack = {
                     easingAt--
