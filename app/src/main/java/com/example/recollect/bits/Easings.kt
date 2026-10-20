@@ -39,15 +39,16 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -134,26 +135,10 @@ fun EasingPicker(
     list: List<EasingOption> = Easings,
     getValues: Boolean = false,
     easingAt: Int,
+    scrollState: ScrollState,
     onSelected: (Int) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
-
     val forEasings = list == Easings
-    if (forEasings && !getValues
-        ) {
-        val state = scrollState.value
-        LaunchedEffect(state) {
-            scrollTo.intValue = (state.toFloat() /
-                    itemHeightPx.toFloat()).roundToInt()
-        }
-        LaunchedEffect(scrollTo.intValue) {
-            val to = scrollTo.intValue
-            val toPx = to * itemHeightPx
-            var down = toPx > state
-            if (true||down) scrollState.scrollTo(toPx)
-            else scrollState.animateScrollTo(toPx)
-        }
-    }
 
     val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
 //    val pxToDp = 1.0 / dpToPx

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val scrollJump = 5
@@ -73,6 +75,7 @@ fun WipeViewer() {
 //        var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var durationMillis by remember { mutableIntStateOf(1000) }
+        val scrollState = rememberScrollState()
         Spacer(Modifier.height(50.dp))
         val easingSet = easingAt >= 0
         Row(
@@ -85,16 +88,32 @@ fun WipeViewer() {
                 list = Easings,
                 getValues = firstPass,
                 easingAt = easingAt,
+                scrollState = scrollState,
                 onSelected = { listAt ->
                     easingAt = listAt
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 })
+            if (!firstPass) {
+                val state = scrollState.value
+                LaunchedEffect(state) {
+                    scrollTo.intValue = (state.toFloat() /
+                            itemHeightPx.toFloat()).roundToInt()
+                }
+                LaunchedEffect(scrollTo.intValue) {
+                    val to = scrollTo.intValue
+                    val toPx = to * itemHeightPx
+                    var down = toPx > state
+                    if (true || down) scrollState.scrollTo(toPx)
+                    else scrollState.animateScrollTo(toPx)
+                }
+            }
             if (firstPass) {
                 if (true) LaunchedEffect(firstPass) {// No effect?
-                    var then = scrollTo.intValue
-                    scrollTo.intValue=0
+                    delay(2500.milliseconds)
+                    val then = scrollTo.intValue
+                    scrollTo.intValue = 5
                 }
-            firstPass = false
+                firstPass = false
             }
 
             Spacer(Modifier.width(10.dp))
@@ -136,9 +155,11 @@ fun WipeViewer() {
                         if (false || fromScroll > scrollTo.intValue)
                             scrollTo.intValue += fromScroll
                     }
-                    println("R1: \rlistAt = ${listAt}" +
-                            " \reasingAt = ${easingAt}" +
-                            " \rscrollTo = ${scrollTo.intValue}")
+                    println(
+                        "R1: \rlistAt = ${listAt}" +
+                                " \reasingAt = ${easingAt}" +
+                                " \rscrollTo = ${scrollTo.intValue}"
+                    )
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 }
             )
@@ -197,7 +218,8 @@ private fun PicksCol(
         EasingPicker(
             list = picks,
             easingAt = easingAt,
-            onSelected = onSelected
+            onSelected = onSelected,
+            scrollState = rememberScrollState(),
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
