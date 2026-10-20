@@ -71,7 +71,7 @@ fun WipeViewer() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        var firstPass by remember { mutableStateOf(true) }
+        var firstPass by remember { mutableStateOf(false) }
 //        var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var durationMillis by remember { mutableIntStateOf(1000) }
@@ -86,7 +86,7 @@ fun WipeViewer() {
             val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
-                getValues = firstPass,
+                getValues = firstPass||true,
                 easingAt = easingAt,
                 scrollState = scrollState,
                 onSelected = { listAt ->
@@ -155,7 +155,7 @@ fun WipeViewer() {
                         if (false || fromScroll > scrollTo.intValue)
                             scrollTo.intValue += fromScroll
                     }
-                    println(
+                    if (false) println(
                         "R1: \rlistAt = ${listAt}" +
                                 " \reasingAt = ${easingAt}" +
                                 " \rscrollTo = ${scrollTo.intValue}"

@@ -122,8 +122,8 @@ val Easings = listOf(
     .subList(0, 30)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
-var itemHeightPx = 38
-var pickerHeightPx = 0
+var itemHeightPx = 85//38
+var pickerHeightPx = 1181//0
 var pickerHeightDp = 450
 fun getPickerRows(): Int {
     val rows = pickerHeightPx / itemHeightPx
@@ -142,13 +142,15 @@ fun EasingPicker(
 
     val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
 //    val pxToDp = 1.0 / dpToPx
+    pickerHeightDp = (getPickerRows()*itemHeightPx / dpToPx).roundToInt()
+    println("R1: pickerHeightPx = ${pickerHeightPx}\r " +
+            "pickerHeightDp = ${pickerHeightDp}")
     Column(
         modifier = Modifier
             .then(
                 if (getValues)
                     Modifier.onSizeChanged {
                         pickerHeightPx = it.height
-                        pickerHeightDp = (pickerHeightPx / dpToPx).roundToInt()
                     } else Modifier.Companion
             )
             .width((if (forEasings) 170 else 165).dp)
@@ -170,6 +172,7 @@ fun EasingPicker(
                         if (getValues && at == 0)
                             Modifier.onSizeChanged {
                                 itemHeightPx = it.height
+                                println("R1: itemHeightPx = ${itemHeightPx}")
                             }
                         else
                             Modifier.Companion
