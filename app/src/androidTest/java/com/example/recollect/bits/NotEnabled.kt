@@ -28,7 +28,7 @@ class MyTests {
     private fun setContentIf() {
         timeMillis_()
         if (!true) rule.setContent {
-            EasingsViewer()
+            WipeViewer()
         }
         timeMillis_("setContent~")
     }

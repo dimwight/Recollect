@@ -39,15 +39,16 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -118,11 +119,11 @@ val Easings = listOf(
     EasingOption("EaseOutBounce", EaseOutBounce),
     EasingOption("EaseInOutBounce", EaseInOutBounce),
 )
-    .subList(0, 20)// ?38
+    .subList(0, 30)// ?38
 val picks: MutableList<EasingOption> = mutableListOf()
 
-var itemHeightPx = 38
-var pickerHeightPx = 0
+var itemHeightPx = 85//38
+var pickerHeightPx = 1181//0
 var pickerHeightDp = 450
 fun getPickerRows(): Int {
     val rows = pickerHeightPx / itemHeightPx
@@ -132,37 +133,24 @@ fun getPickerRows(): Int {
 @Composable
 fun EasingPicker(
     list: List<EasingOption> = Easings,
-    gettingValues: Boolean = false,
+    getValues: Boolean = false,
     easingAt: Int,
+    scrollState: ScrollState,
     onSelected: (Int) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
-
     val forEasings = list == Easings
-    if (forEasings && !gettingValues) {
-        val state = scrollState.value
-        LaunchedEffect(state) {
-            scrollTo.intValue = (state.toFloat() /
-                    itemHeightPx.toFloat()).roundToInt()
-        }
-        val to = scrollTo.intValue
-        val toPx = to * itemHeightPx
-        LaunchedEffect(to) {
-            var down = toPx > state
-            if (true||down) scrollState.scrollTo(toPx)
-            else scrollState.animateScrollTo(toPx)
-        }
-    }
 
     val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
 //    val pxToDp = 1.0 / dpToPx
+    pickerHeightDp = (getPickerRows()*itemHeightPx / dpToPx).roundToInt()
+    println("R1: pickerHeightPx = ${pickerHeightPx}\r " +
+            "pickerHeightDp = ${pickerHeightDp}")
     Column(
         modifier = Modifier
             .then(
-                if (gettingValues)
+                if (getValues)
                     Modifier.onSizeChanged {
                         pickerHeightPx = it.height
-                        pickerHeightDp = (pickerHeightPx / dpToPx).roundToInt()
                     } else Modifier.Companion
             )
             .width((if (forEasings) 170 else 165).dp)
@@ -181,9 +169,10 @@ fun EasingPicker(
                 } else ("" + easing.name),
                 modifier = Modifier
                     .then(
-                        if (gettingValues && at == 0)
+                        if (getValues && at == 0)
                             Modifier.onSizeChanged {
                                 itemHeightPx = it.height
+                                println("R1: itemHeightPx = ${itemHeightPx}")
                             }
                         else
                             Modifier.Companion

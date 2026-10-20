@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val scrollJump = 5
@@ -59,20 +61,21 @@ private fun wipeEasing() {
 }
 
 private val wipeState = mutableIntStateOf(0)
-var scrollTo = mutableIntStateOf(0)
+var scrollTo = mutableIntStateOf(-1)
 
 @Preview
 @Composable
-fun EasingsViewer() {
+fun WipeViewer() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
         var firstPass by remember { mutableStateOf(false) }
-        var gettingValues by remember { mutableStateOf(!firstPass) }
+//        var gettingValues by remember { mutableStateOf(!firstPass) }
         var easingAt by remember { mutableIntStateOf(-1) }
         var durationMillis by remember { mutableIntStateOf(1000) }
+        val scrollState = rememberScrollState()
         Spacer(Modifier.height(50.dp))
         val easingSet = easingAt >= 0
         Row(
@@ -83,18 +86,34 @@ fun EasingsViewer() {
             val scope = rememberCoroutineScope()
             EasingPicker(
                 list = Easings,
-                gettingValues = gettingValues || firstPass,
-                easingAt = easingAt
-            ) { listAt ->
-                easingAt = listAt
-                adjustPicksWithWipe(Easings[easingAt], scope)
-            }
-            if (firstPass) firstPass = false
-            if (gettingValues) {
-                LaunchedEffect(gettingValues) {
-                    gettingValues = false
+                getValues = firstPass||true,
+                easingAt = easingAt,
+                scrollState = scrollState,
+                onSelected = { listAt ->
+                    easingAt = listAt
+                    adjustPicksWithWipe(Easings[easingAt], scope)
+                })
+            if (!firstPass) {
+                val state = scrollState.value
+                LaunchedEffect(state) {
+                    scrollTo.intValue = (state.toFloat() /
+                            itemHeightPx.toFloat()).roundToInt()
                 }
-                if (true) return
+                LaunchedEffect(scrollTo.intValue) {
+                    val to = scrollTo.intValue
+                    val toPx = to * itemHeightPx
+                    var down = toPx > state
+                    if (true || down) scrollState.scrollTo(toPx)
+                    else scrollState.animateScrollTo(toPx)
+                }
+            }
+            if (firstPass) {
+                if (true) LaunchedEffect(firstPass) {// No effect?
+                    delay(2500.milliseconds)
+                    val then = scrollTo.intValue
+                    scrollTo.intValue = 5
+                }
+                firstPass = false
             }
 
             Spacer(Modifier.width(10.dp))
@@ -104,7 +123,11 @@ fun EasingsViewer() {
                     scrollTo.intValue -= min(scrollJump, scrollTo.intValue)
                 },
                 onDown = {
-                    scrollTo.intValue += min(scrollJump, Easings.lastIndex - scrollTo.intValue)
+                    val jump = scrollJump
+                    val lastIndex = Easings.lastIndex
+                    val then = scrollTo.intValue
+                    val now = then + min(jump, lastIndex - then)
+                    scrollTo.intValue = now
                 },
                 onBack = {
                     easingAt--
@@ -132,9 +155,11 @@ fun EasingsViewer() {
                         if (false || fromScroll > scrollTo.intValue)
                             scrollTo.intValue += fromScroll
                     }
-                    println("R1: \rlistAt = ${listAt}" +
-                            " \reasingAt = ${easingAt}" +
-                            " \rscrollTo = ${scrollTo.intValue}")
+                    if (false) println(
+                        "R1: \rlistAt = ${listAt}" +
+                                " \reasingAt = ${easingAt}" +
+                                " \rscrollTo = ${scrollTo.intValue}"
+                    )
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 }
             )
@@ -193,7 +218,8 @@ private fun PicksCol(
         EasingPicker(
             list = picks,
             easingAt = easingAt,
-            onSelected = onSelected
+            onSelected = onSelected,
+            scrollState = rememberScrollState(),
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -222,7 +248,12 @@ private fun PicksCol(
                 enabled = scrollTo.intValue + getPickerRows() < lastEasing,
 //                enabled = false,
                 onClick = onDown
-            ) { Text("Down") }
+            ) {
+                Column {
+                    Text("Down")
+                    Text("scrollTo: ${scrollTo.intValue}")
+                }
+            }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
