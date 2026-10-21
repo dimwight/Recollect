@@ -135,17 +135,28 @@ fun WipeViewer() {
                 },
                 onSelected = { listAt ->
                     easingAt = Easings.indexOf(picks[listAt])
-                    if (false || easingAt < scrollTo.intValue)
+                    val scrollAt = scrollTo.intValue
+                    if (easingAt < scrollAt)
                         scrollTo.intValue = easingAt
                     else {
-                        val fromScroll = easingAt - getPickerRows()
-                        if (false || fromScroll > scrollTo.intValue)
-                            scrollTo.intValue += fromScroll
+                        val pickerRows = getPickerRows()
+                        if (false) {
+                            val fromScroll = easingAt - pickerRows
+                            if (fromScroll > scrollAt)
+                                scrollTo.intValue += fromScroll
+                        }
+                        else {
+                            val fromScroll = easingAt - scrollAt
+                            if (fromScroll > pickerRows)
+                                scrollTo.intValue = min(
+                                    fromScroll+scrollAt,
+                                    Easings.size-pickerRows)
+                        }
                     }
                     if (false) println(
-                        "R1: \r listAt = $listAt" +
-                                " \r easingAt = $easingAt" +
-                                " \r scrollTo = ${scrollTo.intValue}"
+                        "R1:\rlistAt = $listAt" +
+                                "\r easingAt = $easingAt" +
+                                "\r scrollTo = $scrollAt"
                     )
                     adjustPicksWithWipe(Easings[easingAt], scope)
                 }

@@ -14,6 +14,8 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.printToLog
+import com.example.recollect.EasingTests.Button.Down
+import com.example.recollect.EasingTests.Button.Up
 import com.example.recollect.bits.WipeViewer
 import org.junit.Rule
 import org.junit.Test
@@ -38,9 +40,9 @@ class EasingTests {
     private fun nodeWithText(text: String): SemanticsNodeInteraction =
         rule.onNode(hasText(text), true)
 
-    private fun nodeAsButton(text: String): SemanticsNodeInteraction {
+    private fun button(text: Button): SemanticsNodeInteraction {
         val node = rule.onNode(
-            hasText(text, true) and SemanticsMatcher.expectValue(
+            hasText(text.name, true) and SemanticsMatcher.expectValue(
                 SemanticsProperties.Role, Role.Button
             )
         )
@@ -53,19 +55,19 @@ class EasingTests {
     fun scrollTo() {
         setContentIf()
 
-        val up = nodeAsButton("Up")
+        val up = button(Up)
             .assertIsNotEnabled()
-        val down = nodeAsButton("Down")
+        val down = button(Down)
             .assertIsEnabled()
 
-        val easing0 = nodeWithText("0")
+        easing(0)
             .assertIsDisplayed()
 
         down.performClick()
-        easing0.assertIsNotDisplayed()
+        easing(0).assertIsNotDisplayed()
         up.assertIsEnabled()
 
-        nodeWithText("29").assertExists()
+        easing(29).assertExists()
             .performScrollTo()
         down.assertIsNotEnabled()
 
@@ -76,28 +78,28 @@ class EasingTests {
     fun downAndUp() {
         setContentIf()
 
-        val up = nodeAsButton("Up")
+        val up = button(Up)
             .assertIsNotEnabled()
-        val down = nodeAsButton("Down")
+        val down = button(Down)
             .assertIsEnabled()
 
-        val easing0 = nodeWithText("0")
+        easing(0)
             .assertIsDisplayed()
             .performClick()
 
         down.performClick()
-        easing0.assertIsNotDisplayed()
+        easing(0).assertIsNotDisplayed()
         up.assertIsEnabled()
 
-        val easing29 = nodeWithText("29")
+        easing(29)
             .assertIsNotDisplayed()
             .performScrollTo()
         down.assertIsNotEnabled()
 
-        val pick0 = nodeWithText("0P")
+         pick(0)
             .assertIsDisplayed()
             .performClick()
-        easing0.assertIsDisplayed()
+        easing(0).assertIsDisplayed()
 
         down
             .performClick()
@@ -107,19 +109,19 @@ class EasingTests {
             .assertIsNotEnabled()
         up.assertIsEnabled()
 
-        easing29.assertIsDisplayed()
+        easing(29).assertIsDisplayed()
             .performClick()
 
-        val pick29 = nodeWithText("29P")
+        pick(29) 
             .assertIsDisplayed()
 
-        pick0.performClick()
-        easing0.assertIsDisplayed()
+        pick(0).performClick()
+        easing(0).assertIsDisplayed()
         up.assertIsNotEnabled()
         down.assertIsEnabled()
 
-        pick29.performClick()
-//        easing29.assertIsDisplayed()
+        pick(29).performClick()
+        easing(29).assertIsDisplayed()
         up.assertIsEnabled()
         down.assertIsNotEnabled()
 //        Thread.sleep(20000)
@@ -132,10 +134,10 @@ class EasingTests {
 
         nodeWithText("W0").assertExists()
 
-        nodeWithText("2").assertExists()
+        easing(2).assertExists()
             .performClick()
 
-        nodeWithText("2P").assertExists()
+        pick(2).assertExists()
 
         val animationDurationMillis = 1000L
         rule.waitUntil(timeoutMillis = animationDurationMillis * 4 / 3) {
@@ -144,6 +146,12 @@ class EasingTests {
         }
 //        Thread.sleep(20000)
     }
+    enum class Button{
+        Down,Up,Wipe
+    }
+
+    fun easing(n: Int): SemanticsNodeInteraction = nodeWithText("$n")
+    private fun pick(n: Int): SemanticsNodeInteraction = nodeWithText("${n}P")
 }
 
 
