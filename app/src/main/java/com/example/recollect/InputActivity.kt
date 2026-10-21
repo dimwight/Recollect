@@ -43,6 +43,7 @@ import org.javarosa.xform.parse.XFormParser
 import org.javarosa.xform.util.XFormUtils
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
@@ -132,7 +133,15 @@ class InputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val divApp = true
-        if (!divApp) prepareForInput()
+        (if (divApp) {
+            try {
+                val file = File(getExternalFilesDir(null), "App.txt")
+                val stream = FileOutputStream(file)
+                stream.write("Hi".toByteArray())
+            } catch (e: Exception) {
+                println("R1: = $e")
+            }
+        } else prepareForInput())
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -404,7 +413,7 @@ fun timeMillis_(msg: String = "") {
     }
     timeSince = currentTimeMillis() - timeThen
     println("R1: "+
-        (if (blankMsg) "" else "$msg=") +
+        (if (blankMsg) "T" else "$msg=") +
                 "${timeSince / 1}"
     )
 }

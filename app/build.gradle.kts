@@ -37,6 +37,7 @@ android {
         create("Easings") {
             dimension = "environment"
             applicationIdSuffix = ".div"
+            resValue("string", "app_name", "Easings")
         }
     }
 }

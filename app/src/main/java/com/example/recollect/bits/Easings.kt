@@ -43,7 +43,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,7 +51,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -151,10 +149,14 @@ fun EasingPicker(
             .then(
                 if (getValues)
                     Modifier.onSizeChanged {
+                        println("R1: pickerHeightDp = ${pickerHeightDp.intValue}")
                         pickerHeightPx = it.height
-                        pickerHeightDp.intValue = (getPickerRows()*itemHeightPx / dpToPx).roundToInt()
-                        println("R1: pickerHeightPx = ${pickerHeightPx}\r " +
-                                "pickerHeightDp = ${pickerHeightDp.intValue}")
+                        pickerHeightDp.intValue =
+                            (getPickerRows() * itemHeightPx / dpToPx).roundToInt()
+                        println(
+                            "R1: pickerHeightPx = ${pickerHeightPx}\r " +
+                                    "pickerHeightDp = ${pickerHeightDp.intValue}"
+                        )
                     } else Modifier.Companion
             )
             .width((if (forEasings) 170 else 165).dp)
@@ -177,7 +179,7 @@ fun EasingPicker(
                             Modifier.onSizeChanged {
                                 val height = it.height
                                 itemHeightPx = height
-                                println("R1: itemHeightPx = ${height}")
+                                println("R1: itemHeightPx = $height")
                             }
                         else
                             Modifier.Companion

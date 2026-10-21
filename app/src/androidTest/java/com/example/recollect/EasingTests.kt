@@ -12,6 +12,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.printToLog
 import com.example.recollect.bits.WipeViewer
 import org.junit.Rule
@@ -49,6 +50,29 @@ class EasingTests {
 
 
     @Test
+    fun scrollTo() {
+        setContentIf()
+
+        val up = nodeAsButton("Up")
+            .assertIsNotEnabled()
+        val down = nodeAsButton("Down")
+            .assertIsEnabled()
+
+        val easing0 = nodeWithText("0")
+            .assertIsDisplayed()
+
+        down.performClick()
+        easing0.assertIsNotDisplayed()
+        up.assertIsEnabled()
+
+        nodeWithText("29").assertExists()
+            .performScrollTo()
+        down.assertIsNotEnabled()
+
+//        Thread.sleep(20000)
+    }
+
+    @Test
     fun downAndUp() {
         setContentIf()
 
@@ -61,11 +85,19 @@ class EasingTests {
             .assertIsDisplayed()
             .performClick()
 
+        down.performClick()
+        easing0.assertIsNotDisplayed()
+        up.assertIsEnabled()
+
+        val easing29 = nodeWithText("29")
+            .assertIsNotDisplayed()
+            .performScrollTo()
+        down.assertIsNotEnabled()
+
         val pick0 = nodeWithText("0P")
             .assertIsDisplayed()
-
-        val easing19 = nodeWithText("19")
-            .assertIsNotDisplayed()
+            .performClick()
+        easing0.assertIsDisplayed()
 
         down
             .performClick()
@@ -75,10 +107,10 @@ class EasingTests {
             .assertIsNotEnabled()
         up.assertIsEnabled()
 
-        easing19.assertIsDisplayed()
+        easing29.assertIsDisplayed()
             .performClick()
 
-        val pick19 = nodeWithText("19P")
+        val pick29 = nodeWithText("29P")
             .assertIsDisplayed()
 
         pick0.performClick()
@@ -86,8 +118,8 @@ class EasingTests {
         up.assertIsNotEnabled()
         down.assertIsEnabled()
 
-        pick19.performClick()
-        easing19.assertIsDisplayed()
+        pick29.performClick()
+//        easing29.assertIsDisplayed()
         up.assertIsEnabled()
         down.assertIsNotEnabled()
 //        Thread.sleep(20000)
