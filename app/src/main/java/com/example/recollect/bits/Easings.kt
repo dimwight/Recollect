@@ -139,6 +139,7 @@ fun EasingPicker(
     scrollState: ScrollState,
     onSelected: (Int) -> Unit,
 ) {
+    val debug = false
     val forEasings = list == Easings
 
     val dpToPx = with(LocalDensity.current) { 1.dp.toPx() }
@@ -149,11 +150,11 @@ fun EasingPicker(
             .then(
                 if (getValues)
                     Modifier.onSizeChanged {
-                        println("R1: pickerHeightDp = ${pickerHeightDp.intValue}")
+                        if (debug) println("R1: pickerHeightDp = ${pickerHeightDp.intValue}")
                         pickerHeightPx = it.height
                         pickerHeightDp.intValue =
                             (getPickerRows() * itemHeightPx / dpToPx).roundToInt()
-                        println(
+                        if (debug) println(
                             "R1: pickerHeightPx = ${pickerHeightPx}\r " +
                                     "pickerHeightDp = ${pickerHeightDp.intValue}"
                         )
@@ -179,7 +180,7 @@ fun EasingPicker(
                             Modifier.onSizeChanged {
                                 val height = it.height
                                 itemHeightPx = height
-                                println("R1: itemHeightPx = $height")
+                                if (debug) println("R1: itemHeightPx = $height")
                             }
                         else
                             Modifier.Companion
