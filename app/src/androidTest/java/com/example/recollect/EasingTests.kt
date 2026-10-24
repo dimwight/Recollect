@@ -12,60 +12,119 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.printToLog
+import com.example.recollect.EasingTestBase.ButtonLabel.Clear
+import com.example.recollect.EasingTestBase.ButtonLabel.Down
+import com.example.recollect.EasingTestBase.ButtonLabel.Up
+import com.example.recollect.bits.Easings
 import com.example.recollect.bits.WipeViewer
+import com.example.recollect.bits.RandomListBuilder
 import org.junit.Rule
 import org.junit.Test
+import kotlin.collections.map
+import kotlin.random.Random
 
-class EasingTests {
+class EasingTests : EasingTestBase() {
 
-    val useAndroidRule = false
 
-    private fun setContentIf() {
-        timeMillis_()
-        if (!useAndroidRule) rule.setContent {
-            WipeViewer()
-        }
-        timeMillis_("setContentIf~")
-    }
+    @Test
+    fun topToTail() {
+        setContentIf()
 
-    @get:Rule
-    val rule = if (useAndroidRule)
-        createAndroidComposeRule<InputActivity>()
-    else createComposeRule()
-
-    private fun nodeWithText(text: String): SemanticsNodeInteraction =
-        rule.onNode(hasText(text), true)
-
-    private fun nodeAsButton(text: String): SemanticsNodeInteraction {
-        val node = rule.onNode(
-            hasText(text, true) and SemanticsMatcher.expectValue(
-                SemanticsProperties.Role, Role.Button
+        val getter =
+            RandomListBuilder(
+                random = Random(1),
+                src = Easings.map() { it.listAt } as MutableList<Int>)
+                .build().iterator()
+        var passes=0
+        while (getter.hasNext()) {
+            val top = getter.next()
+            val tail = getter.next()
+            println("R1: " +
+                    "\r passes = ${++passes}" +
+                    "\r top = $top" +
+                    "\r tail = $tail"
             )
-        )
-        node.printToLog("")
-        return node
+            if (false&& top==6)continue
+            if (!getter.hasNext())
+                return
+            easing(top)
+                .performClick()
+            easing(tail)
+                .performScrollTo()
+                .performClick()
+
+            pick(top)
+                .performClick()
+//            rule.waitForIdle()
+            easing(top)
+                .assertIsDisplayed()
+
+            pick(tail)
+                .performClick()
+//            rule.waitForIdle()
+            easing(tail)
+                .assertIsDisplayed()
+
+//            Thread.sleep(2000)
+
+            button(Clear)
+                .performClick()
+                .performClick()
+
+        }
     }
 
+    @Test
+    fun scrollTo() {
+        setContentIf()
+
+        val up = button(Up)
+            .assertIsNotEnabled()
+        val down = button(Down)
+            .assertIsEnabled()
+
+        easing(0)
+            .assertIsDisplayed()
+
+        down.performClick()
+        easing(0).assertIsNotDisplayed()
+        up.assertIsEnabled()
+
+        easing(29)//.assertExists()
+            .performScrollTo()
+        down.assertIsNotEnabled()
+
+//        Thread.sleep(20000)
+    }
 
     @Test
     fun downAndUp() {
         setContentIf()
 
-        val up = nodeAsButton("Up")
+        val up = button(Up)
             .assertIsNotEnabled()
-        val down = nodeAsButton("Down")
+        val down = button(Down)
             .assertIsEnabled()
 
-        val easing0 = nodeWithText("0")
+        easing(0)
             .assertIsDisplayed()
             .performClick()
 
-        val pick0 = nodeWithText("0P")
-            .assertIsDisplayed()
+        down.performClick()
+        easing(0).assertIsNotDisplayed()
+        up.assertIsEnabled()
 
-        val easing19 = nodeWithText("19")
+        easing(29)
             .assertIsNotDisplayed()
+            .performScrollTo()
+        down.assertIsNotEnabled()
+
+        pick(0)
+            .assertIsDisplayed()
+            .performClick()
+        easing(0).assertIsDisplayed()
 
         down
             .performClick()
@@ -75,23 +134,22 @@ class EasingTests {
             .assertIsNotEnabled()
         up.assertIsEnabled()
 
-        easing19.assertIsDisplayed()
+        easing(29).assertIsDisplayed()
             .performClick()
 
-        val pick19 = nodeWithText("19P")
+        pick(29)
             .assertIsDisplayed()
 
-        pick0.performClick()
-        easing0.assertIsDisplayed()
+        pick(0).performClick()
+        easing(0).assertIsDisplayed()
         up.assertIsNotEnabled()
         down.assertIsEnabled()
 
-        pick19.performClick()
-        easing19.assertIsDisplayed()
+        pick(29).performClick()
+        easing(29).assertIsDisplayed()
         up.assertIsEnabled()
         down.assertIsNotEnabled()
 //        Thread.sleep(20000)
-
     }
 
     @Test
@@ -100,10 +158,10 @@ class EasingTests {
 
         nodeWithText("W0").assertExists()
 
-        nodeWithText("2").assertExists()
+        easing(2)//.assertExists()
             .performClick()
 
-        nodeWithText("2P").assertExists()
+        pick(2).assertExists()
 
         val animationDurationMillis = 1000L
         rule.waitUntil(timeoutMillis = animationDurationMillis * 4 / 3) {
@@ -112,6 +170,44 @@ class EasingTests {
         }
 //        Thread.sleep(20000)
     }
+
+}
+
+abstract class EasingTestBase {
+
+    private val useAndroidRule = false
+
+    @get:Rule
+    val rule = if (useAndroidRule)
+        createAndroidComposeRule<InputActivity>()
+    else createComposeRule()
+
+    fun setContentIf() {
+        if (!useAndroidRule) rule.setContent {
+            WipeViewer()
+        }
+    }
+
+    fun nodeWithText(text: String): SemanticsNodeInteraction =
+        rule.onNode(hasText(text), true)
+
+    enum class ButtonLabel {
+        Down, Up, Clear
+    }
+
+    fun button(label: ButtonLabel): SemanticsNodeInteraction {
+        val node = rule.onNode(
+            hasText(label.name, true) and SemanticsMatcher.expectValue(
+                SemanticsProperties.Role, Role.Button
+            )
+        )
+        node.printToLog("")
+        return node
+    }
+
+    fun easing(n: Int): SemanticsNodeInteraction = nodeWithText("$n")
+    fun pick(n: Int): SemanticsNodeInteraction = nodeWithText("${n}P")
+
 }
 
 

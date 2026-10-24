@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.recollect.bits.Easings
+import com.example.recollect.bits.RandomListBuilder
 import com.example.recollect.bits.WipeViewer
 import com.example.recollect.ui.theme.RecollectTheme
 import kotlinx.coroutines.delay
@@ -43,6 +45,7 @@ import org.javarosa.xform.parse.XFormParser
 import org.javarosa.xform.util.XFormUtils
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.lang.System.currentTimeMillis
@@ -131,8 +134,25 @@ class InputActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val getter = RandomListBuilder(src = Easings.map() { it.listAt } as MutableList<Int>
+        ).build().iterator()
+        while (getter.hasNext()){
+            val top = getter.next()
+            val tail = getter.next()
+            println("R1: tail = ${tail-top}")
+            top
+        }
+
         val divApp = true
-        if (!divApp) prepareForInput()
+        (if (divApp) {
+            try {
+                val file = File(getExternalFilesDir(null), "App.txt")
+                val stream = FileOutputStream(file)
+                stream.write("Hi".toByteArray())
+            } catch (e: Exception) {
+                println("R1: = $e")
+            }
+        } else prepareForInput())
         enableEdgeToEdge()
         setContent {
             RecollectTheme {
@@ -386,7 +406,6 @@ data class QuestionSpec(
 }
 
 
-
 private var timeThen = -1L
 
 fun timeMillis(msg: String = "") {
@@ -396,6 +415,7 @@ fun timeMillis(msg: String = "") {
         println("R1: Time reset for $msg")
     } else println("R1: $msg=${timeSince / 10}")
 }
+
 fun timeMillis_(msg: String = "") {
     val blankMsg = msg.isBlank()
     var timeSince = 0L
@@ -403,8 +423,9 @@ fun timeMillis_(msg: String = "") {
         timeThen = currentTimeMillis()
     }
     timeSince = currentTimeMillis() - timeThen
-    println("R1: "+
-        (if (blankMsg) "" else "$msg=") +
+    println(
+        "R1: " +
+                (if (blankMsg) "T" else "$msg=") +
                 "${timeSince / 1}"
     )
 }
