@@ -61,7 +61,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
-private val wipeDuration = 300
+const val triggerIme = true
+private val wipeDuration = if (triggerIme) 300 else 0
 private val wipeWait = 400
 
 @Composable
@@ -242,7 +243,7 @@ private fun FormWidgetEditBox(
             if (!screenState.forWipe)
                 LaunchedEffect(screenState) {
                     if (DoWipe) delay(wipeWait.milliseconds)
-                    focusRequester.requestFocus()
+                    if (triggerIme) focusRequester.requestFocus()
                 }
             else
                 LaunchedEffect(screenState) {

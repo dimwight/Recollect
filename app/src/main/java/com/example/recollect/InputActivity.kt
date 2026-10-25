@@ -83,7 +83,7 @@ fun importInstance(instanceFile: File, fec: FormEntryController) {
 
 const val DoWipe = true
 const val ApplyQuestionFromBefore = true
-const val QuestionFrom = 2
+const val QuestionFrom = 1
 
 @Throws(IOException::class)
 fun File.saveToFile(inputStream: InputStream) {
@@ -112,7 +112,7 @@ class InputActivity : ComponentActivity() {
         "repeats",
         "all",
         "end"
-    )[2]
+    )[0]
 
     private lateinit var controller: FormEntryController
     private var firstQuestionPrompt: FormEntryPrompt? = null
@@ -143,7 +143,7 @@ class InputActivity : ComponentActivity() {
             top
         }
 
-        val divApp = true
+        val divApp = false
         (if (divApp) {
             try {
                 val file = File(getExternalFilesDir(null), "App.txt")
@@ -250,7 +250,8 @@ class InputActivity : ComponentActivity() {
             )
             val result = controller.answerQuestion(answer, true)
             hasError = if (false) !hasError
-            else result != FormEntryController.ANSWER_OK
+            else false &&
+                result != FormEntryController.ANSWER_OK
             _screenState.update {
                 it.copy(
                     hasError = hasError,

@@ -45,9 +45,12 @@ fun QuestionTextField(focusRequester: FocusRequester) {
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.colors().copy(
             focusedContainerColor = containerColor,
-            unfocusedContainerColor = containerColor,
+            unfocusedContainerColor =
+                if (indicateError&&!triggerIme) Color.Red
+                    else containerColor,
             focusedIndicatorColor =
-                if (indicateError) Color.Red else myBlue
+                if (indicateError) Color.Red
+                else myBlue
         ),
 //        labelPosition = TextFieldLabelPosition.Above(),
         keyboardOptions = KeyboardOptions(
