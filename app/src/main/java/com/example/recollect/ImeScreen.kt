@@ -61,8 +61,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 val myBlue = Color(62, 159, 208)
 
-const val triggerIme = true
-private val wipeDuration = if (triggerIme) 300 else 0
+const val triggerIme = false
+private val wipeDuration = 300
 private val wipeWait = 400
 
 @Composable
@@ -150,7 +150,6 @@ fun ImeScreen(inputActivity: InputActivity) {
                         screenState.thenState?.wipeInt() ?:0
                     )
                 }
-//                println("R1: wipeState = $wipeState")
                 AnimatedContent(
                     targetState = wipeState,
                     transitionSpec = {

@@ -81,7 +81,7 @@ fun importInstance(instanceFile: File, fec: FormEntryController) {
     fec.getModel().form.instance.setRoot(templateRoot)
 }
 
-const val DoWipe = true
+const val DoWipe = false
 const val ApplyQuestionFromBefore = true
 const val QuestionFrom = 1
 
